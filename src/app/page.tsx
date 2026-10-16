@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { HomePageClient } from "@/components/HomePageClient";
@@ -35,5 +36,15 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  return <HomePageClient />;
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-background text-text-muted text-sm">
+          Loading PromptNest gallery...
+        </div>
+      }
+    >
+      <HomePageClient />
+    </Suspense>
+  );
 }
