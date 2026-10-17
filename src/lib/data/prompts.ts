@@ -622,6 +622,46 @@ export async function getPromptsByAuthorId(
   return { prompts: [], total: 0 };
 }
 
+/**
+ * Retrieves prompts matching the given list of IDs, preserving order.
+ */
+export async function getPromptsByIds(ids: string[]): Promise<PromptItem[]> {
+  if (!ids || ids.length === 0) return [];
+
+  const supabase = createPublicClient();
+  const foundMap = new Map<string, PromptItem>();
+
+  if (supabase) {
+    const { data } = await supabase
+      .from("prompts")
+      .select("*")
+      .in("id", ids);
+
+    if (data) {
+      for (const row of data) {
+        foundMap.set(row.id, mapDatabaseRowToPromptItem(row));
+      }
+    }
+  }
+
+  // Fallback to starter prompts for any missing IDs
+  for (const starter of STARTER_PROMPTS) {
+    if (ids.includes(starter.id) && !foundMap.has(starter.id)) {
+      foundMap.set(starter.id, starter);
+    }
+  }
+
+  const result: PromptItem[] = [];
+  for (const id of ids) {
+    const item = foundMap.get(id);
+    if (item) {
+      result.push(item);
+    }
+  }
+
+  return result;
+}
+
 
 
 

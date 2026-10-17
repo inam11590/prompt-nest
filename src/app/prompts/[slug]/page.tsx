@@ -10,6 +10,7 @@ import {
   ChevronRight,
   SlidersHorizontal,
   ArrowLeft,
+  BookOpen,
 } from "lucide-react";
 import {
   getPromptBySlug,
@@ -18,8 +19,8 @@ import {
 } from "@/data/prompts";
 import {
   getPromptBySlugDb,
-  getRelatedPromptsDb,
 } from "@/lib/data/prompts";
+import { getGuidesForPrompt } from "@/lib/data/articles";
 import { siteConfig } from "@/config/site";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -91,7 +92,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function PromptDetailPage({ params }: PromptPageProps) {
+async function PromptDetailContent({ params }: PromptPageProps) {
   const { slug } = await params;
   let prompt = getPromptBySlug(slug) || null;
   if (!prompt) {
@@ -107,6 +108,9 @@ export default async function PromptDetailPage({ params }: PromptPageProps) {
 
   // Deterministic related prompts matching (excluding current prompt)
   const relatedPrompts = getRelatedPrompts(prompt, 4);
+
+  // Fetch contextual guides associated with this prompt
+  const relatedGuides = await getGuidesForPrompt(prompt.id).catch(() => []);
 
   const categoryLabels: Record<string, string> = {
     photography: "Photography",
@@ -408,6 +412,65 @@ export default async function PromptDetailPage({ params }: PromptPageProps) {
             </div>
           </div>
 
+          {/* Related Guides Section */}
+          {relatedGuides.length > 0 && (
+            <section
+              aria-labelledby="related-guides-heading"
+              className="mt-16 sm:mt-20 border-t border-surface-border pt-10"
+            >
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-brand-light" />
+                    <h2
+                      id="related-guides-heading"
+                      className="text-lg sm:text-xl font-bold tracking-tight text-foreground"
+                    >
+                      Guides & Tutorials Featuring this Prompt
+                    </h2>
+                  </div>
+                  <p className="text-xs text-text-muted mt-1">
+                    In-depth articles and breakdowns demonstrating how to apply and customize this prompt.
+                  </p>
+                </div>
+                <Link
+                  href="/blog"
+                  className="text-xs font-semibold text-brand-light hover:underline"
+                >
+                  Browse all guides &rarr;
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {relatedGuides.map((guide) => (
+                  <Link
+                    key={guide.id}
+                    href={`/blog/${guide.slug}`}
+                    className="group flex flex-col justify-between rounded-xl border border-surface-border bg-surface p-5 hover:border-brand/40 transition"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between text-[11px] text-text-muted mb-2">
+                        <span className="rounded bg-surface-raised px-2 py-0.5 font-semibold text-brand-light uppercase text-[10px]">
+                          {guide.category}
+                        </span>
+                        <span>{guide.readingTimeMinutes} min read</span>
+                      </div>
+                      <h3 className="font-semibold text-sm text-foreground line-clamp-2 group-hover:text-brand-light transition">
+                        {guide.title}
+                      </h3>
+                      <p className="text-xs text-text-muted line-clamp-2 mt-2 leading-relaxed">
+                        {guide.excerpt}
+                      </p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-surface-border/50 text-[11px] font-semibold text-brand-light group-hover:underline">
+                      Read full tutorial &rarr;
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Related Prompts Section (below primary content) */}
           {relatedPrompts.length > 0 && (
             <section
@@ -453,3 +516,18 @@ export default async function PromptDetailPage({ params }: PromptPageProps) {
     </div>
   );
 }
+
+export default function PromptDetailPage(props: PromptPageProps) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-background text-text-muted text-sm">
+          Loading prompt details...
+        </div>
+      }
+    >
+      <PromptDetailContent {...props} />
+    </Suspense>
+  );
+}
+

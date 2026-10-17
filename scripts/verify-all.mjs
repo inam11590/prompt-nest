@@ -481,6 +481,148 @@ async function runAll() {
     assert.ok(headerContent.includes("href=\"/dashboard/submissions\""), "submissions link in header");
   });
 
+  // ----------------------------------------------------
+  // STEP 7: Blog, Guides & Technical SEO
+  // ----------------------------------------------------
+  test("T-7.1", "7.0", "Article and Guides database migration defines constraints, indexes, and RLS policies", () => {
+    const migrationPath = path.resolve("supabase/migrations/004_articles_and_guides.sql");
+    assert.ok(fs.existsSync(migrationPath), "004_articles_and_guides.sql must exist");
+    const sql = fs.readFileSync(migrationPath, "utf-8");
+    assert.ok(sql.includes("CREATE TABLE IF NOT EXISTS public.articles"), "articles table created");
+    assert.ok(sql.includes("CREATE TABLE IF NOT EXISTS public.article_prompts"), "article_prompts table created");
+    assert.ok(sql.includes("chk_articles_slug_format"), "slug constraint enforced");
+    assert.ok(sql.includes("concurrency_version INTEGER NOT NULL DEFAULT 1"), "concurrency version column present");
+    assert.ok(sql.includes("ENABLE ROW LEVEL SECURITY"), "RLS enabled on both tables");
+  });
+
+  test("T-7.2", "7.0", "Database TypeScript definitions include articles and article_prompts table schemas", () => {
+    const typesPath = path.resolve("src/types/database.types.ts");
+    assert.ok(fs.existsSync(typesPath), "database.types.ts must exist");
+    const content = fs.readFileSync(typesPath, "utf-8");
+    assert.ok(content.includes("articles: {"), "articles table definition present");
+    assert.ok(content.includes("article_prompts: {"), "article_prompts table definition present");
+    assert.ok(content.includes("concurrency_version: number"), "concurrency_version field present");
+  });
+
+  test("T-7.3", "7.0", "Safe markdown renderer escapes HTML, validates protocols, and produces TOC with IDs", () => {
+    const mdPath = path.resolve("src/lib/blog/markdown.ts");
+    assert.ok(fs.existsSync(mdPath), "markdown.ts must exist");
+    const content = fs.readFileSync(mdPath, "utf-8");
+    assert.ok(content.includes("renderArticleMarkdown"), "renderArticleMarkdown exported");
+    assert.ok(content.includes("isSafeUrl"), "link protocol validator present");
+    assert.ok(content.includes("escapeHtml"), "html sanitizer present");
+    assert.ok(content.includes("heading-"), "collision-resistant heading IDs generated");
+  });
+
+  test("T-7.4", "7.0", "Article data access module provides public queries and admin operations", () => {
+    const dataPath = path.resolve("src/lib/data/articles.ts");
+    assert.ok(fs.existsSync(dataPath), "articles data file must exist");
+    const content = fs.readFileSync(dataPath, "utf-8");
+    assert.ok(content.includes("getPublishedArticles"), "getPublishedArticles exported");
+    assert.ok(content.includes("getArticleBySlug"), "getArticleBySlug exported");
+    assert.ok(content.includes("getGuidesForPrompt"), "getGuidesForPrompt exported");
+    assert.ok(content.includes("getAdminArticles"), "getAdminArticles exported");
+    assert.ok(content.includes("calculateReadingTime"), "calculateReadingTime exported");
+  });
+
+  test("T-7.5", "7.0", "Article server actions enforce admin security, slug immutability, and concurrency checks", () => {
+    const actionPath = path.resolve("src/app/actions/articles.ts");
+    assert.ok(fs.existsSync(actionPath), "articles actions file must exist");
+    const content = fs.readFileSync(actionPath, "utf-8");
+    assert.ok(content.includes("createArticleAction"), "createArticleAction exported");
+    assert.ok(content.includes("updateArticleAction"), "updateArticleAction exported");
+    assert.ok(content.includes("setArticleStatusAction"), "setArticleStatusAction exported");
+    assert.ok(content.includes("requireAdmin"), "admin authorization verified");
+    assert.ok(content.includes("concurrency_version"), "optimistic concurrency version checked");
+    assert.ok(content.includes("The slug of an already published article cannot be changed"), "slug locked on published articles");
+  });
+
+  test("T-7.6", "7.0", "Article cover image upload validates dimensions with sharp and stores in storage", () => {
+    const actionPath = path.resolve("src/app/actions/articles.ts");
+    const content = fs.readFileSync(actionPath, "utf-8");
+    assert.ok(content.includes("uploadArticleCoverImageAction"), "uploadArticleCoverImageAction exported");
+    assert.ok(content.includes("validateAndProcessImage"), "sharp image pipeline invoked");
+    assert.ok(content.includes("articles/"), "article image path used in bucket");
+  });
+
+  test("T-7.7", "7.0", "Admin articles management page and client view support filtering, search, and metrics", () => {
+    const pagePath = path.resolve("src/app/admin/articles/page.tsx");
+    const clientPath = path.resolve("src/components/admin/AdminArticlesListClient.tsx");
+    assert.ok(fs.existsSync(pagePath), "admin articles page must exist");
+    assert.ok(fs.existsSync(clientPath), "admin articles client must exist");
+    const content = fs.readFileSync(clientPath, "utf-8");
+    assert.ok(content.includes("setArticleStatusAction"), "status quick actions implemented");
+    assert.ok(content.includes("initialArticles"), "renders articles table");
+  });
+
+  test("T-7.8", "7.0", "Admin article editor form supports creator attribution, prompt picker, and preview links", () => {
+    const formPath = path.resolve("src/components/admin/ArticleEditorForm.tsx");
+    const newPagePath = path.resolve("src/app/admin/articles/new/page.tsx");
+    const editPagePath = path.resolve("src/app/admin/articles/[id]/edit/page.tsx");
+    assert.ok(fs.existsSync(formPath), "ArticleEditorForm component must exist");
+    assert.ok(fs.existsSync(newPagePath), "admin new article page must exist");
+    assert.ok(fs.existsSync(editPagePath), "admin edit article page must exist");
+    const content = fs.readFileSync(formPath, "utf-8");
+    assert.ok(content.includes("availableAuthors"), "handles author assignment");
+    assert.ok(content.includes("availablePrompts"), "handles prompt associations");
+    assert.ok(content.includes("uploadArticleCoverImageAction"), "handles cover image upload");
+  });
+
+  test("T-7.9", "7.0", "Admin preview route presents unpublished articles with preview banner and noindex robots", () => {
+    const previewPath = path.resolve("src/app/admin/articles/[id]/preview/page.tsx");
+    assert.ok(fs.existsSync(previewPath), "admin article preview page must exist");
+    const content = fs.readFileSync(previewPath, "utf-8");
+    assert.ok(content.includes("Admin Preview Mode"), "preview banner rendered");
+    assert.ok(content.includes("index: false"), "robots set to noindex");
+  });
+
+  test("T-7.10", "7.0", "Public blog listing page renders published guides, topic filters, search, and pagination", () => {
+    const blogPath = path.resolve("src/app/blog/page.tsx");
+    assert.ok(fs.existsSync(blogPath), "blog listing page must exist");
+    const content = fs.readFileSync(blogPath, "utf-8");
+    assert.ok(content.includes("getPublishedArticles"), "fetches published articles");
+    assert.ok(content.includes("CATEGORIES"), "defines category filters");
+    assert.ok(content.includes("generateMetadata"), "defines SEO metadata");
+  });
+
+  test("T-7.11", "7.0", "Public article detail page renders safe markdown, TOC, author attribution, and JSON-LD schemas", () => {
+    const detailPath = path.resolve("src/app/blog/[slug]/page.tsx");
+    assert.ok(fs.existsSync(detailPath), "article detail page must exist");
+    const content = fs.readFileSync(detailPath, "utf-8");
+    assert.ok(content.includes("getArticleBySlug"), "resolves article by slug");
+    assert.ok(content.includes("BreadcrumbList"), "includes breadcrumb JSON-LD schema");
+    assert.ok(content.includes("BlogPosting"), "includes BlogPosting JSON-LD schema");
+    assert.ok(content.includes("dangerouslySetInnerHTML"), "renders safe server markdown");
+    assert.ok(content.includes("Table of Contents"), "renders table of contents");
+  });
+
+  test("T-7.12", "7.0", "Prompt detail page integrates bidirectional contextual guides referencing the prompt", () => {
+    const promptPath = path.resolve("src/app/prompts/[slug]/page.tsx");
+    const content = fs.readFileSync(promptPath, "utf-8");
+    assert.ok(content.includes("getGuidesForPrompt"), "fetches contextual guides");
+    assert.ok(content.includes("Guides & Tutorials Featuring this Prompt"), "renders contextual guides section");
+  });
+
+  test("T-7.13", "7.0", "Dynamic sitemap generator outputs canonical public URLs with genuine lastModified dates", () => {
+    const sitemapPath = path.resolve("src/app/sitemap.ts");
+    assert.ok(fs.existsSync(sitemapPath), "sitemap.ts must exist");
+    const content = fs.readFileSync(sitemapPath, "utf-8");
+    assert.ok(content.includes("/blog"), "indexes blog routes");
+    assert.ok(content.includes("/creators"), "indexes creator routes");
+    assert.ok(content.includes("/prompts"), "indexes prompt routes");
+    assert.ok(content.includes("lastModified"), "provides lastModified timestamps");
+  });
+
+  test("T-7.14", "7.0", "Search engine robots directives disallow private paths and advertise sitemap", () => {
+    const robotsPath = path.resolve("src/app/robots.ts");
+    assert.ok(fs.existsSync(robotsPath), "robots.ts must exist");
+    const content = fs.readFileSync(robotsPath, "utf-8");
+    assert.ok(content.includes("disallow: ["), "defines disallow paths");
+    assert.ok(content.includes("/admin"), "disallows admin");
+    assert.ok(content.includes("/dashboard"), "disallows dashboard");
+    assert.ok(content.includes("sitemap: `"), "advertises sitemap XML");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;

@@ -387,6 +387,113 @@ export interface Database {
           }
         ];
       };
+      articles: {
+        Row: {
+          id: string;
+          slug: string;
+          title: string;
+          excerpt: string;
+          content: string;
+          cover_image_url: string | null;
+          cover_image_alt: string | null;
+          cover_image_width: number | null;
+          cover_image_height: number | null;
+          cover_image_dominant_color: string | null;
+          category: string;
+          tags: string[];
+          status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+          published_at: string | null;
+          last_edited_at: string | null;
+          author_id: string | null;
+          concurrency_version: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          title: string;
+          excerpt: string;
+          content: string;
+          cover_image_url?: string | null;
+          cover_image_alt?: string | null;
+          cover_image_width?: number | null;
+          cover_image_height?: number | null;
+          cover_image_dominant_color?: string | null;
+          category?: string;
+          tags?: string[];
+          status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+          published_at?: string | null;
+          last_edited_at?: string | null;
+          author_id?: string | null;
+          concurrency_version?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          slug?: string;
+          title?: string;
+          excerpt?: string;
+          content?: string;
+          cover_image_url?: string | null;
+          cover_image_alt?: string | null;
+          cover_image_width?: number | null;
+          cover_image_height?: number | null;
+          cover_image_dominant_color?: string | null;
+          category?: string;
+          tags?: string[];
+          status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+          published_at?: string | null;
+          last_edited_at?: string | null;
+          author_id?: string | null;
+          concurrency_version?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "articles_author_id_fkey";
+            columns: ["author_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      article_prompts: {
+        Row: {
+          article_id: string;
+          prompt_id: string;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          article_id: string;
+          prompt_id: string;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          article_id?: string;
+          prompt_id?: string;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "article_prompts_article_id_fkey";
+            columns: ["article_id"];
+            referencedRelation: "articles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "article_prompts_prompt_id_fkey";
+            columns: ["prompt_id"];
+            referencedRelation: "prompts";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;

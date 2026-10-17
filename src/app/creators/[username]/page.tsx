@@ -38,8 +38,7 @@ export async function generateMetadata({
   const description =
     creator.bio || `Explore curated AI image prompts published by ${name} on ${siteConfig.name}.`;
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://prompt-nest-pi.vercel.app";
-  const canonicalUrl = `${baseUrl}/creators/${creator.username}`;
+  const canonicalUrl = `${siteConfig.url}/creators/${creator.username}`;
 
   return {
     title,

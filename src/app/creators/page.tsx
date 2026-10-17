@@ -13,16 +13,36 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: `Creator Directory — ${siteConfig.name}`,
-  description:
-    "Explore AI prompt creators, photographers, digital artists, and prompt engineers sharing curated visual instructions.",
-};
-
 interface CreatorsPageProps {
   searchParams: Promise<{
     page?: string;
   }>;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: CreatorsPageProps): Promise<Metadata> {
+  const resolved = await searchParams;
+  const page = parseInt(resolved.page || "1", 10);
+  const canonicalUrl =
+    page > 1
+      ? `${siteConfig.url}/creators?page=${page}`
+      : `${siteConfig.url}/creators`;
+
+  return {
+    title: `Creator Directory — ${siteConfig.name}`,
+    description:
+      "Explore AI prompt creators, photographers, digital artists, and prompt engineers sharing curated visual instructions.",
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `Creator Directory — ${siteConfig.name}`,
+      description:
+        "Explore AI prompt creators, photographers, digital artists, and prompt engineers sharing curated visual instructions.",
+      url: canonicalUrl,
+    },
+  };
 }
 
 async function CreatorsContent({ searchParams }: CreatorsPageProps) {

@@ -45,7 +45,7 @@ export const siteConfig: SiteConfig = {
     { label: "Explore", href: "/#gallery", iconName: "Compass" },
     { label: "Creators", href: "/creators", iconName: "Sparkles" },
     { label: "Models", href: "/#models", iconName: "Sparkles" },
-    { label: "Guides", href: "/#guides", iconName: "BookOpen" },
+    { label: "Guides", href: "/blog", iconName: "BookOpen" },
     { label: "About", href: "/#about", iconName: "Info" },
   ],
   categories: [
@@ -64,7 +64,7 @@ export const siteConfig: SiteConfig = {
       { label: "Categories", href: "/#categories" },
     ],
     resources: [
-      { label: "Prompt Engineering Guide", href: "/#guides" },
+      { label: "Guides & Tutorials", href: "/blog" },
       { label: "Image Attribution", href: "/#attribution" },
       { label: "Roadmap", href: "/#roadmap" },
     ],

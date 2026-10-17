@@ -13,6 +13,7 @@ import {
   LogOut,
   Sparkles,
   Inbox,
+  BookOpen,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -123,6 +124,13 @@ async function AdminGuard({ children }: { children: React.ReactNode }) {
               >
                 <Inbox className="h-4 w-4 text-amber-400" />
                 Submissions
+              </Link>
+              <Link
+                href="/admin/articles"
+                className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:text-white hover:bg-surface-raised transition-colors"
+              >
+                <BookOpen className="h-4 w-4 text-purple-400" />
+                Articles
               </Link>
               <Link
                 href="/admin/prompts/new"

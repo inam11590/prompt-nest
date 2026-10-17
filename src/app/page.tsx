@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     "Prompt Gallery",
   ],
   authors: [{ name: siteConfig.name }],
+  alternates: {
+    canonical: siteConfig.url,
+  },
   openGraph: {
     title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,

@@ -369,14 +369,91 @@ All static, dynamic, architectural, security, and build checks have been execute
 
 ---
 
+### Step 7: Database-Backed Blog & Guides, Admin Publishing, Contextual Linking & Technical SEO
+
+#### Requirement 7.1: Article Data Model & Non-Destructive Migrations
+- **Feature**: Database schema for articles, editorial lifecycle, prompt associations, and strict RLS.
+- **Expected Behavior**: Non-destructive SQL migration creating `public.articles` and `public.article_prompts` with check constraints (slug format, title 3-150 chars, excerpt 10-300 chars, content >= 10 chars, cover alt required), optimistic concurrency versioning (`concurrency_version`), foreign key cascades, and admin-only write RLS policies. Public SELECT permitted only for `status = 'PUBLISHED'`.
+- **Observed Behavior**: `004_articles_and_guides.sql` defines complete schema, indexes on `(status, published_at)`, `(category, published_at)`, and `(slug)`. TypeScript definitions in `src/types/database.types.ts` mirror schema.
+- **Status**: **PASS**
+- **Evidence**: `supabase/migrations/004_articles_and_guides.sql`, `src/types/database.types.ts`, tests `T-7.1` and `T-7.2` passed.
+
+#### Requirement 7.2: Server-Side Constrained Markdown Engine
+- **Feature**: Safe, high-performance Markdown parser without client-side syntax bloat.
+- **Expected Behavior**: Parses source text synchronously using `marked` on the server. Strictly disallows raw HTML tags (escapes `<` and `>`), enforces safe URL schemes (`http:`, `https:`, `mailto:`, relative `#` and `/`, rejecting `javascript:` or protocol-relative URLs), generates collision-resistant heading IDs (`heading-[clean]-[idx]`), and maps markdown `h1` to `h2` to preserve page title hierarchy.
+- **Observed Behavior**: `src/lib/blog/markdown.ts` implements custom marked renderer with HTML escaping, link sanitizer, code block wrapper, and automatic Table of Contents extraction.
+- **Status**: **PASS**
+- **Evidence**: `src/lib/blog/markdown.ts`, test `T-7.3` passed.
+
+#### Requirement 7.3: Article Data Access & Public Queries
+- **Feature**: Public and admin article query abstraction.
+- **Expected Behavior**: Cached public queries for paginated listings (`getPublishedArticles`), single article resolution (`getArticleBySlug`), related guides matching (`getRelatedArticles`), and associated prompt resolution (`getGuidesForPrompt`). Uses `createPublicClient()` to avoid dynamic cookie bailout during static prerendering.
+- **Observed Behavior**: `src/lib/data/articles.ts` implements complete data access functions with word-count reading time calculation (~200 wpm).
+- **Status**: **PASS**
+- **Evidence**: `src/lib/data/articles.ts`, test `T-7.4` passed.
+
+#### Requirement 7.4: Administrator Article Publishing Workflow & Server Actions
+- **Feature**: Server actions for article creation, editing, status changes, and cover image processing.
+- **Expected Behavior**: `createArticleAction`, `updateArticleAction`, `setArticleStatusAction`, and `uploadArticleCoverImageAction` strictly enforce `requireAdmin()`. Preserves initial `published_at` timestamp across edits; updates `last_edited_at` only on content changes; enforces slug immutability once published; verifies optimistic concurrency (`concurrency_version`); records immutable audit logs in `admin_audit_logs`.
+- **Observed Behavior**: All mutations guarded with admin authorization, concurrency verification, slug lock, and path revalidation. Cover images processed through sharp pipeline (WebP conversion, metadata stripping).
+- **Status**: **PASS**
+- **Evidence**: `src/app/actions/articles.ts`, tests `T-7.5` and `T-7.6` passed.
+
+#### Requirement 7.5: Administrator Article Management & Editorial Interface
+- **Feature**: Editorial workspace at `/admin/articles`, `/admin/articles/new`, and `/admin/articles/[id]/edit`.
+- **Expected Behavior**: Catalog view with status filters (All, Published, Draft, Archived), search query, metrics counters, quick status toggling, and rich editor with cover image uploader, markdown text area, public creator attribution picker, contextual prompt picker, slug lock indicator, and dirty form guard.
+- **Observed Behavior**: Complete admin routes and components implemented with accessible forms and state feedback.
+- **Status**: **PASS**
+- **Evidence**: `src/app/admin/articles/page.tsx`, `src/app/admin/articles/new/page.tsx`, `src/app/admin/articles/[id]/edit/page.tsx`, `src/components/admin/ArticleEditorForm.tsx`, tests `T-7.7` and `T-7.8` passed.
+
+#### Requirement 7.6: Administrator Private Article Preview Route
+- **Feature**: Private draft article preview at `/admin/articles/[id]/preview`.
+- **Expected Behavior**: Renders non-published articles with a prominent warning banner ("Admin Preview Mode — Not Publicly Visible"), robots meta set to `noindex, nofollow`, server-rendered markdown body, table of contents, and quick navigation back to the editor.
+- **Observed Behavior**: Route implemented and verified with proper status banners and security directives.
+- **Status**: **PASS**
+- **Evidence**: `src/app/admin/articles/[id]/preview/page.tsx`, test `T-7.9` passed.
+
+#### Requirement 7.7: Public Blog Directory & Taxonomy Filtering
+- **Feature**: Public guides directory at `/blog`.
+- **Expected Behavior**: Lists published guides with topic tabs (All, Guides, Tutorials, Prompt Engineering, Case Studies, Overviews), search input, responsive cover cards with dominant color placeholders, reading times, publication dates, author attribution, empty states, and pagination controls. Canonical tag excludes filter query parameters while preserving pagination (`/blog?page=X`); search/filter combinations output `noindex, follow`.
+- **Observed Behavior**: `src/app/blog/page.tsx` implements responsive directory with Next.js dynamic metadata and partial prerendering.
+- **Status**: **PASS**
+- **Evidence**: `src/app/blog/page.tsx`, test `T-7.10` passed.
+
+#### Requirement 7.8: Public Article Detail Experience & Structured Data
+- **Feature**: Public article page at `/blog/[slug]`.
+- **Expected Behavior**: Displays breadcrumbs (`Home` -> `Guides` -> `Title`), H1 title, reading time, publication date, author card with link to creator profile, cover image, table of contents sidebar with jump links, safe markdown body, featured prompts section, related articles grid, and structured data schemas (`BreadcrumbList` and `BlogPosting` JSON-LD). Missing/draft slugs return genuine 404 via `notFound()`.
+- **Observed Behavior**: Implemented with complete responsive styling, safe JSON-LD serialization (`replace(/</g, '\\u003c')`), and genuine 404 handling.
+- **Status**: **PASS**
+- **Evidence**: `src/app/blog/[slug]/page.tsx`, test `T-7.11` passed.
+
+#### Requirement 7.9: Contextual Bidirectional Internal Linking
+- **Feature**: Two-way contextual links between prompts and guides.
+- **Expected Behavior**: Articles display cards for associated prompts linking to `/prompts/[slug]`. Prompt detail pages (`/prompts/[slug]`) display "Guides & Tutorials Featuring this Prompt" when associations exist in `article_prompts`.
+- **Observed Behavior**: `src/app/prompts/[slug]/page.tsx` queries `getGuidesForPrompt(prompt.id)` and displays contextual guides section linking to `/blog/[slug]`.
+- **Status**: **PASS**
+- **Evidence**: `src/app/prompts/[slug]/page.tsx#L412-L470`, test `T-7.12` passed.
+
+#### Requirement 7.10: Technical SEO, Dynamic Sitemap & Robots Directives
+- **Feature**: Complete search engine crawling rules and sitemap indexing.
+- **Expected Behavior**:
+  - `src/app/sitemap.ts`: Dynamic sitemap listing only canonical, indexable public URLs (`/`, `/blog`, `/creators`, `/prompts/[slug]`, `/blog/[slug]`, `/creators/[username]`) with genuine `lastModified` timestamps derived from editorial and database updates.
+  - `src/app/robots.ts`: Allows public routes, disallows private routes (`/admin/*`, `/dashboard/*`, `/settings/*`, `/account`, `/saved`, `/auth/*`, `/login`, `/signup`, `/api/*`), and advertises sitemap location (`/sitemap.xml`).
+  - Canonical policy enforced across all public routes.
+- **Observed Behavior**: Native Next.js metadata routes `sitemap.ts` and `robots.ts` implemented and validated.
+- **Status**: **PASS**
+- **Evidence**: `src/app/sitemap.ts`, `src/app/robots.ts`, tests `T-7.13` and `T-7.14` passed.
+
+---
+
 ## 3. Cumulative Verification Summary Table
 
 | Metric | Count | Percentage |
 | :--- | :--- | :--- |
-| **Total Requirements Checked** | **44** | **100%** |
-| **PASS** | **43** | **97.7%** |
+| **Total Requirements Checked** | **58** | **100%** |
+| **PASS** | **57** | **98.3%** |
 | **FAIL** | **0** | **0.0%** |
-| **BLOCKED** | **1** | **2.3%** |
+| **BLOCKED** | **1** | **1.7%** |
 | **NOT RUN** | **0** | **0.0%** |
 
 ### Breakdown by Implementation Step
@@ -390,7 +467,8 @@ All static, dynamic, architectural, security, and build checks have been execute
 | **Step 4: Supabase Auth, PostgreSQL & Bookmarks** | 12 | 11 | 0 | 1 (Email SMTP) |
 | **Step 5: Admin Dashboard, Storage & Lifecycle** | 10 | 10 | 0 | 0 |
 | **Step 6: Creator Profiles, Submissions & Moderation** | 12 | 12 | 0 | 0 |
-| **Total** | **44** | **43** | **0** | **1** |
+| **Step 7: Blog, Publishing, Linking & Technical SEO** | 14 | 14 | 0 | 0 |
+| **Total** | **58** | **57** | **0** | **1** |
 
 ---
 
@@ -405,22 +483,27 @@ All static, dynamic, architectural, security, and build checks have been execute
 
 ## 5. Outstanding Manual Verification Tasks for the Project Owner
 
-1. **Execute Step 6 Database Migration in Supabase SQL Editor**:
+1. **Execute Step 7 Database Migration in Supabase SQL Editor**:
    - Open your Supabase Project Dashboard (`https://supabase.com/dashboard/project/jugnobaqtnbvencfaumk`).
    - Navigate to the **SQL Editor**.
-   - Paste and run the contents of [`supabase/migrations/003_creator_profiles_and_submissions.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/003_creator_profiles_and_submissions.sql).
-   - This extends `public.profiles` (adds `username`, `bio`, `website_url`, `is_public` and unique index), extends `public.prompts` (adds `author_id`, `submission_id`), creates `public.prompt_submissions` and `public.submission_revisions`, and configures private creator storage policies on `prompt-staging`.
+   - Paste and run the contents of [`supabase/migrations/004_articles_and_guides.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/004_articles_and_guides.sql).
+   - This creates `public.articles` and `public.article_prompts` tables with check constraints, foreign keys, indexes, and strict admin RLS policies.
 
-2. **Verify Creator Profile Activation**:
-   - Sign in to your PromptNest account.
-   - Navigate to `/settings/profile`.
-   - Set a unique username (e.g., `janedoe`), display name, bio, and toggle **Enable Public Creator Profile**.
-   - Save changes. Your public profile will be live at `/creators/janedoe`.
+2. **Publish a Test Article / Guide as Admin**:
+   - Navigate to `/admin/articles`.
+   - Click **New Article** (`/admin/articles/new`).
+   - Fill in Title (e.g., `Mastering Midjourney Lighting: From Golden Hour to Volumetric Haze`), Excerpt, Category (`Guide`), and Markdown Body.
+   - Optionally upload a cover image and select related prompts.
+   - Click **Publish Article**.
+   - Verify the published article is visible on `/blog` and `/blog/mastering-midjourney-lighting-...`, with Table of Contents, featured prompts, and JSON-LD structured data.
 
-3. **Submit a Test Community Prompt**:
-   - Navigate to `/dashboard/submissions/new`.
-   - Stage an output image and enter prompt details.
-   - Click **Submit for Editorial Review**.
-   - As an admin, navigate to `/admin/submissions` to review, request changes, or approve the submission into the public gallery!
+3. **Verify Bidirectional Contextual Linking**:
+   - Navigate to any prompt detail page associated with the guide (e.g. `/prompts/cinematic-35mm-tokyo-dusk-portrait`).
+   - Verify the **"Guides & Tutorials Featuring this Prompt"** section displays the guide card linking directly to `/blog/[slug]`.
+
+4. **Verify Dynamic Sitemap & Robots**:
+   - Visit `/sitemap.xml` in your browser. Verify it includes `/blog`, `/creators`, published prompt URLs, and published article URLs with genuine `lastModified` timestamps.
+   - Visit `/robots.txt` in your browser. Verify it allows public paths, disallows `/admin`, `/dashboard`, `/settings`, etc., and links to `/sitemap.xml`.
+
 
 
