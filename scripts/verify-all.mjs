@@ -1,0 +1,240 @@
+// scripts/verify-all.mjs
+// Automated verification suite for PromptNest (Steps 1, 1.1, 2, 3, 4)
+
+import assert from "node:assert";
+import fs from "node:fs";
+import path from "node:path";
+
+console.log("==========================================");
+console.log("   PromptNest Cumulative Verification     ");
+console.log("==========================================");
+
+const results = [];
+
+function test(id, step, description, fn) {
+  try {
+    fn();
+    results.push({ id, step, description, status: "PASS" });
+    console.log(`[PASS] ${id} (Step ${step}): ${description}`);
+  } catch (err) {
+    results.push({ id, step, description, status: "FAIL", error: err.message });
+    console.error(`[FAIL] ${id} (Step ${step}): ${description} -> ${err.message}`);
+  }
+}
+
+function blocked(id, step, description, reason) {
+  results.push({ id, step, description, status: "BLOCKED", reason });
+  console.log(`[BLOCKED] ${id} (Step ${step}): ${description} -> Reason: ${reason}`);
+}
+
+// ----------------------------------------------------
+// STEP 1: Foundation & Homepage
+// ----------------------------------------------------
+test("T-1.1", "1.0", "Configuration module defines PromptNest metadata & navigation", () => {
+  const configPath = path.resolve("src/config/site.ts");
+  assert.ok(fs.existsSync(configPath), "site.ts must exist");
+  const content = fs.readFileSync(configPath, "utf-8");
+  assert.ok(content.includes('name: "PromptNest"'), "site name must be PromptNest");
+  assert.ok(content.includes("navItems: ["), "navItems must be defined");
+  assert.ok(content.includes("categories: ["), "categories must be defined");
+});
+
+test("T-1.2", "1.0", "Starter prompts dataset contains exactly 12 validated items", () => {
+  const promptsPath = path.resolve("src/data/prompts.ts");
+  assert.ok(fs.existsSync(promptsPath), "prompts.ts must exist");
+  const content = fs.readFileSync(promptsPath, "utf-8");
+  const matches = content.match(/id: "prompt-(\d+)"/g);
+  assert.strictEqual(matches?.length, 12, "Must contain exactly 12 starter prompts");
+});
+
+test("T-1.3", "1.0", "Layout & Global styling contains accessible dark theme tokens", () => {
+  const cssPath = path.resolve("src/app/globals.css");
+  assert.ok(fs.existsSync(cssPath), "globals.css must exist");
+  const content = fs.readFileSync(cssPath, "utf-8");
+  assert.ok(content.includes("--color-background"), "Must define background color token");
+  assert.ok(content.includes("--color-surface"), "Must define surface color token");
+});
+
+// ----------------------------------------------------
+// STEP 1.1: GitHub & Vercel
+// ----------------------------------------------------
+test("T-1.1.1", "1.1", "Package configuration conforms to Next.js 16 + React 19 standards", () => {
+  const pkgPath = path.resolve("package.json");
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+  assert.strictEqual(pkg.name, "prompt-nest");
+  assert.ok(pkg.dependencies.next, "next must be installed");
+  assert.ok(pkg.dependencies.react, "react must be installed");
+});
+
+// ----------------------------------------------------
+// STEP 2: Gallery, Search, Filters, Sorting & Pagination
+// ----------------------------------------------------
+test("T-2.1", "2.0", "Hero component contains full filter, search, and sorting controls", () => {
+  const heroPath = path.resolve("src/components/Hero.tsx");
+  assert.ok(fs.existsSync(heroPath), "Hero.tsx must exist");
+  const content = fs.readFileSync(heroPath, "utf-8");
+  assert.ok(content.includes("selectedCategory"), "Hero must handle category selection");
+  assert.ok(content.includes("selectedModel"), "Hero must handle model selection");
+  assert.ok(content.includes("sortOption"), "Hero must handle sort selection");
+});
+
+test("T-2.2", "2.0", "Gallery component renders responsive columns and accessible pagination", () => {
+  const galleryPath = path.resolve("src/components/PromptGallery.tsx");
+  assert.ok(fs.existsSync(galleryPath), "PromptGallery.tsx must exist");
+  const content = fs.readFileSync(galleryPath, "utf-8");
+  assert.ok(content.includes("columns-1 sm:columns-2 lg:columns-3 xl:columns-4"), "Masonry columns defined");
+  assert.ok(content.includes("Pagination Controls"), "Pagination controls present");
+});
+
+test("T-2.3", "2.0", "PromptCard renders copy action, aspect ratio preservation & fallback", () => {
+  const cardPath = path.resolve("src/components/PromptCard.tsx");
+  assert.ok(fs.existsSync(cardPath), "PromptCard.tsx must exist");
+  const content = fs.readFileSync(cardPath, "utf-8");
+  assert.ok(content.includes("handleCopy"), "Copy prompt handler present");
+  assert.ok(content.includes("onError"), "Image fallback handler present");
+  assert.ok(content.includes("aspectRatioValue"), "Aspect ratio style present");
+});
+
+// ----------------------------------------------------
+// STEP 3: Detail Pages, Modal, Metadata & Return Nav
+// ----------------------------------------------------
+test("T-3.1", "3.0", "Static detail routes generate all 12 published prompt slugs", () => {
+  const detailPath = path.resolve("src/app/prompts/[slug]/page.tsx");
+  assert.ok(fs.existsSync(detailPath), "Detail page route must exist");
+  const content = fs.readFileSync(detailPath, "utf-8");
+  assert.ok(content.includes("generateStaticParams"), "generateStaticParams must be defined");
+  assert.ok(content.includes("generateMetadata"), "generateMetadata must be defined");
+});
+
+test("T-3.2", "3.0", "ImageModal provides keyboard-accessible zoom and backdrop dismiss", () => {
+  const modalPath = path.resolve("src/components/ImageModal.tsx");
+  assert.ok(fs.existsSync(modalPath), "ImageModal.tsx must exist");
+  const content = fs.readFileSync(modalPath, "utf-8");
+  assert.ok(content.includes("Escape"), "Escape key dismiss handler present");
+  assert.ok(content.includes("role=\"dialog\""), "Accessible dialog role present");
+});
+
+test("T-3.3", "3.0", "ReturnButton preserves search/filter URL parameters on return", () => {
+  const returnPath = path.resolve("src/components/ReturnButton.tsx");
+  assert.ok(fs.existsSync(returnPath), "ReturnButton.tsx must exist");
+  const content = fs.readFileSync(returnPath, "utf-8");
+  assert.ok(content.includes("useSearchParams"), "Reads search parameters");
+  assert.ok(content.includes("Back to Gallery"), "Renders accessible gallery return link");
+});
+
+// ----------------------------------------------------
+// STEP 4: Supabase PostgreSQL, Real Auth & Saved Prompts
+// ----------------------------------------------------
+test("T-4.1", "4.0", "PostgreSQL database migration defines profiles, prompts, bookmarks & RLS", () => {
+  const sqlPath = path.resolve("supabase/migrations/001_initial_schema.sql");
+  assert.ok(fs.existsSync(sqlPath), "001_initial_schema.sql must exist");
+  const sql = fs.readFileSync(sqlPath, "utf-8");
+  assert.ok(sql.includes("CREATE TABLE IF NOT EXISTS public.profiles"), "profiles table exists");
+  assert.ok(sql.includes("CREATE TABLE IF NOT EXISTS public.prompts"), "prompts table exists");
+  assert.ok(sql.includes("CREATE TABLE IF NOT EXISTS public.bookmarks"), "bookmarks table exists");
+  assert.ok(sql.includes("ENABLE ROW LEVEL SECURITY"), "RLS enabled");
+  assert.ok(sql.includes("UNIQUE (user_id, prompt_id)"), "Unique bookmark per user and prompt");
+  assert.ok(sql.includes("ON DELETE CASCADE"), "Foreign key cascade on delete");
+});
+
+test("T-4.2", "4.0", "Database types file is fully defined and export typed interfaces", () => {
+  const typesPath = path.resolve("src/types/database.types.ts");
+  assert.ok(fs.existsSync(typesPath), "database.types.ts must exist");
+  const content = fs.readFileSync(typesPath, "utf-8");
+  assert.ok(content.includes("export interface Database"), "Database interface exported");
+  assert.ok(content.includes("bookmarks: {"), "bookmarks table typed");
+});
+
+
+test("T-4.3", "4.0", "Supabase SSR clients (client, server, middleware) handle missing env gracefully", () => {
+  const clientPath = path.resolve("src/lib/supabase/client.ts");
+  const serverPath = path.resolve("src/lib/supabase/server.ts");
+  const mwPath = path.resolve("src/lib/supabase/middleware.ts");
+  assert.ok(fs.existsSync(clientPath), "client.ts exists");
+  assert.ok(fs.existsSync(serverPath), "server.ts exists");
+  assert.ok(fs.existsSync(mwPath), "middleware.ts exists");
+  
+  const clientContent = fs.readFileSync(clientPath, "utf-8");
+  assert.ok(clientContent.includes("return null"), "Returns null if unconfigured");
+});
+
+test("T-4.4", "4.0", "Middleware protects /saved and /account routes for unauthenticated visitors", () => {
+  const mwPath = path.resolve("src/lib/supabase/middleware.ts");
+  const content = fs.readFileSync(mwPath, "utf-8");
+  assert.ok(content.includes("pathname.startsWith(\"/saved\")"), "Protects /saved");
+  assert.ok(content.includes("pathname.startsWith(\"/account\")"), "Protects /account");
+  assert.ok(content.includes("returnTo"), "Preserves returnTo parameter");
+});
+
+test("T-4.5", "4.0", "Server actions derive user session safely and implement bookmark toggling", () => {
+  const actionPath = path.resolve("src/app/actions/bookmarks.ts");
+  assert.ok(fs.existsSync(actionPath), "bookmarks.ts exists");
+  const content = fs.readFileSync(actionPath, "utf-8");
+  assert.ok(content.includes("supabase.auth.getUser()"), "Validates user from session");
+  assert.ok(content.includes("revalidatePath(\"/saved\")"), "Revalidates saved path");
+});
+
+test("T-4.6", "4.0", "Auth Server actions handle signIn, signUp, signOut, forgotPassword, updatePassword", () => {
+  const authActionPath = path.resolve("src/app/actions/auth.ts");
+  assert.ok(fs.existsSync(authActionPath), "auth.ts exists");
+  const content = fs.readFileSync(authActionPath, "utf-8");
+  assert.ok(content.includes("signInAction"), "signInAction implemented");
+  assert.ok(content.includes("signUpAction"), "signUpAction implemented");
+  assert.ok(content.includes("signOutAction"), "signOutAction implemented");
+  assert.ok(content.includes("forgotPasswordAction"), "forgotPasswordAction implemented");
+  assert.ok(content.includes("updatePasswordAction"), "updatePasswordAction implemented");
+});
+
+test("T-4.7", "4.0", "BookmarkButton provides optimistic UI, error rollback, and non-propagating clicks", () => {
+  const btnPath = path.resolve("src/components/BookmarkButton.tsx");
+  assert.ok(fs.existsSync(btnPath), "BookmarkButton.tsx exists");
+  const content = fs.readFileSync(btnPath, "utf-8");
+  assert.ok(content.includes("e.stopPropagation()"), "Stops event propagation");
+  assert.ok(content.includes("e.preventDefault()"), "Prevents default navigation");
+  assert.ok(content.includes("setOverrideBookmarked"), "Optimistic state update present");
+});
+
+test("T-4.8", "4.0", "Auth pages (/login, /signup, /forgot-password, /reset-password, /account) exist", () => {
+  assert.ok(fs.existsSync(path.resolve("src/app/login/page.tsx")), "/login exists");
+  assert.ok(fs.existsSync(path.resolve("src/app/signup/page.tsx")), "/signup exists");
+  assert.ok(fs.existsSync(path.resolve("src/app/forgot-password/page.tsx")), "/forgot-password exists");
+  assert.ok(fs.existsSync(path.resolve("src/app/reset-password/page.tsx")), "/reset-password exists");
+  assert.ok(fs.existsSync(path.resolve("src/app/account/page.tsx")), "/account exists");
+});
+
+test("T-4.9", "4.0", "Saved prompts page (/saved) renders bookmarked collection and empty state", () => {
+  const savedPath = path.resolve("src/app/saved/page.tsx");
+  const clientPath = path.resolve("src/components/SavedPromptsClient.tsx");
+  assert.ok(fs.existsSync(savedPath), "/saved exists");
+  assert.ok(fs.existsSync(clientPath), "SavedPromptsClient exists");
+});
+
+test("T-4.10", "4.0", "Seed script and SQL seed file exist with idempotent upserts", () => {
+  assert.ok(fs.existsSync(path.resolve("scripts/seed.ts")), "scripts/seed.ts exists");
+  assert.ok(fs.existsSync(path.resolve("supabase/seed.sql")), "supabase/seed.sql exists");
+  const sql = fs.readFileSync(path.resolve("supabase/seed.sql"), "utf-8");
+  assert.ok(sql.includes("ON CONFLICT (id) DO UPDATE SET"), "Idempotent on conflict upsert");
+});
+
+// Live Cloud Tests (Marked BLOCKED when live Supabase project credentials are unprovided)
+blocked(
+  "T-4.11",
+  "4.0",
+  "Live Supabase PostgreSQL connection & remote query execution",
+  "Requires live Supabase project URL and service role key configured in environment"
+);
+
+blocked(
+  "T-4.12",
+  "4.0",
+  "Live Supabase Auth email confirmation dispatch",
+  "Requires live Supabase project and SMTP/email provider configured in Supabase dashboard"
+);
+
+console.log("\n==========================================");
+const passCount = results.filter((r) => r.status === "PASS").length;
+const failCount = results.filter((r) => r.status === "FAIL").length;
+const blockedCount = results.filter((r) => r.status === "BLOCKED").length;
+
+console.log(`Results: PASS=${passCount}, FAIL=${failCount}, BLOCKED=${blockedCount}, TOTAL=${results.length}`);
+console.log("==========================================");

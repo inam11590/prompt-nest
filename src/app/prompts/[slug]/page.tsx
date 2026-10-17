@@ -24,6 +24,7 @@ import { ImageModal } from "@/components/ImageModal";
 import { ShareButton } from "@/components/ShareButton";
 import { PromptCard } from "@/components/PromptCard";
 import { ReturnButton } from "@/components/ReturnButton";
+import { BookmarkButton } from "@/components/BookmarkButton";
 
 interface PromptPageProps {
   params: Promise<{
@@ -245,8 +246,10 @@ export default async function PromptDetailPage({ params }: PromptPageProps) {
                     <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
                     <span>{formattedDate}</span>
                   </span>
+                  <BookmarkButton promptId={prompt.id} variant="detail" />
                   <ShareButton title={prompt.title} url={canonicalUrl} />
                 </div>
+
               </div>
 
               {/* Title & Short Description */}

@@ -11,6 +11,8 @@ interface PromptGalleryProps {
   onPageChange: (page: number) => void;
   onResetFilters: () => void;
   returnQuery?: string;
+  bookmarkedPromptIds?: string[];
+  isAuthenticated?: boolean;
 }
 
 export function PromptGallery({
@@ -21,6 +23,8 @@ export function PromptGallery({
   onPageChange,
   onResetFilters,
   returnQuery = "",
+  bookmarkedPromptIds = [],
+  isAuthenticated = false,
 }: PromptGalleryProps) {
   const totalPages = Math.ceil(totalMatching / pageSize);
 
@@ -62,6 +66,8 @@ export function PromptGallery({
               prompt={prompt}
               priority={index < 4}
               returnQuery={returnQuery}
+              isBookmarked={bookmarkedPromptIds.includes(prompt.id)}
+              isAuthenticated={isAuthenticated}
             />
           ))}
         </div>

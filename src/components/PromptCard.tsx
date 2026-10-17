@@ -5,14 +5,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { Copy, Check, ExternalLink, Sparkles, ImageOff } from "lucide-react";
 import type { PromptItem } from "@/data/prompts";
+import { BookmarkButton } from "@/components/BookmarkButton";
 
 interface PromptCardProps {
   prompt: PromptItem;
   priority?: boolean;
   returnQuery?: string;
+  isBookmarked?: boolean;
+  isAuthenticated?: boolean;
 }
 
-export function PromptCard({ prompt, priority = false, returnQuery = "" }: PromptCardProps) {
+export function PromptCard({
+  prompt,
+  priority = false,
+  returnQuery = "",
+  isBookmarked = false,
+  isAuthenticated = false,
+}: PromptCardProps) {
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -90,10 +99,18 @@ export function PromptCard({ prompt, priority = false, returnQuery = "" }: Promp
             <span className="rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-md border border-white/10 shadow-sm">
               {categoryLabels[prompt.category] || prompt.category}
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-blue-600/85 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md border border-blue-400/20 shadow-sm">
-              <Sparkles className="h-3 w-3" />
-              {prompt.model}
-            </span>
+            <div className="flex items-center gap-1.5 pointer-events-auto">
+              <span className="inline-flex items-center gap-1 rounded-full bg-blue-600/85 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md border border-blue-400/20 shadow-sm pointer-events-none">
+                <Sparkles className="h-3 w-3" />
+                {prompt.model}
+              </span>
+              <BookmarkButton
+                promptId={prompt.id}
+                initialBookmarked={isBookmarked}
+                isAuthenticated={isAuthenticated}
+                variant="card"
+              />
+            </div>
           </div>
 
           {/* Floating Copy Button */}

@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useMemo, useCallback, useTransition } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Hero, type SortOption } from "@/components/Hero";
 import { PromptGallery } from "@/components/PromptGallery";
 import { Footer } from "@/components/Footer";
 import { STARTER_PROMPTS, type AIModel } from "@/data/prompts";
+import { createClient } from "@/lib/supabase/client";
+import { getUserBookmarkedPromptIds } from "@/app/actions/bookmarks";
 
 const PAGE_SIZE = 8;
 
@@ -14,6 +16,40 @@ export function HomePageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
+
+  const [bookmarkedPromptIds, setBookmarkedPromptIds] = useState<string[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    if (!supabase) return;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setIsAuthenticated(true);
+        getUserBookmarkedPromptIds().then((ids) => {
+          setBookmarkedPromptIds(ids);
+        });
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session?.user);
+      if (session?.user) {
+        getUserBookmarkedPromptIds().then((ids) => {
+          setBookmarkedPromptIds(ids);
+        });
+      } else {
+        setBookmarkedPromptIds([]);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // Directly derive state from URL search params (Single Source of Truth, fully shareable)
   const searchQuery = searchParams.get("q") || "";
@@ -25,6 +61,7 @@ export function HomePageClient() {
     : "newest";
   const rawPage = parseInt(searchParams.get("page") || "1", 10);
   const currentPage = rawPage > 0 ? rawPage : 1;
+
 
   // Single URL Updater
   const updateUrl = useCallback(
@@ -221,7 +258,10 @@ export function HomePageClient() {
           onPageChange={handlePageChange}
           onResetFilters={handleResetFilters}
           returnQuery={searchParams.toString() ? `/?${searchParams.toString()}` : "/#gallery"}
+          bookmarkedPromptIds={bookmarkedPromptIds}
+          isAuthenticated={isAuthenticated}
         />
+
       </main>
 
       {/* Footer */}
