@@ -7,7 +7,8 @@ import { signOutAction } from "@/app/actions/auth";
 import { siteConfig } from "@/config/site";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { User, Mail, Calendar, Bookmark, Compass, LogOut, ShieldCheck } from "lucide-react";
+import { User, Mail, Calendar, Bookmark, Compass, LogOut, ShieldCheck, Sparkles } from "lucide-react";
+import { isAdmin } from "@/lib/auth/admin";
 
 export const metadata: Metadata = {
   title: `Your Account — ${siteConfig.name}`,
@@ -28,6 +29,8 @@ async function AccountContent() {
   if (!user) {
     redirect("/login?returnTo=/account");
   }
+
+  const userIsAdmin = await isAdmin(user.id);
 
   // Fetch user profile from database
   const { data: profile } = await supabase
@@ -140,6 +143,32 @@ async function AccountContent() {
 
         {/* Right col: Quick Links & Summary */}
         <div className="space-y-6">
+          {/* Admin Console Card if authorized */}
+          {userIsAdmin && (
+            <div className="rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                    <Sparkles className="h-5 w-5" />
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/20 px-2 py-0.5 text-[10px] font-semibold text-indigo-300">
+                    Admin
+                  </span>
+                </div>
+                <h3 className="text-sm font-bold text-white mb-1">Admin Console</h3>
+                <p className="text-xs text-text-muted mb-4">
+                  Manage prompts, upload new generation assets, and control publication lifecycles.
+                </p>
+              </div>
+              <Link
+                href="/admin"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-all text-center"
+              >
+                <span>Open Admin Console &rarr;</span>
+              </Link>
+            </div>
+          )}
+
           {/* Saved Prompts Quick Card */}
           <div className="rounded-2xl border border-surface-border bg-surface p-6 shadow-sm flex flex-col justify-between">
             <div>

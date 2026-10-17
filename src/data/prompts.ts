@@ -31,6 +31,8 @@ export interface PromptItem {
   aspectRatioValue: string; // e.g. "4/5", "3/4", "16/9", "1/1"
   dominantColor: string; // for reserving space and smooth loading without layout shift
   publishedAt: string; // ISO 8601 publication date
+  status?: "draft" | "published" | "archived"; // publication lifecycle state
+  updatedAt?: string; // ISO 8601 timestamp for concurrency checks
   negativePrompt?: string; // Optional: only present when explicitly stored
   generationParameters?: Record<string, string | number>; // Optional generation params
   sourceAttribution: {

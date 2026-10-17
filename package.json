@@ -10,7 +10,6 @@
     "verify": "node scripts/verify-all.mjs",
     "seed": "tsx scripts/seed.ts"
   },
-
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
@@ -19,6 +18,7 @@
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "sharp": "^0.35.5",
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {

@@ -260,6 +260,107 @@ async function runAll() {
     "Requires live user mailbox interaction or mock SMTP provider validation"
   );
 
+  // ----------------------------------------------------
+  // STEP 5: Secure Admin Dashboard & Image Pipeline
+  // ----------------------------------------------------
+  test("T-5.1", "5.0", "Admin & Storage SQL migration defines admin_users, is_admin, trigger, audit logs, and storage buckets", () => {
+    const sqlPath = path.resolve("supabase/migrations/002_admin_and_storage.sql");
+    assert.ok(fs.existsSync(sqlPath), "002_admin_and_storage.sql must exist");
+    const sql = fs.readFileSync(sqlPath, "utf-8");
+    assert.ok(sql.includes("CREATE TABLE IF NOT EXISTS public.admin_users"), "admin_users table defined");
+    assert.ok(sql.includes("CREATE OR REPLACE FUNCTION public.is_admin"), "is_admin function defined");
+    assert.ok(sql.includes("SET search_path = public, pg_temp"), "is_admin search_path fixed");
+    assert.ok(sql.includes("CREATE TABLE IF NOT EXISTS public.admin_audit_logs"), "admin_audit_logs defined");
+    assert.ok(sql.includes("storage.buckets"), "storage bucket policies defined");
+  });
+
+  test("T-5.2", "5.0", "Database types file includes admin_users, admin_audit_logs, is_admin, and prompt status", () => {
+    const typesPath = path.resolve("src/types/database.types.ts");
+    assert.ok(fs.existsSync(typesPath), "database.types.ts must exist");
+    const content = fs.readFileSync(typesPath, "utf-8");
+    assert.ok(content.includes("admin_users: {"), "admin_users interface exported");
+    assert.ok(content.includes("admin_audit_logs: {"), "admin_audit_logs interface exported");
+    assert.ok(content.includes("is_admin: {"), "is_admin function typed");
+    assert.ok(content.includes("status: \"draft\" | \"published\" | \"archived\""), "status column typed");
+  });
+
+  test("T-5.3", "5.0", "Server-side admin authorization module verifies admin_users membership and rejects unprivileged users", () => {
+    const adminAuthPath = path.resolve("src/lib/auth/admin.ts");
+    assert.ok(fs.existsSync(adminAuthPath), "src/lib/auth/admin.ts must exist");
+    const content = fs.readFileSync(adminAuthPath, "utf-8");
+    assert.ok(content.includes("export async function isAdmin"), "isAdmin exported");
+    assert.ok(content.includes("export async function requireAdmin"), "requireAdmin exported");
+    assert.ok(content.includes("export async function getAdminSession"), "getAdminSession exported");
+    assert.ok(content.includes("admin_users"), "queries admin_users role table");
+  });
+
+  test("T-5.4", "5.0", "Image storage pipeline processes buffer with sharp, validates dimensions, and strips metadata", () => {
+    const imgPath = path.resolve("src/lib/storage/image.ts");
+    assert.ok(fs.existsSync(imgPath), "src/lib/storage/image.ts must exist");
+    const content = fs.readFileSync(imgPath, "utf-8");
+    assert.ok(content.includes("validateAndProcessImage"), "validateAndProcessImage implemented");
+    assert.ok(content.includes("sharp(inputBuffer)"), "sharp processing initialized");
+    assert.ok(content.includes("generateStorageKey"), "collision-resistant key generator implemented");
+    assert.ok(content.includes("uploadToStorage"), "uploadToStorage implemented");
+  });
+
+  test("T-5.5", "5.0", "Admin server actions enforce concurrency checks, slug immutability, and audit logging", () => {
+    const actionsPath = path.resolve("src/app/actions/admin-prompts.ts");
+    assert.ok(fs.existsSync(actionsPath), "admin-prompts.ts must exist");
+    const content = fs.readFileSync(actionsPath, "utf-8");
+    assert.ok(content.includes("createPromptAction"), "createPromptAction exported");
+    assert.ok(content.includes("updatePromptAction"), "updatePromptAction exported");
+    assert.ok(content.includes("setPromptStatusAction"), "setPromptStatusAction exported");
+    assert.ok(content.includes("requireAdmin"), "requireAdmin guard called");
+    assert.ok(content.includes("admin_audit_logs"), "audit logs inserted on mutation");
+    assert.ok(content.includes("Slug Immutability"), "slug immutability enforced for published prompts");
+    assert.ok(content.includes("Concurrency Conflict"), "concurrency conflict detected on updated_at mismatch");
+  });
+
+  test("T-5.6", "5.0", "Admin layout enforces server authorization guard, access denied view, and noindex robots", () => {
+    const layoutPath = path.resolve("src/app/admin/layout.tsx");
+    assert.ok(fs.existsSync(layoutPath), "src/app/admin/layout.tsx must exist");
+    const content = fs.readFileSync(layoutPath, "utf-8");
+    assert.ok(content.includes("getAdminSession"), "checks admin session");
+    assert.ok(content.includes("Administrator Access Required"), "renders access denied screen for unauthorized users");
+    assert.ok(content.includes("index: false"), "enforces noindex robots metadata");
+  });
+
+  test("T-5.7", "5.0", "Admin dashboard provides real database metrics, status filters, and prompt catalog table", () => {
+    const pagePath = path.resolve("src/app/admin/page.tsx");
+    const clientPath = path.resolve("src/components/admin/AdminDashboardClient.tsx");
+    assert.ok(fs.existsSync(pagePath), "src/app/admin/page.tsx must exist");
+    assert.ok(fs.existsSync(clientPath), "AdminDashboardClient.tsx must exist");
+    const content = fs.readFileSync(clientPath, "utf-8");
+    assert.ok(content.includes("setPromptStatusAction"), "quick status toggle present");
+    assert.ok(content.includes("Published"), "published filter present");
+    assert.ok(content.includes("Drafts"), "drafts filter present");
+    assert.ok(content.includes("Archived"), "archived filter present");
+  });
+
+  test("T-5.8", "5.0", "Prompt editor form provides image upload pipeline, dirty form guard, and slug lock", () => {
+    const editorPath = path.resolve("src/components/admin/PromptEditorForm.tsx");
+    assert.ok(fs.existsSync(editorPath), "PromptEditorForm.tsx must exist");
+    const content = fs.readFileSync(editorPath, "utf-8");
+    assert.ok(content.includes("beforeunload"), "dirty form confirmation present");
+    assert.ok(content.includes("uploadImageAction"), "image upload pipeline invoked");
+    assert.ok(content.includes("isSlugLocked"), "slug locked for published prompts");
+  });
+
+  test("T-5.9", "5.0", "Admin draft preview route allows private inspection of non-published prompts", () => {
+    const previewPath = path.resolve("src/app/admin/prompts/[id]/preview/page.tsx");
+    assert.ok(fs.existsSync(previewPath), "preview page route must exist");
+    const content = fs.readFileSync(previewPath, "utf-8");
+    assert.ok(content.includes("ADMIN PREVIEW MODE"), "admin preview indicator present");
+    assert.ok(content.includes("index: false"), "enforces noindex on preview route");
+  });
+
+  test("T-5.10", "5.0", "Middleware protects /admin route and redirects unauthenticated visitors to /login", () => {
+    const mwPath = path.resolve("src/lib/supabase/middleware.ts");
+    const content = fs.readFileSync(mwPath, "utf-8");
+    assert.ok(content.includes("pathname.startsWith(\"/admin\")"), "protects /admin route");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;

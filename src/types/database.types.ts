@@ -60,6 +60,7 @@ export interface Database {
           source_attribution: Json;
           published: boolean;
           published_at: string;
+          status: "draft" | "published" | "archived";
           created_at: string;
           updated_at: string;
         };
@@ -85,6 +86,7 @@ export interface Database {
           source_attribution?: Json;
           published?: boolean;
           published_at?: string;
+          status?: "draft" | "published" | "archived";
           created_at?: string;
           updated_at?: string;
         };
@@ -110,10 +112,82 @@ export interface Database {
           source_attribution?: Json;
           published?: boolean;
           published_at?: string;
+          status?: "draft" | "published" | "archived";
           created_at?: string;
           updated_at?: string;
         };
         Relationships: [];
+      };
+      admin_users: {
+        Row: {
+          user_id: string;
+          created_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          user_id: string;
+          created_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          user_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "admin_users_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      admin_audit_logs: {
+        Row: {
+          id: string;
+          actor_id: string;
+          prompt_id: string | null;
+          action: string;
+          previous_state: Json | null;
+          new_state: Json | null;
+          changed_fields: string[];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          actor_id: string;
+          prompt_id?: string | null;
+          action: string;
+          previous_state?: Json | null;
+          new_state?: Json | null;
+          changed_fields?: string[];
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          actor_id?: string;
+          prompt_id?: string | null;
+          action?: string;
+          previous_state?: Json | null;
+          new_state?: Json | null;
+          changed_fields?: string[];
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_logs_actor_id_fkey";
+            columns: ["actor_id"];
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "admin_audit_logs_prompt_id_fkey";
+            columns: ["prompt_id"];
+            referencedRelation: "prompts";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       bookmarks: {
         Row: {
@@ -154,7 +228,12 @@ export interface Database {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      is_admin: {
+        Args: {
+          user_id: string;
+        };
+        Returns: boolean;
+      };
     };
     Enums: {
       [_ in never]: never;

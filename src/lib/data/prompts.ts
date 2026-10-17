@@ -42,6 +42,8 @@ function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
     aspectRatioValue: row.aspect_ratio_value,
     dominantColor: row.dominant_color,
     publishedAt: row.published_at,
+    status: row.status || (row.published ? "published" : "draft"),
+    updatedAt: row.updated_at,
     negativePrompt: row.negative_prompt || undefined,
     generationParameters: (row.generation_parameters as Record<string, string | number>) || undefined,
     sourceAttribution: (row.source_attribution as unknown as PromptItem["sourceAttribution"]) || {
@@ -50,7 +52,6 @@ function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
       authorUrl: "https://unsplash.com",
       license: "Unsplash Free License",
     },
-
   };
 }
 
@@ -318,5 +319,247 @@ export async function getUserSavedPrompts(): Promise<PromptItem[]> {
 
   return results;
 }
+
+export interface GetAdminPromptsOptions {
+  query?: string;
+  category?: string;
+  model?: string;
+  status?: "all" | "draft" | "published" | "archived";
+  sort?: "newest" | "oldest" | "title-asc" | "title-desc" | "updated";
+  page?: number;
+  pageSize?: number;
+}
+
+export interface GetAdminPromptsResult {
+  prompts: PromptItem[];
+  totalMatching: number;
+  source: "database" | "local";
+}
+
+/**
+ * Retrieves prompts for the administrator console (including draft, published, and archived).
+ */
+export async function getAdminPrompts(
+  options: GetAdminPromptsOptions = {}
+): Promise<GetAdminPromptsResult> {
+  const {
+    query = "",
+    category = "all",
+    model = "All Models",
+    status = "all",
+    sort = "newest",
+    page = 1,
+    pageSize = 15,
+  } = options;
+
+  const supabase = await createClient();
+
+  if (supabase) {
+    let dbQuery = supabase.from("prompts").select("*", { count: "exact" });
+
+    // Status filter
+    if (status && status !== "all") {
+      dbQuery = dbQuery.eq("status", status);
+    }
+
+    // Category filter
+    if (category && category !== "all") {
+      dbQuery = dbQuery.eq("category", category);
+    }
+
+    // Model filter
+    if (model && model !== "All Models") {
+      dbQuery = dbQuery.or(`model.eq."${model}",compatible_models.cs.{"${model}"}`);
+    }
+
+    // Search query
+    if (query.trim()) {
+      const q = query.trim().replace(/"/g, '""');
+      dbQuery = dbQuery.or(
+        `title.ilike."%${q}%",short_description.ilike."%${q}%",slug.ilike."%${q}%",prompt.ilike."%${q}%"`
+      );
+    }
+
+    // Sort
+    if (sort === "title-asc") {
+      dbQuery = dbQuery.order("title", { ascending: true });
+    } else if (sort === "title-desc") {
+      dbQuery = dbQuery.order("title", { ascending: false });
+    } else if (sort === "oldest") {
+      dbQuery = dbQuery.order("created_at", { ascending: true });
+    } else if (sort === "updated") {
+      dbQuery = dbQuery.order("updated_at", { ascending: false });
+    } else {
+      dbQuery = dbQuery.order("created_at", { ascending: false });
+    }
+
+    // Pagination
+    const fromIndex = (page - 1) * pageSize;
+    const toIndex = fromIndex + pageSize - 1;
+    dbQuery = dbQuery.range(fromIndex, toIndex);
+
+    const { data, count, error } = await dbQuery;
+
+    if (error) {
+      console.error("getAdminPrompts query error:", error);
+      throw new Error(`Admin prompts query failed: ${error.message}`);
+    }
+
+    return {
+      prompts: (data || []).map(mapDatabaseRowToPromptItem),
+      totalMatching: count || 0,
+      source: "database",
+    };
+  }
+
+  // Local fallback
+  let items = STARTER_PROMPTS.map((p) => ({
+    ...p,
+    status: p.status || "published" as const,
+  }));
+
+  if (status !== "all") {
+    items = items.filter((item) => (item.status || "published") === status);
+  }
+
+  if (category !== "all") {
+    items = items.filter((item) => item.category === category);
+  }
+
+  if (model !== "All Models") {
+    items = items.filter(
+      (item) => item.model === model || item.compatibleModels?.includes(model as AIModel)
+    );
+  }
+
+  if (query.trim()) {
+    const q = query.toLowerCase().trim();
+    items = items.filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        item.slug.toLowerCase().includes(q) ||
+        item.prompt.toLowerCase().includes(q)
+    );
+  }
+
+  items.sort((a, b) => {
+    if (sort === "title-asc") return a.title.localeCompare(b.title);
+    if (sort === "title-desc") return b.title.localeCompare(a.title);
+    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+  });
+
+  const totalMatching = items.length;
+  const paginated = items.slice((page - 1) * pageSize, page * pageSize);
+
+  return {
+    prompts: paginated,
+    totalMatching,
+    source: "local",
+  };
+}
+
+/**
+ * Retrieves a single prompt by its unique ID for the admin editor or preview.
+ */
+export async function getPromptByIdAdmin(id: string): Promise<PromptItem | null> {
+  const supabase = await createClient();
+
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("prompts")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) {
+      console.error(`getPromptByIdAdmin error for id '${id}':`, error);
+      throw new Error(`Database error: ${error.message}`);
+    }
+
+    return data ? mapDatabaseRowToPromptItem(data) : null;
+  }
+
+  const found = STARTER_PROMPTS.find((p) => p.id === id);
+  return found ? { ...found, status: found.status || "published" } : null;
+}
+
+/**
+ * Computes administrative counts across all publication states.
+ */
+export async function getAdminStats(): Promise<{
+  total: number;
+  published: number;
+  draft: number;
+  archived: number;
+}> {
+  const supabase = await createClient();
+
+  if (supabase) {
+    const { data, error } = await supabase.from("prompts").select("status, published");
+
+    if (error) {
+      console.error("getAdminStats query error:", error);
+      return { total: 0, published: 0, draft: 0, archived: 0 };
+    }
+
+    let published = 0;
+    let draft = 0;
+    let archived = 0;
+
+    for (const row of data || []) {
+      const s = row.status || (row.published ? "published" : "draft");
+      if (s === "published") published++;
+      else if (s === "draft") draft++;
+      else if (s === "archived") archived++;
+    }
+
+    return {
+      total: (data || []).length,
+      published,
+      draft,
+      archived,
+    };
+  }
+
+  return {
+    total: STARTER_PROMPTS.length,
+    published: STARTER_PROMPTS.length,
+    draft: 0,
+    archived: 0,
+  };
+}
+
+export interface AdminAuditLogEntry {
+  id: string;
+  actor_id: string;
+  prompt_id: string | null;
+  action: string;
+  previous_state: Record<string, unknown> | null;
+  new_state: Record<string, unknown> | null;
+  changed_fields: string[];
+  created_at: string;
+}
+
+/**
+ * Fetches recent admin audit logs.
+ */
+export async function getAuditLogsAdmin(limit = 20): Promise<AdminAuditLogEntry[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("admin_audit_logs")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("getAuditLogsAdmin error:", error);
+    return [];
+  }
+
+  return (data || []) as unknown as AdminAuditLogEntry[];
+}
+
 
 
