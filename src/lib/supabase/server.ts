@@ -54,7 +54,6 @@ export function createAdminClient() {
   supabaseUrl = supabaseUrl.replace(/\/rest\/v1\/?$/, "").replace(/\/+$/, "");
 
   return createServerClient<Database>(supabaseUrl, serviceRoleKey, {
-
     cookies: {
       getAll() {
         return [];
@@ -63,3 +62,28 @@ export function createAdminClient() {
     },
   });
 }
+
+/**
+ * Creates a cookie-free anonymous Supabase client for public read queries.
+ * Prevents triggering dynamic cookies() during static prerendering in Next.js 16.
+ */
+export function createPublicClient() {
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return null;
+  }
+
+  supabaseUrl = supabaseUrl.replace(/\/rest\/v1\/?$/, "").replace(/\/+$/, "");
+
+  return createServerClient<Database>(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() {
+        return [];
+      },
+      setAll() {},
+    },
+  });
+}
+

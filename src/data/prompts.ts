@@ -41,6 +41,12 @@ export interface PromptItem {
     authorUrl: string;
     license: string;
   };
+  authorId?: string; // Optional creator user ID
+  author?: {
+    username: string;
+    displayName: string | null;
+    avatarUrl?: string | null;
+  };
 }
 
 export const STARTER_PROMPTS: PromptItem[] = [

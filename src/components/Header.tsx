@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { Sparkles, Menu, X, Bookmark, User as UserIcon } from "lucide-react";
+import { Sparkles, Menu, X, Bookmark, User as UserIcon, Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -84,6 +84,18 @@ export function Header() {
             <span className="hidden sm:inline">Saved</span>
           </Link>
 
+          {/* Creator Submissions Link */}
+          {user && (
+            <Link
+              href="/dashboard/submissions"
+              className="inline-flex items-center gap-1.5 rounded-full border border-surface-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-muted transition-all hover:bg-surface-raised hover:text-foreground focus-visible:ring-2"
+              aria-label="Creator submissions dashboard"
+            >
+              <Send className="h-3.5 w-3.5 text-indigo-400" />
+              <span className="hidden lg:inline">Submissions</span>
+            </Link>
+          )}
+
           {/* User Auth Link */}
           {user ? (
             <Link
@@ -144,6 +156,16 @@ export function Header() {
               <Bookmark className="h-4 w-4" />
               <span>Saved Prompts</span>
             </Link>
+            {user && (
+              <Link
+                href="/dashboard/submissions"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-indigo-400 transition-colors hover:bg-surface-raised"
+              >
+                <Send className="h-4 w-4" />
+                <span>My Submissions</span>
+              </Link>
+            )}
             {user ? (
               <Link
                 href="/account"

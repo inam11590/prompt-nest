@@ -361,6 +361,126 @@ async function runAll() {
     assert.ok(content.includes("pathname.startsWith(\"/admin\")"), "protects /admin route");
   });
 
+  // ----------------------------------------------------
+  // STEP 6: Creator Profiles, Submissions & Moderation
+  // ----------------------------------------------------
+  test("T-6.1", "6.0", "Creator profiles, submissions & moderation migration exists and defines schema and policies", () => {
+    const migrationPath = path.resolve("supabase/migrations/003_creator_profiles_and_submissions.sql");
+    assert.ok(fs.existsSync(migrationPath), "003 migration must exist");
+    const content = fs.readFileSync(migrationPath, "utf-8");
+    assert.ok(content.includes("idx_profiles_username_lower"), "lower case username index exists");
+    assert.ok(content.includes("prompt_submissions"), "prompt_submissions table defined");
+    assert.ok(content.includes("submission_revisions"), "submission_revisions table defined");
+    assert.ok(content.includes("prompt-staging"), "staging storage bucket policies defined");
+  });
+
+  test("T-6.2", "6.0", "Database types export extended profiles, prompts, prompt_submissions, and revisions", () => {
+    const typesPath = path.resolve("src/types/database.types.ts");
+    assert.ok(fs.existsSync(typesPath), "database.types.ts must exist");
+    const content = fs.readFileSync(typesPath, "utf-8");
+    assert.ok(content.includes("prompt_submissions: {"), "prompt_submissions defined in types");
+    assert.ok(content.includes("submission_revisions: {"), "submission_revisions defined in types");
+    assert.ok(content.includes("author_id"), "author_id defined in prompts");
+    assert.ok(content.includes("is_public"), "is_public defined in profiles");
+  });
+
+  test("T-6.3", "6.0", "Creator profile validation module enforces username rules, reserved slugs, bio, and HTTPS URL", () => {
+    const profPath = path.resolve("src/lib/creators/profiles.ts");
+    assert.ok(fs.existsSync(profPath), "profiles.ts must exist");
+    const content = fs.readFileSync(profPath, "utf-8");
+    assert.ok(content.includes("normalizeUsername"), "normalizeUsername implemented");
+    assert.ok(content.includes("validateUsername"), "validateUsername implemented");
+    assert.ok(content.includes("RESERVED_USERNAMES"), "reserved usernames set defined");
+    assert.ok(content.includes("validateWebsiteUrl"), "validateWebsiteUrl enforces HTTPS");
+    assert.ok(content.includes("validateBio"), "validateBio enforces 500 max characters");
+  });
+
+  test("T-6.4", "6.0", "Creator profile server action derives session, checks username uniqueness, and enforces immutability", () => {
+    const actionPath = path.resolve("src/app/actions/creator-profile.ts");
+    assert.ok(fs.existsSync(actionPath), "creator-profile.ts must exist");
+    const content = fs.readFileSync(actionPath, "utf-8");
+    assert.ok(content.includes("updateCreatorProfileAction"), "updateCreatorProfileAction exported");
+    assert.ok(content.includes("Username is immutable once set"), "username immutability enforced");
+    assert.ok(content.includes("normalizeUsername"), "case-insensitive uniqueness handled");
+  });
+
+  test("T-6.5", "6.0", "Staging image action validates media with sharp, strips metadata, and stores into user path", () => {
+    const actionPath = path.resolve("src/app/actions/submissions.ts");
+    assert.ok(fs.existsSync(actionPath), "submissions action file must exist");
+    const content = fs.readFileSync(actionPath, "utf-8");
+    assert.ok(content.includes("uploadCreatorStagingImageAction"), "uploadCreatorStagingImageAction exported");
+    assert.ok(content.includes("validateAndProcessImage(buffer)"), "sharp image processing invoked");
+    assert.ok(content.includes("createSignedUrl"), "returns short-lived signed preview URL");
+  });
+
+  test("T-6.6", "6.0", "Submissions server actions enforce draft lifecycle, quota, revisions, and withdrawal", () => {
+    const actionPath = path.resolve("src/app/actions/submissions.ts");
+    const content = fs.readFileSync(actionPath, "utf-8");
+    assert.ok(content.includes("createSubmissionAction"), "createSubmissionAction exported");
+    assert.ok(content.includes("updateSubmissionAction"), "updateSubmissionAction exported");
+    assert.ok(content.includes("withdrawSubmissionAction"), "withdrawSubmissionAction exported");
+    assert.ok(content.includes("MAX_ACTIVE_SUBMISSIONS_QUOTA"), "quota limit enforced");
+    assert.ok(content.includes("submission_revisions"), "revision snapshot created on review submission");
+  });
+
+  test("T-6.7", "6.0", "Moderation actions enforce admin authorization, feedback requirements, and atomic publishing", () => {
+    const actionPath = path.resolve("src/app/actions/moderation.ts");
+    assert.ok(fs.existsSync(actionPath), "moderation.ts must exist");
+    const content = fs.readFileSync(actionPath, "utf-8");
+    assert.ok(content.includes("approveSubmissionAction"), "approveSubmissionAction exported");
+    assert.ok(content.includes("requestChangesSubmissionAction"), "requestChangesSubmissionAction exported");
+    assert.ok(content.includes("rejectSubmissionAction"), "rejectSubmissionAction exported");
+    assert.ok(content.includes("requireAdmin"), "admin authorization guard enforced");
+    assert.ok(content.includes("Feedback explanation is required"), "feedback mandatory for changes and rejection");
+  });
+
+  test("T-6.8", "6.0", "Public creator directory and detail routes exist and enforce 404 for non-public profiles", () => {
+    const dirPage = path.resolve("src/app/creators/page.tsx");
+    const userPage = path.resolve("src/app/creators/[username]/page.tsx");
+    assert.ok(fs.existsSync(dirPage), "creators directory page must exist");
+    assert.ok(fs.existsSync(userPage), "creator detail page must exist");
+    const content = fs.readFileSync(userPage, "utf-8");
+    assert.ok(content.includes("notFound()"), "enforces notFound for non-public or missing profiles");
+  });
+
+  test("T-6.9", "6.0", "Creator workspace routes exist for submission management and profile settings", () => {
+    const subList = path.resolve("src/app/dashboard/submissions/page.tsx");
+    const subNew = path.resolve("src/app/dashboard/submissions/new/page.tsx");
+    const subEdit = path.resolve("src/app/dashboard/submissions/[id]/page.tsx");
+    const profSet = path.resolve("src/app/settings/profile/page.tsx");
+    assert.ok(fs.existsSync(subList), "dashboard submissions list page exists");
+    assert.ok(fs.existsSync(subNew), "dashboard new submission page exists");
+    assert.ok(fs.existsSync(subEdit), "dashboard edit/view submission page exists");
+    assert.ok(fs.existsSync(profSet), "creator profile settings page exists");
+  });
+
+  test("T-6.10", "6.0", "Admin moderation queue route exists and provides queue inspection and actions", () => {
+    const modPage = path.resolve("src/app/admin/submissions/page.tsx");
+    const modClient = path.resolve("src/components/admin/AdminModerationClient.tsx");
+    assert.ok(fs.existsSync(modPage), "admin submissions page must exist");
+    assert.ok(fs.existsSync(modClient), "admin moderation client must exist");
+    const content = fs.readFileSync(modClient, "utf-8");
+    assert.ok(content.includes("approveSubmissionAction"), "calls approval action");
+    assert.ok(content.includes("requestChangesSubmissionAction"), "calls request changes action");
+    assert.ok(content.includes("rejectSubmissionAction"), "calls reject action");
+  });
+
+  test("T-6.11", "6.0", "Prompt detail page displays creator attribution badge linking to public profile", () => {
+    const promptPage = path.resolve("src/app/prompts/[slug]/page.tsx");
+    const content = fs.readFileSync(promptPage, "utf-8");
+    assert.ok(content.includes("getPromptBySlugDb"), "uses database prompt resolver");
+    assert.ok(content.includes("/creators/${prompt.author.username}"), "renders creator badge link");
+  });
+
+  test("T-6.12", "6.0", "Navigation header and site config incorporate creator directory and submission links", () => {
+    const configPath = path.resolve("src/config/site.ts");
+    const headerPath = path.resolve("src/components/Header.tsx");
+    const configContent = fs.readFileSync(configPath, "utf-8");
+    const headerContent = fs.readFileSync(headerPath, "utf-8");
+    assert.ok(configContent.includes("href: \"/creators\""), "creators directory link in navItems");
+    assert.ok(headerContent.includes("href=\"/dashboard/submissions\""), "submissions link in header");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;

@@ -1,5 +1,5 @@
 import { STARTER_PROMPTS, type PromptItem, type PromptCategory, type AIModel } from "@/data/prompts";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createPublicClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database.types";
 
 export type PromptRow = Database["public"]["Tables"]["prompts"]["Row"];
@@ -52,6 +52,7 @@ function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
       authorUrl: "https://unsplash.com",
       license: "Unsplash Free License",
     },
+    authorId: row.author_id || undefined,
   };
 }
 
@@ -71,7 +72,7 @@ export async function getPrompts(options: GetPromptsOptions = {}): Promise<GetPr
     pageSize = 8,
   } = options;
 
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   if (supabase) {
     let dbQuery = supabase
@@ -167,7 +168,7 @@ export async function getPrompts(options: GetPromptsOptions = {}): Promise<GetPr
  * Resolves a prompt by slug from Supabase PostgreSQL (or local fallback if unconfigured).
  */
 export async function getPromptBySlugDb(slug: string): Promise<PromptItem | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   if (supabase) {
     const { data, error } = await supabase
@@ -182,7 +183,30 @@ export async function getPromptBySlugDb(slug: string): Promise<PromptItem | null
       throw new Error(`Database error: ${error.message}`);
     }
 
-    return data ? mapDatabaseRowToPromptItem(data) : null;
+    if (data) {
+      const item = mapDatabaseRowToPromptItem(data);
+      if (data.author_id) {
+        try {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("username, display_name, avatar_url, is_public")
+            .eq("id", data.author_id)
+            .maybeSingle();
+
+          if (profile?.is_public && profile?.username) {
+            item.author = {
+              username: profile.username,
+              displayName: profile.display_name,
+              avatarUrl: profile.avatar_url,
+            };
+          }
+        } catch {
+          // Graceful fallback if profiles table error
+        }
+      }
+      return item;
+    }
+    return null;
   }
 
   const local = STARTER_PROMPTS.find((p) => p.slug === slug);
@@ -193,7 +217,7 @@ export async function getPromptBySlugDb(slug: string): Promise<PromptItem | null
  * Returns all published prompt slugs for static params and sitemaps.
  */
 export async function getAllPromptSlugsDb(): Promise<string[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   if (supabase) {
     const { data, error } = await supabase
@@ -219,7 +243,7 @@ export async function getRelatedPromptsDb(
   prompt: PromptItem,
   limit = 4
 ): Promise<PromptItem[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   if (supabase) {
     // 1. Fetch other published prompts in the same category or overlapping tags
@@ -560,6 +584,44 @@ export async function getAuditLogsAdmin(limit = 20): Promise<AdminAuditLogEntry[
 
   return (data || []) as unknown as AdminAuditLogEntry[];
 }
+
+/**
+ * Retrieves all published prompts attributed to a specific creator author_id.
+ * Excludes drafts, pending reviews, and archived prompts.
+ */
+export async function getPromptsByAuthorId(
+  authorId: string,
+  options: { page?: number; pageSize?: number } = {}
+): Promise<{ prompts: PromptItem[]; total: number }> {
+  const { page = 1, pageSize = 20 } = options;
+  const supabase = createPublicClient();
+
+  if (supabase) {
+    const fromIndex = (page - 1) * pageSize;
+    const toIndex = fromIndex + pageSize - 1;
+
+    const { data, count, error } = await supabase
+      .from("prompts")
+      .select("*", { count: "exact" })
+      .eq("author_id", authorId)
+      .eq("published", true)
+      .order("published_at", { ascending: false })
+      .range(fromIndex, toIndex);
+
+    if (error) {
+      console.error("getPromptsByAuthorId error:", error);
+      return { prompts: [], total: 0 };
+    }
+
+    return {
+      prompts: (data || []).map(mapDatabaseRowToPromptItem),
+      total: count || 0,
+    };
+  }
+
+  return { prompts: [], total: 0 };
+}
+
 
 
 

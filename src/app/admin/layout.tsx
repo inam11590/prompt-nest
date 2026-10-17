@@ -12,6 +12,7 @@ import {
   ExternalLink,
   LogOut,
   Sparkles,
+  Inbox,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -115,6 +116,13 @@ async function AdminGuard({ children }: { children: React.ReactNode }) {
               >
                 <LayoutDashboard className="h-4 w-4 text-indigo-400" />
                 Prompts
+              </Link>
+              <Link
+                href="/admin/submissions"
+                className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:text-white hover:bg-surface-raised transition-colors"
+              >
+                <Inbox className="h-4 w-4 text-amber-400" />
+                Submissions
               </Link>
               <Link
                 href="/admin/prompts/new"

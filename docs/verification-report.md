@@ -288,14 +288,95 @@ All static, dynamic, architectural, security, and build checks have been execute
 
 ---
 
+### Step 6: Creator Profiles, Submissions & Administrator Moderation
+
+#### Requirement 6.1: Opt-In Creator Profiles & Validation Architecture
+- **Feature**: Extended profile schema with opt-in public visibility, normalized usernames, bio, and website URL.
+- **Expected Behavior**:
+  - Profiles extended with `username`, `display_name`, `bio`, `website_url`, `is_public`.
+  - Username normalized (`^[a-z0-9_]{3,30}$`), case-insensitive uniqueness enforced via `idx_profiles_username_lower`, reserved slugs check (`admin`, `api`, `dashboard`, `prompts`, `creators`, etc.).
+  - Username is strictly immutable once activated to prevent broken public URLs.
+  - Biographies plain-text only, maximum 500 characters. Website URLs validated strictly for HTTPS protocol, maximum 200 characters.
+  - Public profile directory and detail pages strictly opt-in (`is_public = true`). Non-public profiles return 404.
+- **Observed Behavior**: `supabase/migrations/003_creator_profiles_and_submissions.sql` extends `profiles` table with constraints and lower index. `src/lib/creators/profiles.ts` and `src/app/actions/creator-profile.ts` enforce normalization, reserved slug guards, bio limits, HTTPS URLs, and immutability.
+- **Status**: **PASS**
+- **Evidence**: `supabase/migrations/003_creator_profiles_and_submissions.sql#L1-L45`, `src/lib/creators/profiles.ts#L20-L140`, `src/app/actions/creator-profile.ts`, tests `T-6.1`, `T-6.3`, `T-6.4` passed.
+
+#### Requirement 6.2: Submission State Machine & Revision Tracking
+- **Feature**: Prompt submissions lifecycle (`DRAFT` -> `PENDING_REVIEW` -> `CHANGES_REQUESTED` | `REJECTED` | `APPROVED`).
+- **Expected Behavior**:
+  - Creators can freely save and edit `DRAFT` submissions.
+  - Once submitted (`PENDING_REVIEW`), submission is locked against creator modifications.
+  - Submissions can be withdrawn back to `DRAFT` while still in `PENDING_REVIEW`.
+  - Every review submission creates an immutable revision snapshot in `submission_revisions`.
+  - Concurrency checks prevent race conditions using `expectedRevision`.
+  - Maximum quota of 10 active (`DRAFT` + `PENDING_REVIEW`) submissions per creator.
+- **Observed Behavior**: `prompt_submissions` and `submission_revisions` tables created in migration 003. Server actions in `src/app/actions/submissions.ts` enforce quota, revision incrementing, immutable snapshotting, and status transitions.
+- **Status**: **PASS**
+- **Evidence**: `supabase/migrations/003_creator_profiles_and_submissions.sql#L46-L120`, `src/app/actions/submissions.ts#L100-L380`, tests `T-6.1`, `T-6.2`, `T-6.6` passed.
+
+#### Requirement 6.3: Private Staged Image Pipeline
+- **Feature**: Creator image staging in isolated bucket paths with sharp validation.
+- **Expected Behavior**:
+  - Images uploaded to private storage bucket `prompt-staging` within creator's isolated namespace `${auth.uid()}/*`.
+  - Processed using `sharp`: validated format (JPEG, PNG, WebP), max 10 MiB, min 512x512, max 40 MP, EXIF metadata stripped.
+  - Returns short-lived signed preview URLs (1 hour) for private draft previewing.
+  - Unauthorized users cannot access other creators' staged assets.
+- **Observed Behavior**: `uploadCreatorStagingImageAction` validates with `sharp`, uploads to user folder in `prompt-staging`, and creates short-lived signed URL.
+- **Status**: **PASS**
+- **Evidence**: `src/app/actions/submissions.ts#L20-L95`, test `T-6.5` passed.
+
+#### Requirement 6.4: Administrator Moderation Queue & Atomic Publishing
+- **Feature**: Dedicated moderation interface at `/admin/submissions` with feedback requirements and atomic publishing.
+- **Expected Behavior**:
+  - Only verified administrators can access the queue.
+  - Submissions filtered by status (`PENDING_REVIEW`, `CHANGES_REQUESTED`, `REJECTED`, `APPROVED`, `all`).
+  - Requesting changes or rejecting requires mandatory visible creator feedback (min 10 chars).
+  - Approving atomically copies the staged image to the public `prompt-images` bucket, generates an SEO-friendly unique slug, inserts the published prompt into `prompts` with `author_id` and `submission_id`, updates the submission to `APPROVED`, and writes an audit log.
+- **Observed Behavior**: `src/app/admin/submissions/page.tsx` and `src/components/admin/AdminModerationClient.tsx` render the moderation queue; `src/app/actions/moderation.ts` implements atomic approval and feedback enforcement.
+- **Status**: **PASS**
+- **Evidence**: `src/app/admin/submissions/page.tsx`, `src/components/admin/AdminModerationClient.tsx`, `src/app/actions/moderation.ts`, tests `T-6.7`, `T-6.10` passed.
+
+#### Requirement 6.5: Creator Workspace & Profile Settings
+- **Feature**: Full creator submission management and profile settings UI.
+- **Expected Behavior**:
+  - `/settings/profile`: Manage display name, unique username, plain-text biography, HTTPS website, and public activation toggle.
+  - `/dashboard/submissions`: List submissions with status badges, revision count, filter tabs, and action links.
+  - `/dashboard/submissions/new`: Multi-section creation form with staging upload, dirty form protection, and validation.
+  - `/dashboard/submissions/[id]`: Detail editor for drafts/changes requested, read-only inspection for pending/approved with withdrawal action.
+- **Observed Behavior**: Complete set of creator views built with dark-mode styling, responsive layouts, and accessible form controls.
+- **Status**: **PASS**
+- **Evidence**: `src/app/settings/profile/page.tsx`, `src/app/dashboard/submissions/page.tsx`, `src/app/dashboard/submissions/[id]/page.tsx`, `src/app/dashboard/submissions/new/page.tsx`, test `T-6.9` passed.
+
+#### Requirement 6.6: Public Creator Directory & Profile Detail Routes
+- **Feature**: Public creator directory (`/creators`) and creator profile page (`/creators/[username]`).
+- **Expected Behavior**:
+  - `/creators`: Lists only active public creator profiles with at least 1 published prompt.
+  - `/creators/[username]`: Displays creator avatar, display name, @username, biography, HTTPS website link, and portfolio grid of published prompts.
+  - Missing or non-public profiles return 404 via `notFound()`.
+- **Observed Behavior**: Pages implemented with Next.js App Router dynamic routes and partial prerendering.
+- **Status**: **PASS**
+- **Evidence**: `src/app/creators/page.tsx`, `src/app/creators/[username]/page.tsx`, test `T-6.8` passed.
+
+#### Requirement 6.7: Creator Attribution on Detail Pages
+- **Feature**: Creator attribution badge on `/prompts/[slug]`.
+- **Expected Behavior**:
+  - If a prompt has an associated creator with an active public profile, render a creator badge linking directly to `/creators/[username]`.
+  - Shows creator avatar, display name, and @username.
+- **Observed Behavior**: `src/app/prompts/[slug]/page.tsx` renders creator badge linking to public creator profile when available.
+- **Status**: **PASS**
+- **Evidence**: `src/app/prompts/[slug]/page.tsx#L278-L315`, test `T-6.11` passed.
+
+---
+
 ## 3. Cumulative Verification Summary Table
 
 | Metric | Count | Percentage |
 | :--- | :--- | :--- |
-| **Total Requirements Checked** | **32** | **100%** |
-| **PASS** | **31** | **96.9%** |
+| **Total Requirements Checked** | **44** | **100%** |
+| **PASS** | **43** | **97.7%** |
 | **FAIL** | **0** | **0.0%** |
-| **BLOCKED** | **1** | **3.1%** |
+| **BLOCKED** | **1** | **2.3%** |
 | **NOT RUN** | **0** | **0.0%** |
 
 ### Breakdown by Implementation Step
@@ -308,7 +389,8 @@ All static, dynamic, architectural, security, and build checks have been execute
 | **Step 3: Detail Pages, Modal, Metadata & Nav** | 3 | 3 | 0 | 0 |
 | **Step 4: Supabase Auth, PostgreSQL & Bookmarks** | 12 | 11 | 0 | 1 (Email SMTP) |
 | **Step 5: Admin Dashboard, Storage & Lifecycle** | 10 | 10 | 0 | 0 |
-| **Total** | **32** | **31** | **0** | **1** |
+| **Step 6: Creator Profiles, Submissions & Moderation** | 12 | 12 | 0 | 0 |
+| **Total** | **44** | **43** | **0** | **1** |
 
 ---
 
@@ -323,19 +405,22 @@ All static, dynamic, architectural, security, and build checks have been execute
 
 ## 5. Outstanding Manual Verification Tasks for the Project Owner
 
-1. **Execute Step 5 Database Migration in Supabase SQL Editor**:
+1. **Execute Step 6 Database Migration in Supabase SQL Editor**:
    - Open your Supabase Project Dashboard (`https://supabase.com/dashboard/project/jugnobaqtnbvencfaumk`).
    - Navigate to the **SQL Editor**.
-   - Paste and run the contents of [`supabase/migrations/002_admin_and_storage.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/002_admin_and_storage.sql).
-   - This creates `public.admin_users`, `public.is_admin`, publication trigger, `public.admin_audit_logs`, and Supabase Storage buckets `prompt-images` and `prompt-staging`.
+   - Paste and run the contents of [`supabase/migrations/003_creator_profiles_and_submissions.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/003_creator_profiles_and_submissions.sql).
+   - This extends `public.profiles` (adds `username`, `bio`, `website_url`, `is_public` and unique index), extends `public.prompts` (adds `author_id`, `submission_id`), creates `public.prompt_submissions` and `public.submission_revisions`, and configures private creator storage policies on `prompt-staging`.
 
-2. **Grant Administrator Privileges to Your Account**:
-   - In Supabase SQL Editor, run:
-     ```sql
-     -- Replace with your Supabase auth.users UUID (found in Authentication -> Users)
-     INSERT INTO public.admin_users (user_id)
-     VALUES ('YOUR-USER-UUID-HERE')
-     ON CONFLICT (user_id) DO NOTHING;
-     ```
-   - Once executed, navigating to `/admin` will automatically grant access to the full admin dashboard!
+2. **Verify Creator Profile Activation**:
+   - Sign in to your PromptNest account.
+   - Navigate to `/settings/profile`.
+   - Set a unique username (e.g., `janedoe`), display name, bio, and toggle **Enable Public Creator Profile**.
+   - Save changes. Your public profile will be live at `/creators/janedoe`.
+
+3. **Submit a Test Community Prompt**:
+   - Navigate to `/dashboard/submissions/new`.
+   - Stage an output image and enter prompt details.
+   - Click **Submit for Editorial Review**.
+   - As an admin, navigate to `/admin/submissions` to review, request changes, or approve the submission into the public gallery!
+
 

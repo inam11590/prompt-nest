@@ -13,18 +13,33 @@ export interface Database {
         Row: {
           id: string;
           display_name: string | null;
+          username: string | null;
+          bio: string | null;
+          avatar_url: string | null;
+          website_url: string | null;
+          is_public: boolean;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id: string;
           display_name?: string | null;
+          username?: string | null;
+          bio?: string | null;
+          avatar_url?: string | null;
+          website_url?: string | null;
+          is_public?: boolean;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
           display_name?: string | null;
+          username?: string | null;
+          bio?: string | null;
+          avatar_url?: string | null;
+          website_url?: string | null;
+          is_public?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -61,6 +76,8 @@ export interface Database {
           published: boolean;
           published_at: string;
           status: "draft" | "published" | "archived";
+          author_id: string | null;
+          submission_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -87,6 +104,8 @@ export interface Database {
           published?: boolean;
           published_at?: string;
           status?: "draft" | "published" | "archived";
+          author_id?: string | null;
+          submission_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -113,6 +132,8 @@ export interface Database {
           published?: boolean;
           published_at?: string;
           status?: "draft" | "published" | "archived";
+          author_id?: string | null;
+          submission_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -219,6 +240,149 @@ export interface Database {
             foreignKeyName: "bookmarks_user_id_fkey";
             columns: ["user_id"];
             referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      prompt_submissions: {
+        Row: {
+          id: string;
+          author_id: string;
+          revision: number;
+          title: string;
+          short_description: string;
+          prompt: string;
+          negative_prompt: string | null;
+          generation_parameters: Json | null;
+          category: string;
+          model: string;
+          compatible_models: string[];
+          tags: string[];
+          staged_image_path: string;
+          staged_image_bucket: string;
+          image_alt: string;
+          width: number;
+          height: number;
+          aspect_ratio: string;
+          aspect_ratio_value: string;
+          dominant_color: string;
+          status: "DRAFT" | "PENDING_REVIEW" | "CHANGES_REQUESTED" | "REJECTED" | "APPROVED";
+          review_feedback: string | null;
+          internal_notes: string | null;
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+          published_prompt_id: string | null;
+          submitted_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          author_id: string;
+          revision?: number;
+          title: string;
+          short_description: string;
+          prompt: string;
+          negative_prompt?: string | null;
+          generation_parameters?: Json | null;
+          category: string;
+          model: string;
+          compatible_models?: string[];
+          tags?: string[];
+          staged_image_path: string;
+          staged_image_bucket?: string;
+          image_alt: string;
+          width?: number;
+          height?: number;
+          aspect_ratio?: string;
+          aspect_ratio_value?: string;
+          dominant_color?: string;
+          status?: "DRAFT" | "PENDING_REVIEW" | "CHANGES_REQUESTED" | "REJECTED" | "APPROVED";
+          review_feedback?: string | null;
+          internal_notes?: string | null;
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+          published_prompt_id?: string | null;
+          submitted_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          author_id?: string;
+          revision?: number;
+          title?: string;
+          short_description?: string;
+          prompt?: string;
+          negative_prompt?: string | null;
+          generation_parameters?: Json | null;
+          category?: string;
+          model?: string;
+          compatible_models?: string[];
+          tags?: string[];
+          staged_image_path?: string;
+          staged_image_bucket?: string;
+          image_alt?: string;
+          width?: number;
+          height?: number;
+          aspect_ratio?: string;
+          aspect_ratio_value?: string;
+          dominant_color?: string;
+          status?: "DRAFT" | "PENDING_REVIEW" | "CHANGES_REQUESTED" | "REJECTED" | "APPROVED";
+          review_feedback?: string | null;
+          internal_notes?: string | null;
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+          published_prompt_id?: string | null;
+          submitted_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "prompt_submissions_author_id_fkey";
+            columns: ["author_id"];
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "prompt_submissions_published_prompt_id_fkey";
+            columns: ["published_prompt_id"];
+            referencedRelation: "prompts";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      submission_revisions: {
+        Row: {
+          id: string;
+          submission_id: string;
+          revision: number;
+          snapshot: Json;
+          submitted_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          submission_id: string;
+          revision: number;
+          snapshot: Json;
+          submitted_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          submission_id?: string;
+          revision?: number;
+          snapshot?: Json;
+          submitted_at?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "submission_revisions_submission_id_fkey";
+            columns: ["submission_id"];
+            referencedRelation: "prompt_submissions";
             referencedColumns: ["id"];
           }
         ];

@@ -16,6 +16,10 @@ import {
   getAllPromptSlugs,
   getRelatedPrompts,
 } from "@/data/prompts";
+import {
+  getPromptBySlugDb,
+  getRelatedPromptsDb,
+} from "@/lib/data/prompts";
 import { siteConfig } from "@/config/site";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -42,7 +46,10 @@ export async function generateMetadata({
   params,
 }: PromptPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const prompt = getPromptBySlug(slug);
+  let prompt = getPromptBySlug(slug) || null;
+  if (!prompt) {
+    prompt = await getPromptBySlugDb(slug).catch(() => null);
+  }
 
   if (!prompt) {
     return {
@@ -86,7 +93,10 @@ export async function generateMetadata({
 
 export default async function PromptDetailPage({ params }: PromptPageProps) {
   const { slug } = await params;
-  const prompt = getPromptBySlug(slug);
+  let prompt = getPromptBySlug(slug) || null;
+  if (!prompt) {
+    prompt = await getPromptBySlugDb(slug).catch(() => null);
+  }
 
   if (!prompt) {
     notFound();
@@ -261,6 +271,42 @@ export default async function PromptDetailPage({ params }: PromptPageProps) {
                   {prompt.shortDescription}
                 </p>
               </div>
+
+              {/* Creator Attribution Badge (if prompt is community created & author is public) */}
+              {prompt.author?.username && (
+                <div className="flex items-center justify-between rounded-xl border border-surface-border bg-surface p-3 shadow-sm">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-bold text-xs shadow-sm overflow-hidden">
+                      {prompt.author.avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={prompt.author.avatarUrl}
+                          alt={prompt.author.username}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        prompt.author.username.charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-semibold text-text-faint tracking-wider block">
+                        Creator
+                      </span>
+                      <p className="text-xs font-semibold text-white">
+                        {prompt.author.displayName || prompt.author.username}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Link
+                    href={`/creators/${prompt.author.username}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-medium text-indigo-300 hover:bg-indigo-500/20 transition-colors"
+                  >
+                    <span>@{prompt.author.username}</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </Link>
+                </div>
+              )}
 
               {/* Prompt Text Section with Copy Button */}
               <section
