@@ -9,12 +9,17 @@ import type { PromptItem } from "@/data/prompts";
 interface PromptCardProps {
   prompt: PromptItem;
   priority?: boolean;
+  returnQuery?: string;
 }
 
-export function PromptCard({ prompt, priority = false }: PromptCardProps) {
+export function PromptCard({ prompt, priority = false, returnQuery = "" }: PromptCardProps) {
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
   const [imgError, setImgError] = useState(false);
+
+  const detailHref = returnQuery
+    ? `/prompts/${prompt.slug}?from=${encodeURIComponent(returnQuery)}`
+    : `/prompts/${prompt.slug}`;
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -49,7 +54,7 @@ export function PromptCard({ prompt, priority = false }: PromptCardProps) {
     >
       {/* Primary Clickable Link targeting /prompts/[slug] */}
       <Link
-        href={`/prompts/${prompt.slug}`}
+        href={detailHref}
         className="block relative w-full overflow-hidden focus:outline-none"
         aria-label={`View prompt details for ${prompt.title}`}
       >
@@ -124,7 +129,7 @@ export function PromptCard({ prompt, priority = false }: PromptCardProps) {
       {/* Content Area */}
       <div className="relative z-10 flex flex-col p-4 bg-surface">
         <Link
-          href={`/prompts/${prompt.slug}`}
+          href={detailHref}
           className="group/title focus:outline-none"
         >
           <h2 className="mb-1 text-sm font-bold leading-snug text-foreground transition-colors group-hover/title:text-blue-400 sm:text-base">
@@ -162,7 +167,7 @@ export function PromptCard({ prompt, priority = false }: PromptCardProps) {
         {/* Card Footer: Detail Link & Source Attribution */}
         <div className="flex items-center justify-between border-t border-surface-border pt-2.5 text-[11px] text-text-faint">
           <Link
-            href={`/prompts/${prompt.slug}`}
+            href={detailHref}
             className="font-medium text-blue-400 hover:text-blue-300 hover:underline"
           >
             View prompt &rarr;

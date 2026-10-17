@@ -31,6 +31,8 @@ export interface PromptItem {
   aspectRatioValue: string; // e.g. "4/5", "3/4", "16/9", "1/1"
   dominantColor: string; // for reserving space and smooth loading without layout shift
   publishedAt: string; // ISO 8601 publication date
+  negativePrompt?: string; // Optional: only present when explicitly stored
+  generationParameters?: Record<string, string | number>; // Optional generation params
   sourceAttribution: {
     source: string;
     author: string;
@@ -368,4 +370,72 @@ export const STARTER_PROMPTS: PromptItem[] = [
 
 export function getPromptBySlug(slug: string): PromptItem | undefined {
   return STARTER_PROMPTS.find((p) => p.slug === slug);
+}
+
+/**
+ * Returns all published prompt slugs for static route generation and sitemaps.
+ */
+export function getAllPromptSlugs(): string[] {
+  return STARTER_PROMPTS.map((p) => p.slug);
+}
+
+/**
+ * Deterministically ranks and selects related prompts for a given prompt:
+ * - Excludes the current prompt
+ * - Primary weight: Shared category (+10 points)
+ * - Secondary weight: Shared tags (+3 points each)
+ * - Tertiary weight: Compatible AI models overlap (+2 points each)
+ * - Stable tie-breaker: Newest publishedAt date, followed by title comparison
+ * - Returns at most `limit` unique prompts (default: 6)
+ * - Returns empty array if no relevance threshold is met (> 0 points)
+ */
+export function getRelatedPrompts(currentPrompt: PromptItem, limit = 6): PromptItem[] {
+  const scored = STARTER_PROMPTS
+    .filter((p) => p.slug !== currentPrompt.slug)
+    .map((candidate) => {
+      let score = 0;
+
+      // 1. Category match (highest priority signal)
+      if (candidate.category === currentPrompt.category) {
+        score += 10;
+      }
+
+      // 2. Shared tags match
+      const currentTags = new Set(currentPrompt.tags.map((t) => t.toLowerCase()));
+      const sharedTagsCount = candidate.tags.filter((t) =>
+        currentTags.has(t.toLowerCase())
+      ).length;
+      score += sharedTagsCount * 3;
+
+      // 3. Compatible AI model overlap
+      const currentModels = new Set([
+        currentPrompt.model,
+        ...(currentPrompt.compatibleModels || []),
+      ]);
+      const candidateModels = [
+        candidate.model,
+        ...(candidate.compatibleModels || []),
+      ];
+      const modelOverlap = candidateModels.filter((m) => currentModels.has(m)).length;
+      score += modelOverlap * 2;
+
+      return { candidate, score };
+    })
+    .filter((item) => item.score > 0);
+
+  // Sort deterministically: highest score first, then newest publication date, then title alphabetical
+  scored.sort((a, b) => {
+    if (b.score !== a.score) {
+      return b.score - a.score;
+    }
+    const dateDiff =
+      new Date(b.candidate.publishedAt).getTime() -
+      new Date(a.candidate.publishedAt).getTime();
+    if (dateDiff !== 0) {
+      return dateDiff;
+    }
+    return a.candidate.title.localeCompare(b.candidate.title);
+  });
+
+  return scored.slice(0, limit).map((item) => item.candidate);
 }

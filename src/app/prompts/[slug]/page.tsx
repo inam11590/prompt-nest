@@ -1,14 +1,29 @@
-import React from "react";
+import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, Calendar, Tag, ExternalLink } from "lucide-react";
-import { getPromptBySlug, STARTER_PROMPTS } from "@/data/prompts";
+import {
+  Sparkles,
+  Calendar,
+  Tag,
+  ExternalLink,
+  ChevronRight,
+  SlidersHorizontal,
+  ArrowLeft,
+} from "lucide-react";
+import {
+  getPromptBySlug,
+  getAllPromptSlugs,
+  getRelatedPrompts,
+} from "@/data/prompts";
 import { siteConfig } from "@/config/site";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CopyPromptButton } from "@/components/CopyPromptButton";
+import { ImageModal } from "@/components/ImageModal";
+import { ShareButton } from "@/components/ShareButton";
+import { PromptCard } from "@/components/PromptCard";
+import { ReturnButton } from "@/components/ReturnButton";
 
 interface PromptPageProps {
   params: Promise<{
@@ -17,8 +32,8 @@ interface PromptPageProps {
 }
 
 export async function generateStaticParams() {
-  return STARTER_PROMPTS.map((p) => ({
-    slug: p.slug,
+  return getAllPromptSlugs().map((slug) => ({
+    slug,
   }));
 }
 
@@ -34,13 +49,30 @@ export async function generateMetadata({
     };
   }
 
+  // Canonical public URL without return-state parameters
+  const canonicalUrl = `${siteConfig.url}/prompts/${prompt.slug}`;
+
   return {
     title: `${prompt.title} — ${siteConfig.name}`,
     description: prompt.shortDescription || prompt.prompt.slice(0, 160),
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: `${prompt.title} — ${siteConfig.name}`,
       description: prompt.shortDescription,
-      images: [{ url: prompt.imageUrl, alt: prompt.imageAlt }],
+      url: canonicalUrl,
+      siteName: siteConfig.name,
+      locale: "en_US",
+      type: "article",
+      images: [
+        {
+          url: prompt.imageUrl,
+          width: prompt.width,
+          height: prompt.height,
+          alt: prompt.imageAlt,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
@@ -59,6 +91,12 @@ export default async function PromptDetailPage({ params }: PromptPageProps) {
     notFound();
   }
 
+  // Compute canonical URL for sharing (excludes ?from=)
+  const canonicalUrl = `${siteConfig.url}/prompts/${prompt.slug}`;
+
+  // Deterministic related prompts matching (excluding current prompt)
+  const relatedPrompts = getRelatedPrompts(prompt, 4);
+
   const categoryLabels: Record<string, string> = {
     photography: "Photography",
     "digital-art": "Digital Art",
@@ -74,43 +112,94 @@ export default async function PromptDetailPage({ params }: PromptPageProps) {
     day: "numeric",
   });
 
+  // Breadcrumb schema (JSON-LD) accurately matching visible navigation
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: siteConfig.url,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: categoryLabels[prompt.category] || prompt.category,
+        item: `${siteConfig.url}/?category=${encodeURIComponent(prompt.category)}#gallery`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: prompt.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground antialiased selection:bg-blue-600 selection:text-white">
+      {/* Schema.org Breadcrumb JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
       {/* Header */}
       <Header />
 
-      <main className="flex-1 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-          {/* Back Navigation Button */}
-          <div className="mb-6">
-            <Link
-              href="/#gallery"
-              className="inline-flex items-center gap-2 rounded-xl border border-surface-border bg-surface px-4 py-2 text-xs font-medium text-text-muted transition-all hover:bg-surface-raised hover:text-foreground focus-visible:ring-2 focus-visible:ring-blue-500"
+          {/* Top Bar: Return Link & Breadcrumb */}
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            {/* Safe Back Navigation Link wrapped in Suspense for searchParams isolation */}
+            <Suspense
+              fallback={
+                <Link
+                  href="/#gallery"
+                  className="inline-flex items-center gap-2 rounded-xl border border-surface-border bg-surface px-3.5 py-2 text-xs font-semibold text-text-muted transition-all hover:bg-surface-raised hover:text-foreground"
+                >
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                  <span>Back to Gallery</span>
+                </Link>
+              }
             >
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to Gallery</span>
-            </Link>
+              <ReturnButton />
+            </Suspense>
+
+            {/* Breadcrumb Navigation */}
+            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-text-faint">
+              <Link href="/" className="hover:text-foreground transition-colors">
+                Home
+              </Link>
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+              <Link
+                href={`/?category=${encodeURIComponent(prompt.category)}#gallery`}
+                className="hover:text-foreground transition-colors"
+              >
+                {categoryLabels[prompt.category] || prompt.category}
+              </Link>
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="text-text-muted truncate max-w-[200px] sm:max-w-[320px]" aria-current="page">
+                {prompt.title}
+              </span>
+            </nav>
           </div>
 
+          {/* Main 2-Column Responsive Detail Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            {/* Visual Showcase (Left Column) */}
-            <div className="lg:col-span-7 flex flex-col gap-4">
-              <div
-                className="relative w-full overflow-hidden rounded-2xl border border-surface-border shadow-2xl bg-surface"
-                style={{
-                  aspectRatio: prompt.aspectRatioValue,
-                  backgroundColor: prompt.dominantColor,
-                }}
-              >
-                <Image
-                  src={prompt.imageUrl}
-                  alt={prompt.imageAlt}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 60vw"
-                  className="object-cover"
-                />
-              </div>
+            {/* Visual Showcase (Left Column on Desktop, First on Mobile) */}
+            <div className="lg:col-span-7 flex flex-col gap-3">
+              {/* Image Area with Accessible Enlargement Modal */}
+              <ImageModal
+                src={prompt.imageUrl}
+                alt={prompt.imageAlt}
+                width={prompt.width}
+                height={prompt.height}
+                aspectRatioValue={prompt.aspectRatioValue}
+                dominantColor={prompt.dominantColor}
+              />
 
               {/* Image Attribution */}
               <div className="flex items-center justify-between text-xs text-text-faint px-1">
@@ -120,31 +209,47 @@ export default async function PromptDetailPage({ params }: PromptPageProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 hover:text-text-muted hover:underline"
+                  aria-label={`Photo by ${prompt.sourceAttribution.author} on ${prompt.sourceAttribution.source} (opens in new tab)`}
                 >
                   <span>{prompt.sourceAttribution.source}</span>
-                  <ExternalLink className="h-3 w-3" />
+                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
                 </a>
               </div>
             </div>
 
-            {/* Prompt Details & Meta (Right Column) */}
+            {/* Prompt Details & Actions (Right Column on Desktop, Below on Mobile) */}
             <div className="lg:col-span-5 flex flex-col gap-6">
-              {/* Badges: Category & Primary Model */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-surface-border bg-surface px-3 py-1 text-xs font-semibold text-foreground">
-                  {categoryLabels[prompt.category] || prompt.category}
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-600/20 border border-blue-500/30 px-3 py-1 text-xs font-semibold text-blue-400">
-                  <Sparkles className="h-3 w-3" />
-                  {prompt.model}
-                </span>
-                <span className="inline-flex items-center gap-1 text-xs text-text-faint ml-auto">
-                  <Calendar className="h-3.5 w-3.5" />
-                  <span>{formattedDate}</span>
-                </span>
+              {/* Category, Model, Date & Share Row */}
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Category Pill Link */}
+                  <Link
+                    href={`/?category=${encodeURIComponent(prompt.category)}#gallery`}
+                    className="rounded-full border border-surface-border bg-surface px-3 py-1 text-xs font-semibold text-foreground hover:bg-surface-raised hover:border-surface-border-subtle transition-all"
+                  >
+                    {categoryLabels[prompt.category] || prompt.category}
+                  </Link>
+
+                  {/* Primary AI Model Link */}
+                  <Link
+                    href={`/?model=${encodeURIComponent(prompt.model)}#gallery`}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-blue-600/20 border border-blue-500/30 px-3 py-1 text-xs font-semibold text-blue-400 hover:bg-blue-600/30 transition-all"
+                  >
+                    <Sparkles className="h-3 w-3" aria-hidden="true" />
+                    <span>{prompt.model}</span>
+                  </Link>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 text-xs text-text-faint">
+                    <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>{formattedDate}</span>
+                  </span>
+                  <ShareButton title={prompt.title} url={canonicalUrl} />
+                </div>
               </div>
 
-              {/* Title and Short Description */}
+              {/* Title & Short Description */}
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2 leading-tight">
                   {prompt.title}
@@ -154,57 +259,144 @@ export default async function PromptDetailPage({ params }: PromptPageProps) {
                 </p>
               </div>
 
-              {/* Complete Prompt Box */}
-              <div className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 shadow-lg">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-text-faint">
-                    Complete Prompt
-                  </span>
-                  <CopyPromptButton promptText={prompt.prompt} />
+              {/* Prompt Text Section with Copy Button */}
+              <section
+                aria-labelledby="prompt-heading"
+                className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 shadow-lg"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <h2 id="prompt-heading" className="text-xs font-bold uppercase tracking-wider text-text-faint">
+                    Prompt Text
+                  </h2>
+                  <CopyPromptButton promptText={prompt.prompt} label="Copy Prompt" />
                 </div>
-                <div className="rounded-xl border border-surface-border-subtle bg-surface-raised p-4 font-mono text-xs leading-relaxed text-foreground select-all break-words">
+                <div className="rounded-xl border border-surface-border-subtle bg-surface-raised p-4 font-mono text-xs leading-relaxed text-foreground select-all break-words whitespace-pre-wrap">
                   {prompt.prompt}
                 </div>
-              </div>
+              </section>
+
+              {/* Optional: Negative Prompt Section (only rendered when explicitly stored) */}
+              {prompt.negativePrompt && (
+                <section
+                  aria-labelledby="negative-prompt-heading"
+                  className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 shadow-lg"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <h2
+                      id="negative-prompt-heading"
+                      className="text-xs font-bold uppercase tracking-wider text-text-faint"
+                    >
+                      Negative Prompt
+                    </h2>
+                    <CopyPromptButton
+                      promptText={prompt.negativePrompt}
+                      label="Copy Negative"
+                      className="bg-zinc-800 hover:bg-zinc-700"
+                    />
+                  </div>
+                  <div className="rounded-xl border border-surface-border-subtle bg-surface-raised p-4 font-mono text-xs leading-relaxed text-text-muted select-all break-words whitespace-pre-wrap">
+                    {prompt.negativePrompt}
+                  </div>
+                </section>
+              )}
+
+              {/* Optional: Generation Parameters (only rendered when explicitly stored) */}
+              {prompt.generationParameters && Object.keys(prompt.generationParameters).length > 0 && (
+                <div className="rounded-xl border border-surface-border bg-surface p-4">
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-text-faint mb-2.5">
+                    <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>Parameters</span>
+                  </div>
+                  <dl className="grid grid-cols-2 gap-2 text-xs">
+                    {Object.entries(prompt.generationParameters).map(([key, value]) => (
+                      <div key={key} className="rounded-lg bg-surface-raised p-2 border border-surface-border-subtle">
+                        <dt className="text-[10px] uppercase font-semibold text-text-faint">{key}</dt>
+                        <dd className="font-mono text-foreground font-medium">{String(value)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )}
 
               {/* Compatible AI Models */}
               {prompt.compatibleModels && prompt.compatibleModels.length > 0 && (
                 <div className="rounded-xl border border-surface-border bg-surface p-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-text-faint mb-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-text-faint mb-2.5">
                     Compatible AI Models
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {prompt.compatibleModels.map((m) => (
-                      <span
+                      <Link
                         key={m}
-                        className="rounded-lg bg-surface-raised border border-surface-border px-2.5 py-1 text-xs font-medium text-text-muted"
+                        href={`/?model=${encodeURIComponent(m)}#gallery`}
+                        className="rounded-lg bg-surface-raised border border-surface-border px-2.5 py-1 text-xs font-medium text-text-muted hover:border-blue-500/40 hover:text-foreground transition-colors"
                       >
                         {m}
-                      </span>
+                      </Link>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Tags list */}
+              {/* Tags & Descriptors */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-text-faint">
-                  <Tag className="h-3.5 w-3.5" />
+                  <Tag className="h-3.5 w-3.5" aria-hidden="true" />
                   <span>Tags & Descriptors</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {prompt.tags.map((tag) => (
-                    <span
+                    <Link
                       key={tag}
-                      className="rounded-md bg-surface border border-surface-border px-2.5 py-1 text-xs font-medium text-text-muted"
+                      href={`/?q=${encodeURIComponent(tag)}#gallery`}
+                      className="rounded-md bg-surface border border-surface-border px-2.5 py-1 text-xs font-medium text-text-muted hover:border-blue-500/40 hover:text-foreground transition-colors"
                     >
                       #{tag}
-                    </span>
+                    </Link>
                   ))}
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Related Prompts Section (below primary content) */}
+          {relatedPrompts.length > 0 && (
+            <section
+              aria-labelledby="related-heading"
+              className="mt-16 sm:mt-20 border-t border-surface-border pt-10"
+            >
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <h2
+                    id="related-heading"
+                    className="text-lg sm:text-xl font-bold tracking-tight text-foreground"
+                  >
+                    Similar & Related Prompts
+                  </h2>
+                  <p className="text-xs text-text-muted mt-1">
+                    Prompts sharing category, aesthetic tags, and AI model compatibility.
+                  </p>
+                </div>
+                <Link
+                  href={`/?category=${encodeURIComponent(prompt.category)}#gallery`}
+                  className="text-xs font-semibold text-blue-400 hover:text-blue-300 hover:underline"
+                >
+                  View all in {categoryLabels[prompt.category] || prompt.category} &rarr;
+                </Link>
+              </div>
+
+              {/* Related cards gallery grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {relatedPrompts.map((relatedPrompt) => (
+                  <PromptCard
+                    key={relatedPrompt.id}
+                    prompt={relatedPrompt}
+                    priority={false}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </main>
 

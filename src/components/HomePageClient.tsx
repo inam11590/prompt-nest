@@ -220,6 +220,7 @@ export function HomePageClient() {
           pageSize={PAGE_SIZE}
           onPageChange={handlePageChange}
           onResetFilters={handleResetFilters}
+          returnQuery={searchParams.toString() ? `/?${searchParams.toString()}` : "/#gallery"}
         />
       </main>
 

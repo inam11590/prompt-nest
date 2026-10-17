@@ -10,6 +10,7 @@ interface PromptGalleryProps {
   pageSize: number;
   onPageChange: (page: number) => void;
   onResetFilters: () => void;
+  returnQuery?: string;
 }
 
 export function PromptGallery({
@@ -19,6 +20,7 @@ export function PromptGallery({
   pageSize,
   onPageChange,
   onResetFilters,
+  returnQuery = "",
 }: PromptGalleryProps) {
   const totalPages = Math.ceil(totalMatching / pageSize);
 
@@ -59,6 +61,7 @@ export function PromptGallery({
               key={prompt.id}
               prompt={prompt}
               priority={index < 4}
+              returnQuery={returnQuery}
             />
           ))}
         </div>
