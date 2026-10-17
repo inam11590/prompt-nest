@@ -76,6 +76,8 @@ All database changes are non-destructive and tracked under `supabase/migrations/
 6. [`supabase/migrations/006_prompt_types_and_sourcing.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/006_prompt_types_and_sourcing.sql):
    - Adds `prompt_type` ('original' vs 'recreation'), `source_type` ('midjourney', 'unsplash', 'curated', 'user'), `import_key` (TEXT UNIQUE), `asset_status` ('READY' vs 'DRAFT_PENDING_ASSET'), and `image_provenance` (JSONB) to `public.prompts`.
    - Creates supporting indexes for high-speed catalog filtering and idempotent batch upserts.
+7. [`supabase/migrations/007_prompt_transformation_variants.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/007_prompt_transformation_variants.sql):
+   - Non-destructively adds nullable `prompt_dual TEXT` column to `public.prompts` to support dual-reference "Use my photo + example" transformation modes.
 
 ---
 
@@ -146,6 +148,20 @@ node scripts/import-revised-step10.mjs --publish
 
 # 3. Synchronize with Live Midjourney Assets (Publishes both Unsplash and Midjourney)
 node scripts/import-revised-step10.mjs --publish-mj
+```
+
+### Personal Photo Transformations CLI (`scripts/import-personal-transformations.mjs`)
+For the 50 personal-photo transformation concepts inspired by owner-confirmed Midjourney artwork:
+
+```bash
+# 1. Dry-run contract validation across all 50 concepts
+node scripts/import-personal-transformations.mjs --dry-run
+
+# 2. Synchronize 50 drafts to Supabase PostgreSQL (staged as DRAFT_PENDING_ASSET)
+node scripts/import-personal-transformations.mjs --publish
+
+# 3. Promote a single verified concept to live published status after asset supply
+node scripts/import-personal-transformations.mjs --promote transform-sports-01
 ```
 
 ---

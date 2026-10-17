@@ -14,7 +14,12 @@ export type PromptCategory =
   | "graphic-design"
   | "portraits"
   | "food-product"
-  | "fashion-cinematic";
+  | "fashion-cinematic"
+  | "sports-portraits"
+  | "cinematic-portraits"
+  | "editorial-portraits"
+  | "streetwear-fashion"
+  | "outdoor-travel";
 
 export interface PromptItem {
   id: string;
@@ -22,6 +27,7 @@ export interface PromptItem {
   title: string;
   shortDescription: string;
   prompt: string;
+  promptDual?: string; // "Use my photo + example" dual-reference prompt variant
   category: PromptCategory;
   model: AIModel;
   compatibleModels: AIModel[];

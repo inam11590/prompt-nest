@@ -31,6 +31,7 @@ import { PromptCard } from "@/components/PromptCard";
 import { ReturnButton } from "@/components/ReturnButton";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { AddToCollectionButton } from "@/components/collections/AddToCollectionButton";
+import { PromptTransformationTabs } from "@/components/PromptTransformationTabs";
 
 interface PromptPageProps {
   params: Promise<{
@@ -123,6 +124,11 @@ async function PromptDetailContent({ params }: PromptPageProps) {
     portraits: "Portraits",
     "food-product": "Food & Product",
     "fashion-cinematic": "Fashion & Cinematic",
+    "sports-portraits": "Cricket & Sports",
+    "cinematic-portraits": "Cinematic Portraits",
+    "editorial-portraits": "Professional Editorial",
+    "streetwear-fashion": "Streetwear & Fashion",
+    "outdoor-travel": "Outdoor & Travel",
   };
 
   const formattedDate = new Date(prompt.publishedAt).toLocaleDateString("en-US", {
@@ -365,21 +371,11 @@ async function PromptDetailContent({ params }: PromptPageProps) {
                 </div>
               )}
 
-              {/* Prompt Text Section with Copy Button */}
-              <section
-                aria-labelledby="prompt-heading"
-                className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 shadow-lg"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <h2 id="prompt-heading" className="text-xs font-bold uppercase tracking-wider text-text-faint">
-                    Prompt Text
-                  </h2>
-                  <CopyPromptButton promptText={prompt.prompt} label="Copy Prompt" />
-                </div>
-                <div className="rounded-xl border border-surface-border-subtle bg-surface-raised p-4 font-mono text-xs leading-relaxed text-foreground select-all break-words whitespace-pre-wrap">
-                  {prompt.prompt}
-                </div>
-              </section>
+              {/* Prompt Text & Transformation Variants Section */}
+              <PromptTransformationTabs
+                promptText={prompt.prompt}
+                promptDual={prompt.promptDual}
+              />
 
               {/* Optional: Negative Prompt Section (only rendered when explicitly stored) */}
               {prompt.negativePrompt && (

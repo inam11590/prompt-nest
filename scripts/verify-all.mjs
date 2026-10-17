@@ -943,6 +943,125 @@ async function runAll() {
     assert.ok(scriptCode.includes("upsert"), "Uses upsert on import_key for idempotency");
   });
 
+  // ----------------------------------------------------
+  // STEP 10: Personal-Photo Transformation Concepts (Dual-Mode)
+  // ----------------------------------------------------
+  test("T-10.9", "10.0", "Migration 007 adds prompt_dual column non-destructively and database types reflect it", () => {
+    const migrationPath = path.resolve("supabase/migrations/007_prompt_transformation_variants.sql");
+    assert.ok(fs.existsSync(migrationPath), "007 migration file must exist");
+    const sql = fs.readFileSync(migrationPath, "utf-8");
+    assert.ok(sql.includes("prompt_dual") && sql.includes("ALTER TABLE public.prompts ADD COLUMN"), "007 adds prompt_dual column");
+
+    const typesPath = path.resolve("src/types/database.types.ts");
+    const types = fs.readFileSync(typesPath, "utf-8");
+    assert.ok(types.includes("prompt_dual: string | null"), "Database types include prompt_dual");
+  });
+
+  test("T-10.10", "10.0", "Personal transformations dataset contains exactly 50 records with 10 per category across all 5 categories", () => {
+    const datasetPath = path.resolve("src/data/personalTransformationPrompts.json");
+    assert.ok(fs.existsSync(datasetPath), "personalTransformationPrompts.json must exist");
+    const data = JSON.parse(fs.readFileSync(datasetPath, "utf-8"));
+    assert.strictEqual(data.length, 50, "Dataset must have exactly 50 records");
+
+    const expectedCats = ["sports-portraits", "cinematic-portraits", "editorial-portraits", "streetwear-fashion", "outdoor-travel"];
+    const catCounts = {};
+    const slugs = new Set();
+    const importKeys = new Set();
+
+    for (const cat of expectedCats) catCounts[cat] = 0;
+
+    for (const item of data) {
+      assert.ok(item.slug, "Every item must have a slug");
+      assert.ok(item.importKey, "Every item must have an importKey");
+      assert.ok(!slugs.has(item.slug), `Duplicate slug detected: ${item.slug}`);
+      assert.ok(!importKeys.has(item.importKey), `Duplicate importKey detected: ${item.importKey}`);
+      slugs.add(item.slug);
+      importKeys.add(item.importKey);
+
+      assert.ok(expectedCats.includes(item.category), `Unexpected category: ${item.category}`);
+      catCounts[item.category]++;
+    }
+
+    for (const cat of expectedCats) {
+      assert.strictEqual(catCounts[cat], 10, `Category ${cat} must contain exactly 10 posts`);
+    }
+  });
+
+  test("T-10.11", "10.0", "Personal transformation prompt contracts enforce facial identity preservation and dual reference authority", () => {
+    const data = JSON.parse(fs.readFileSync(path.resolve("src/data/personalTransformationPrompts.json"), "utf-8"));
+
+    for (const item of data) {
+      // Mode A contract checks
+      assert.ok(item.prompt, `Mode A prompt required in ${item.importKey}`);
+      assert.ok(item.prompt.length >= 80, `Mode A prompt must be substantive in ${item.importKey}`);
+      assert.ok(
+        item.prompt.includes("sole facial identity authority") || item.prompt.includes("PERSONAL IDENTITY REFERENCE"),
+        `Mode A must designate personal photo as sole facial identity in ${item.importKey}`
+      );
+      assert.ok(
+        item.prompt.includes("Preserve natural facial proportions") || item.prompt.includes("facial proportions"),
+        `Mode A must preserve facial proportions in ${item.importKey}`
+      );
+      assert.ok(
+        item.prompt.includes("Facial accuracy depends") || item.prompt.includes("results depend on tool capabilities"),
+        `Mode A must avoid false guarantees of 100% preservation in ${item.importKey}`
+      );
+
+      // Mode B contract checks
+      assert.ok(item.promptDual, `Mode B promptDual required in ${item.importKey}`);
+      assert.ok(item.promptDual.length >= 80, `Mode B promptDual must be substantive in ${item.importKey}`);
+      assert.ok(item.promptDual.includes("Reference Image A"), `Mode B must specify Reference Image A in ${item.importKey}`);
+      assert.ok(item.promptDual.includes("Reference Image B"), `Mode B must specify Reference Image B in ${item.importKey}`);
+      assert.ok(
+        item.promptDual.includes("Priority Clause") || item.promptDual.includes("must NEVER override"),
+        `Mode B must enforce priority clause preventing Reference B from overriding facial identity in ${item.importKey}`
+      );
+    }
+  });
+
+  test("T-10.12", "10.0", "Personal transformations provenance: owner-confirmed Midjourney, DRAFT_PENDING_ASSET, and manifest documentation", () => {
+    const data = JSON.parse(fs.readFileSync(path.resolve("src/data/personalTransformationPrompts.json"), "utf-8"));
+    const manifestPath = path.resolve("docs/missing-asset-manifest.md");
+    assert.ok(fs.existsSync(manifestPath), "missing-asset-manifest.md must exist");
+    const manifestContent = fs.readFileSync(manifestPath, "utf-8");
+
+    for (const item of data) {
+      assert.strictEqual(item.sourceType, "midjourney", `Must have sourceType midjourney in ${item.importKey}`);
+      assert.strictEqual(item.promptType, "recreation", `Must have promptType recreation in ${item.importKey}`);
+      assert.strictEqual(item.assetStatus, "DRAFT_PENDING_ASSET", `Must be staged as DRAFT_PENDING_ASSET in ${item.importKey}`);
+      assert.strictEqual(item.published, false, `Must be unpublished in ${item.importKey}`);
+      assert.strictEqual(item.imageProvenance?.provenanceType, "owner-confirmed", `Must record owner-confirmed provenance in ${item.importKey}`);
+      assert.ok(manifestContent.includes(item.importKey), `Manifest must include ${item.importKey}`);
+      assert.ok(manifestContent.includes(item.slug), `Manifest must include ${item.slug}`);
+    }
+  });
+
+  test("T-10.13", "10.0", "PromptTransformationTabs renders dual mode tabs, copy actions, and facial accuracy notice", () => {
+    const compPath = path.resolve("src/components/PromptTransformationTabs.tsx");
+    assert.ok(fs.existsSync(compPath), "PromptTransformationTabs.tsx must exist");
+    const compCode = fs.readFileSync(compPath, "utf-8");
+    assert.ok(compCode.includes("Use My Photo"), "Renders Mode A tab title");
+    assert.ok(compCode.includes("Match This Example"), "Renders Mode B tab title");
+    assert.ok(compCode.includes("Copy Mode A Prompt"), "Provides Mode A copy action");
+    assert.ok(compCode.includes("Copy Mode B Prompt"), "Provides Mode B copy action");
+    assert.ok(compCode.includes("Facial accuracy depends on the tool and reference photo"), "Includes required facial accuracy notice");
+
+    const detailPagePath = path.resolve("src/app/prompts/[slug]/page.tsx");
+    const detailCode = fs.readFileSync(detailPagePath, "utf-8");
+    assert.ok(detailCode.includes("PromptTransformationTabs"), "Detail page integrates PromptTransformationTabs");
+  });
+
+  test("T-10.14", "10.0", "Personal transformations importer script supports --dry-run, --publish, and --promote CLI flags", () => {
+    const scriptPath = path.resolve("scripts/import-personal-transformations.mjs");
+    assert.ok(fs.existsSync(scriptPath), "import script must exist");
+    const scriptCode = fs.readFileSync(scriptPath, "utf-8");
+    assert.ok(scriptCode.includes("--dry-run"), "Supports --dry-run flag");
+    assert.ok(scriptCode.includes("--publish"), "Supports --publish flag");
+    assert.ok(scriptCode.includes("--promote"), "Supports --promote flag");
+    assert.ok(scriptCode.includes("onConflict: \"import_key\""), "Upserts on import_key for idempotency");
+    assert.ok(scriptCode.includes("hasPromptDualColumn"), "Handles missing remote schema column gracefully");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;

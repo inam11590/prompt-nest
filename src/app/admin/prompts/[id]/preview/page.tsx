@@ -40,6 +40,11 @@ const categoryLabels: Record<string, string> = {
   portraits: "Portraits",
   "food-product": "Food & Product",
   "fashion-cinematic": "Fashion & Cinematic",
+  "sports-portraits": "Cricket & Sports",
+  "cinematic-portraits": "Cinematic Portraits",
+  "editorial-portraits": "Professional Editorial",
+  "streetwear-fashion": "Streetwear & Fashion",
+  "outdoor-travel": "Outdoor & Travel",
 };
 
 async function PreviewContent({ params }: AdminPreviewPageProps) {

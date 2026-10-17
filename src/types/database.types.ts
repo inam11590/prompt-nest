@@ -83,6 +83,7 @@ export interface Database {
           import_key: string | null;
           asset_status: "READY" | "DRAFT_PENDING_ASSET";
           image_provenance: Json;
+          prompt_dual: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -116,6 +117,7 @@ export interface Database {
           import_key?: string | null;
           asset_status?: "READY" | "DRAFT_PENDING_ASSET";
           image_provenance?: Json;
+          prompt_dual?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -149,6 +151,7 @@ export interface Database {
           import_key?: string | null;
           asset_status?: "READY" | "DRAFT_PENDING_ASSET";
           image_provenance?: Json;
+          prompt_dual?: string | null;
           created_at?: string;
           updated_at?: string;
         };

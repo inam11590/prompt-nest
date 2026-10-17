@@ -30,6 +30,7 @@ export function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
     title: row.title,
     shortDescription: row.short_description,
     prompt: row.prompt,
+    promptDual: row.prompt_dual || (row.generation_parameters as Record<string, unknown>)?.prompt_dual as string || undefined,
     category: row.category as PromptCategory,
     model: row.model as AIModel,
     compatibleModels: (row.compatible_models || []) as AIModel[],

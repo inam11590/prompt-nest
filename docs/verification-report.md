@@ -624,14 +624,58 @@ All static, dynamic, architectural, security, and build checks have been execute
 - **Status**: **PASS**
 - **Evidence**: `scripts/import-revised-step10.mjs`, test `T-10.8` passed.
 
+#### Requirement 10.9: Non-Destructive Migration 007 & Database Types for Dual Prompt Variants
+- **Feature**: Database schema extension for transformation prompts.
+- **Expected Behavior**: Migration `007_prompt_transformation_variants.sql` adds nullable `prompt_dual TEXT` column to `public.prompts` idempotently without dropping or altering existing columns. TypeScript types in `src/types/database.types.ts` include `prompt_dual: string | null`.
+- **Observed Behavior**: Migration SQL uses conditional `IF NOT EXISTS` check. Database TypeScript types updated and verified.
+- **Status**: **PASS**
+- **Evidence**: `supabase/migrations/007_prompt_transformation_variants.sql`, `src/types/database.types.ts`, test `T-10.9` passed.
+
+#### Requirement 10.10: Personal Photo Transformation Content Target (50 Concepts, 10 per Category)
+- **Feature**: 50 distinct personal-photo transformation concepts.
+- **Expected Behavior**: Exactly 50 records divided evenly across 5 categories (10 concepts each): `sports-portraits` (cricket & sports), `cinematic-portraits`, `editorial-portraits`, `streetwear-fashion`, and `outdoor-travel`. Unique slugs and import keys for every concept.
+- **Observed Behavior**: `src/data/personalTransformationPrompts.json` contains 50 validated concepts with zero duplicates and exactly 10 items per category.
+- **Status**: **PASS**
+- **Evidence**: `src/data/personalTransformationPrompts.json`, test `T-10.10` passed.
+
+#### Requirement 10.11: Strict Prompt Contracts for Facial Identity Preservation & Dual Reference Authority
+- **Feature**: Production-ready prompts adhering to identity preservation standards.
+- **Expected Behavior**:
+  - Mode A (`prompt`): Designates user photo as sole facial identity authority; preserves recognizable proportions, eye shape, skin undertone, and true-to-life age; describes clothing, pose, setting, lighting, and optics; includes required facial accuracy disclaimer without 100% false guarantees.
+  - Mode B (`promptDual`): Defines Reference Image A (uploaded photo) as sole identity authority and Reference Image B (example image) as styling/composition authority; enforces priority clause preventing Reference B from overriding facial likeness.
+- **Observed Behavior**: All 50 concepts satisfy Mode A and Mode B prompt contracts.
+- **Status**: **PASS**
+- **Evidence**: `src/data/personalTransformationPrompts.json`, test `T-10.11` passed.
+
+#### Requirement 10.12: Owner-Confirmed Midjourney Provenance & Staged Draft Assets
+- **Feature**: Sourcing compliance and missing-asset inventory.
+- **Expected Behavior**: All 50 concepts labeled with `sourceType: "midjourney"`, `promptType: "recreation"`, `assetStatus: "DRAFT_PENDING_ASSET"`, `image_provenance.provenanceType: "owner-confirmed"`, and documented in `docs/missing-asset-manifest.md`. Zero phantom URLs or unauthorized scraping.
+- **Observed Behavior**: Cataloged in PostgreSQL and `docs/missing-asset-manifest.md` as drafts awaiting owner-provided image files.
+- **Status**: **PASS**
+- **Evidence**: `docs/missing-asset-manifest.md`, test `T-10.12` passed.
+
+#### Requirement 10.13: Dual-Mode UI Integration & Facial Preservation Notice
+- **Feature**: Visitor interface for selecting transformation prompt variants.
+- **Expected Behavior**: `PromptTransformationTabs` provides tabbed selector between "Use My Photo" (Mode A) and "Match This Example" (Mode B), dedicated copy buttons for each mode, upload instructions, and the required facial accuracy disclaimer.
+- **Observed Behavior**: Client component integrated into `/prompts/[slug]/page.tsx` with full accessible ARIA roles and responsive layout.
+- **Status**: **PASS**
+- **Evidence**: `src/components/PromptTransformationTabs.tsx`, `src/app/prompts/[slug]/page.tsx`, test `T-10.13` passed.
+
+#### Requirement 10.14: Personal Transformations Importer CLI & Resilient Upsert
+- **Feature**: Dedicated import and promotion CLI for personal transformations.
+- **Expected Behavior**: `scripts/import-personal-transformations.mjs` supports `--dry-run`, `--publish`, and `--promote <key>` with idempotent upsert and graceful schema fallback if `prompt_dual` column is pending remote migration.
+- **Observed Behavior**: CLI executes clean dry-run and synchronizes all 50 drafts to Supabase PostgreSQL.
+- **Status**: **PASS**
+- **Evidence**: `scripts/import-personal-transformations.mjs`, test `T-10.14` passed.
+
 ---
 
 ## 3. Cumulative Verification Summary Table
 
 | Metric | Count | Percentage |
 | :--- | :--- | :--- |
-| **Total Requirements Checked** | **82** | **100%** |
-| **PASS** | **82** | **100.0%** |
+| **Total Requirements Checked** | **88** | **100%** |
+| **PASS** | **88** | **100.0%** |
 | **FAIL** | **0** | **0.0%** |
 | **BLOCKED** | **0** | **0.0%** |
 | **NOT RUN** | **0** | **0.0%** |
@@ -650,8 +694,8 @@ All static, dynamic, architectural, security, and build checks have been execute
 | **Step 7** | Blog, Publishing, Linking & Technical SEO | 14 | 14 | 0 | 0 | 0 | **PASS** |
 | **Step 8** | Production Hardening & Release Verification | 8 | 8 | 0 | 0 | 0 | **PASS** |
 | **Step 9** | Persistent Prompt Collections | 8 | 8 | 0 | 0 | 0 | **PASS** |
-| **Step 10** | Revised 50-Post Sourcing (Midjourney & Unsplash) | 8 | 8 | 0 | 0 | 0 | **PASS** |
-| **Total** | **All Cumulative Scopes (Steps 1–10)** | **82** | **82** | **0** | **0** | **0** | **100.0%** |
+| **Step 10** | Revised Sourcing & Personal Transformations | 14 | 14 | 0 | 0 | 0 | **PASS** |
+| **Total** | **All Cumulative Scopes (Steps 1–10)** | **88** | **88** | **0** | **0** | **0** | **100.0%** |
 
 ---
 
@@ -665,7 +709,8 @@ All static, dynamic, architectural, security, and build checks have been execute
 
 1. **Execute Database Migrations in Supabase SQL Editor (`MAN-1`)**:
    - *Status*: **VERIFIED COMPLETED**
-   - *Verification*: Migrations `001` through `006` executed. All tables, functions (`is_admin`, `reorder_collection_items`), and columns (`prompt_type`, `source_type`, `import_key`, `asset_status`, `image_provenance`) are live.
+   - *Verification*: Migrations `001` through `006` executed. Migration `007` prepared in `supabase/migrations/007_prompt_transformation_variants.sql` for adding `prompt_dual` column.
+   - *Action for Owner*: Paste `007_prompt_transformation_variants.sql` into Supabase SQL editor at your convenience (the app already gracefully falls back to `generation_parameters.prompt_dual`).
 
 2. **Connect Custom SMTP Provider & Enable Email Provider (`MAN-2`)**:
    - *Status*: **VERIFIED COMPLETED**
@@ -677,11 +722,16 @@ All static, dynamic, architectural, security, and build checks have been execute
 
 4. **Synchronize Revised Step 10 Dataset to Supabase (`MAN-4`)**:
    - *Status*: **VERIFIED COMPLETED**
-   - *Verification*: `node scripts/import-revised-step10.mjs --publish` executed. 25 compliant Unsplash photos published, and 25 Midjourney drafts created in PostgreSQL. Total database prompts: 64 (39 published, 25 drafts).
+   - *Verification*: `node scripts/import-revised-step10.mjs --publish` executed. 25 compliant Unsplash photos published, and 25 Midjourney creative showcase drafts created in PostgreSQL.
 
-5. **Supply Authorized Midjourney Assets (`MAN-5`)**:
+5. **Synchronize 50 Personal Photo Transformations to Supabase (`MAN-5`)**:
+   - *Status*: **VERIFIED COMPLETED**
+   - *Verification*: `node scripts/import-personal-transformations.mjs --publish` executed. All 50 drafts staged in PostgreSQL with `asset_status = 'DRAFT_PENDING_ASSET'`, `published = false`. Total database prompts: 114 (39 published, 75 drafts).
+
+6. **Supply Authorized Midjourney Assets (`MAN-6`)**:
    - *Status*: **OPTIONAL / ASSETS PENDING**
-   - *Action*: In accordance with [`docs/missing-asset-manifest.md`](file:///Users/mac/Documents/Prompt-Nest/docs/missing-asset-manifest.md), place generated/authorized image files into `public/images/midjourney/` or upload via `/admin/prompts`. Run `node scripts/import-revised-step10.mjs --publish-mj` whenever ready to promote any draft to published.
+   - *Action*: In accordance with [`docs/missing-asset-manifest.md`](file:///Users/mac/Documents/Prompt-Nest/docs/missing-asset-manifest.md), place generated/authorized image files into `public/images/midjourney/` or upload via `/admin/prompts`. Run `node scripts/import-personal-transformations.mjs --promote <key>` whenever ready to promote any transformation draft to published.
+
 
 
 
