@@ -11,14 +11,18 @@ export type PromptCategory =
   | "architecture"
   | "character-design"
   | "nature"
-  | "graphic-design";
+  | "graphic-design"
+  | "cricket";
 
 export interface PromptItem {
   id: string;
   slug: string;
   title: string;
   shortDescription: string;
-  prompt: string;
+  prompt: string; // Mode A ("Use my photo")
+  promptMatchExample?: string; // Mode B ("Match this example")
+  styleInspiration?: string; // Style inspiration label
+  isCricketIdentity?: boolean; // Flag for cricket identity-preserving prompt
   category: PromptCategory;
   model: AIModel;
   compatibleModels: AIModel[];
@@ -41,6 +45,12 @@ export interface PromptItem {
     authorUrl: string;
     license: string;
   };
+  imageProvenance?: {
+    source: string;
+    license: string;
+    generationMethod?: string;
+    dimensions?: { width: number; height: number };
+  };
   authorId?: string; // Optional creator user ID
   author?: {
     username: string;
@@ -49,7 +59,9 @@ export interface PromptItem {
   };
 }
 
-export const STARTER_PROMPTS: PromptItem[] = [
+import { CRICKET_PROMPTS_DATASET } from "./cricketPrompts";
+
+const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
   {
     id: "prompt-1",
     slug: "cinematic-35mm-tokyo-dusk-portrait",
@@ -374,6 +386,11 @@ export const STARTER_PROMPTS: PromptItem[] = [
       license: "Unsplash Free License",
     },
   },
+];
+
+export const STARTER_PROMPTS: PromptItem[] = [
+  ...ORIGINAL_STARTER_PROMPTS,
+  ...CRICKET_PROMPTS_DATASET,
 ];
 
 export function getPromptBySlug(slug: string): PromptItem | undefined {

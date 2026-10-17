@@ -56,6 +56,7 @@ export const siteConfig: SiteConfig = {
     { id: "character-design", name: "Characters", slug: "character-design", description: "Stylized characters, heroic figures, and expressive expressions" },
     { id: "nature", name: "Nature & Landscapes", slug: "nature", description: "Dramatic weather, atmospheric environments, and pristine wilderness" },
     { id: "graphic-design", name: "Graphic & UI", slug: "graphic-design", description: "Isometric renders, packaging, 3D icons, and clean layouts" },
+    { id: "cricket", name: "Cricket", slug: "cricket", description: "Batting action, express fast bowling, stadium atmospheres, and cricket portraits" },
   ],
   footerLinks: {
     product: [

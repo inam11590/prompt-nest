@@ -78,6 +78,10 @@ export interface Database {
           status: "draft" | "published" | "archived";
           author_id: string | null;
           submission_id: string | null;
+          prompt_match_example: string | null;
+          style_inspiration: string | null;
+          is_cricket_identity: boolean;
+          image_provenance: Json;
           created_at: string;
           updated_at: string;
         };
@@ -101,6 +105,10 @@ export interface Database {
           negative_prompt?: string | null;
           generation_parameters?: Json | null;
           source_attribution?: Json;
+          prompt_match_example?: string | null;
+          style_inspiration?: string | null;
+          is_cricket_identity?: boolean;
+          image_provenance?: Json;
           published?: boolean;
           published_at?: string;
           status?: "draft" | "published" | "archived";
@@ -129,6 +137,10 @@ export interface Database {
           negative_prompt?: string | null;
           generation_parameters?: Json | null;
           source_attribution?: Json;
+          prompt_match_example?: string | null;
+          style_inspiration?: string | null;
+          is_cricket_identity?: boolean;
+          image_provenance?: Json;
           published?: boolean;
           published_at?: string;
           status?: "draft" | "published" | "archived";
