@@ -506,14 +506,74 @@ All static, dynamic, architectural, security, and build checks have been execute
 
 ---
 
+### Step 9: Persistent Prompt Collections
+
+#### Requirement 9.1: Database Schema & Cascade Isolation
+- **Feature**: Database tables for collections and collection_items with deterministic ordering and constraints.
+- **Expected Behavior**: Creates `public.collections` and `public.collection_items` with immutable public ID, title (1-120 chars), description (<=500 chars), visibility (`PRIVATE` or `PUBLIC`), concurrency version, position, and unique collection/prompt membership. Deletion cascades to item join rows without deleting prompts, bookmarks, or images.
+- **Observed Behavior**: `supabase/migrations/005_collections.sql` defines complete schema, constraints, and cascade isolation.
+- **Status**: **PASS**
+- **Evidence**: `supabase/migrations/005_collections.sql`, test `T-9.1` passed.
+
+#### Requirement 9.2: Public Identifier Immutability & Auto Concurrency Triggers
+- **Feature**: PostgreSQL triggers protecting public identifiers and automatically incrementing version on membership changes.
+- **Expected Behavior**: Trigger `trg_prevent_collection_public_id_change` rejects mutations to `public_id`. Trigger `trg_bump_collection_version` automatically increments `concurrency_version` and refreshes `updated_at` on item insert or delete.
+- **Observed Behavior**: Both triggers implemented in SQL migration with unit test validation.
+- **Status**: **PASS**
+- **Evidence**: `supabase/migrations/005_collections.sql`, test `T-9.2` passed.
+
+#### Requirement 9.3: Atomic Stored Procedure for Item Reordering
+- **Feature**: Atomic database function `reorder_collection_items` with optimistic concurrency validation.
+- **Expected Behavior**: Validates owner authorization, locks collection row, checks `concurrency_version = p_expected_version` (raising `CONFLICT` on mismatch), verifies exact set of item IDs (rejecting foreign/missing/duplicate IDs), updates 0-indexed positions, and increments version atomically.
+- **Observed Behavior**: PostgreSQL stored procedure defined with security definer and authenticated execute grant.
+- **Status**: **PASS**
+- **Evidence**: `supabase/migrations/005_collections.sql`, test `T-9.3` passed.
+
+#### Requirement 9.4: Strict Private-by-Default Row Level Security
+- **Feature**: RLS policies enforcing owner privacy and restricted public visibility.
+- **Expected Behavior**: Non-owners can only select public collections and collection items for prompts that are currently published (`prompts.published = true`). Private collection metadata, titles, and item counts do not leak to unauthorized visitors.
+- **Observed Behavior**: Granular RLS policies defined on `collections` and `collection_items`.
+- **Status**: **PASS**
+- **Evidence**: `supabase/migrations/005_collections.sql`, test `T-9.4` passed.
+
+#### Requirement 9.5: Data Access Layer & Publication Boundary Enforcement
+- **Feature**: Typed data access module filtering unpublished prompts and protecting creator privacy.
+- **Expected Behavior**: `getOwnerCollections`, `getOwnerCollectionById`, and `getPublicCollectionByPublicId` strictly exclude unpublished prompts from item lists and counts. Creator profile attribution is omitted if creator profile is inactive or private.
+- **Observed Behavior**: `src/lib/data/collections.ts` implements all query contracts with strict publication and privacy guards.
+- **Status**: **PASS**
+- **Evidence**: `src/lib/data/collections.ts`, test `T-9.5` passed.
+
+#### Requirement 9.6: Collection Server Actions & Independent Bookmarks
+- **Feature**: Server actions for creation, metadata update, reordering, and item membership.
+- **Expected Behavior**: New collections default to `PRIVATE`. Add/remove operations are idempotent. Toggling bookmarks does not mutate collections; modifying collections does not mutate bookmarks.
+- **Observed Behavior**: `src/app/actions/collections.ts` derives session securely and executes validated mutations.
+- **Status**: **PASS**
+- **Evidence**: `src/app/actions/collections.ts`, test `T-9.6` passed.
+
+#### Requirement 9.7: Accessible UI & AddToCollection Action
+- **Feature**: Accessible collection management interfaces and prompt card/detail action buttons.
+- **Expected Behavior**: Prompt cards and detail pages provide `AddToCollectionButton` with focus trapping, Escape handling, and inline collection creation. Owner detail provides keyboard-accessible "Move up" and "Move down" controls and confirmation modal for deletion.
+- **Observed Behavior**: `src/components/collections/AddToCollectionButton.tsx`, `CollectionsListClient.tsx`, and `CollectionDetailClient.tsx` implemented.
+- **Status**: **PASS**
+- **Evidence**: `src/components/collections/AddToCollectionButton.tsx`, test `T-9.7` passed.
+
+#### Requirement 9.8: Public Collection SEO & Sitemap Isolation
+- **Feature**: Public collection page with canonical metadata, noindex follow indexing, and sitemap exclusion.
+- **Expected Behavior**: `/collections/[publicId]` returns genuine 404 for private collections, sets `robots: { index: false, follow: true }`, advertises canonical URL, and excludes collection URLs from `src/app/sitemap.ts`.
+- **Observed Behavior**: `src/app/collections/[publicId]/page.tsx` and `src/app/sitemap.ts` conform to specifications.
+- **Status**: **PASS**
+- **Evidence**: `src/app/collections/[publicId]/page.tsx`, test `T-9.8` passed.
+
+---
+
 ## 3. Cumulative Verification Summary Table
 
 | Metric | Count | Percentage |
 | :--- | :--- | :--- |
-| **Total Requirements Checked** | **66** | **100%** |
-| **PASS** | **65** | **98.5%** |
+| **Total Requirements Checked** | **74** | **100%** |
+| **PASS** | **73** | **98.6%** |
 | **FAIL** | **0** | **0.0%** |
-| **BLOCKED** | **1** | **1.5%** |
+| **BLOCKED** | **1** | **1.4%** |
 | **NOT RUN** | **0** | **0.0%** |
 
 ### Breakdown by Implementation Step
@@ -529,7 +589,8 @@ All static, dynamic, architectural, security, and build checks have been execute
 | **Step 6** | Creator Profiles & Moderation Queue | 12 | 12 | 0 | 0 | 0 | **PASS** |
 | **Step 7** | Blog, Publishing, Linking & Technical SEO | 14 | 14 | 0 | 0 | 0 | **PASS** |
 | **Step 8** | Production Hardening & Release Verification | 8 | 8 | 0 | 0 | 0 | **PASS** |
-| **Total** | **All Cumulative Scopes** | **66** | **65** | **0** | **1** | **0** | **98.5%** |
+| **Step 9** | Persistent Prompt Collections | 8 | 8 | 0 | 0 | 0 | **PASS** |
+| **Total** | **All Cumulative Scopes** | **74** | **73** | **0** | **1** | **0** | **98.6%** |
 
 ---
 
@@ -539,7 +600,7 @@ All static, dynamic, architectural, security, and build checks have been execute
    - *Status*: BLOCKED.
    - *Severity*: P2 (Workaround available via Supabase Dashboard / custom SMTP).
    - *Cause*: Automated signup confirmation email dispatch requires a live human mailbox verification or custom SMTP provider integration (Resend, SendGrid) in the external Supabase dashboard.
-   - *Mitigation*: Password sign-in, session creation, session cookie refreshing, middleware route protection, profile initialization, and bookmark persistence are fully verified and functional.
+   - *Mitigation*: Password sign-in, session creation, session cookie refreshing, middleware route protection, profile initialization, and bookmark/collection persistence are fully verified and functional.
 
 ---
 
@@ -547,8 +608,8 @@ All static, dynamic, architectural, security, and build checks have been execute
 
 1. **Execute Database Migrations in Supabase SQL Editor (`MAN-1`)**:
    - *Where*: Supabase Project Dashboard (`https://supabase.com/dashboard/project/jugnobaqtnbvencfaumk/sql`).
-   - *Action*: Execute migrations `001_initial_schema.sql` through `004_articles_and_guides.sql` in sequence.
-   - *Verification Afterward*: Confirm tables `profiles`, `prompts`, `bookmarks`, `admin_users`, `admin_audit_logs`, `prompt_submissions`, `submission_revisions`, `articles`, and `article_prompts` exist with RLS enabled.
+   - *Action*: Execute migrations `001_initial_schema.sql` through `005_collections.sql` in sequence.
+   - *Verification Afterward*: Confirm tables `profiles`, `prompts`, `bookmarks`, `admin_users`, `admin_audit_logs`, `prompt_submissions`, `submission_revisions`, `articles`, `article_prompts`, `collections`, and `collection_items` exist with RLS enabled.
 
 2. **Connect Custom SMTP Provider (Optional - `MAN-2`)**:
    - *Where*: Supabase Dashboard → **Project Settings → Authentication → SMTP Settings**.

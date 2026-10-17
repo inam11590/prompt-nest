@@ -494,6 +494,86 @@ export interface Database {
           }
         ];
       };
+      collections: {
+        Row: {
+          id: string;
+          public_id: string;
+          user_id: string;
+          title: string;
+          description: string | null;
+          visibility: "PRIVATE" | "PUBLIC";
+          concurrency_version: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          public_id?: string;
+          user_id: string;
+          title: string;
+          description?: string | null;
+          visibility?: "PRIVATE" | "PUBLIC";
+          concurrency_version?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          public_id?: string;
+          user_id?: string;
+          title?: string;
+          description?: string | null;
+          visibility?: "PRIVATE" | "PUBLIC";
+          concurrency_version?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "collections_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      collection_items: {
+        Row: {
+          id: string;
+          collection_id: string;
+          prompt_id: string;
+          position: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          collection_id: string;
+          prompt_id: string;
+          position?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          collection_id?: string;
+          prompt_id?: string;
+          position?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "collection_items_collection_id_fkey";
+            columns: ["collection_id"];
+            referencedRelation: "collections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "collection_items_prompt_id_fkey";
+            columns: ["prompt_id"];
+            referencedRelation: "prompts";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -504,6 +584,14 @@ export interface Database {
           user_id: string;
         };
         Returns: boolean;
+      };
+      reorder_collection_items: {
+        Args: {
+          p_collection_id: string;
+          p_expected_version: number;
+          p_item_ids: string[];
+        };
+        Returns: number;
       };
     };
     Enums: {

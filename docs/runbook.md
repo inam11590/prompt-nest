@@ -70,6 +70,9 @@ All database changes are non-destructive and tracked under `supabase/migrations/
 4. [`supabase/migrations/004_articles_and_guides.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/004_articles_and_guides.sql):
    - Creates `public.articles` and `public.article_prompts` tables.
    - Enforces check constraints, optimistic concurrency versioning, and admin RLS.
+5. [`supabase/migrations/005_collections.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/005_collections.sql):
+   - Creates `public.collections` and `public.collection_items` tables.
+   - Enforces immutable public identifiers, automatic version bump triggers, atomic stored procedure `reorder_collection_items`, and strict private-by-default RLS.
 
 ---
 

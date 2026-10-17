@@ -30,6 +30,7 @@ import { ShareButton } from "@/components/ShareButton";
 import { PromptCard } from "@/components/PromptCard";
 import { ReturnButton } from "@/components/ReturnButton";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { AddToCollectionButton } from "@/components/collections/AddToCollectionButton";
 
 interface PromptPageProps {
   params: Promise<{
@@ -261,6 +262,7 @@ async function PromptDetailContent({ params }: PromptPageProps) {
                     <span>{formattedDate}</span>
                   </span>
                   <BookmarkButton promptId={prompt.id} variant="detail" />
+                  <AddToCollectionButton promptId={prompt.id} variant="detail" />
                   <ShareButton title={prompt.title} url={canonicalUrl} />
                 </div>
 

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Copy, Check, ExternalLink, Sparkles, ImageOff } from "lucide-react";
 import type { PromptItem } from "@/data/prompts";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { AddToCollectionButton } from "@/components/collections/AddToCollectionButton";
 
 interface PromptCardProps {
   prompt: PromptItem;
@@ -107,6 +108,11 @@ export function PromptCard({
               <BookmarkButton
                 promptId={prompt.id}
                 initialBookmarked={isBookmarked}
+                isAuthenticated={isAuthenticated}
+                variant="card"
+              />
+              <AddToCollectionButton
+                promptId={prompt.id}
                 isAuthenticated={isAuthenticated}
                 variant="card"
               />

@@ -22,7 +22,7 @@ export interface GetPromptsResult {
 /**
  * Transforms a raw Supabase PostgreSQL prompts table row into a PromptItem
  */
-function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
+export function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
 
   return {
     id: row.id,

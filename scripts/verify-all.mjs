@@ -697,6 +697,97 @@ async function runAll() {
     assert.ok(content.includes("What a Vercel Rollback Restores"), "documents rollback boundaries");
   });
 
+  // ----------------------------------------------------
+  // STEP 9: Persistent Prompt Collections
+  // ----------------------------------------------------
+  test("T-9.1", "9.0", "Migration 005_collections.sql defines collections and collection_items schema with constraints", () => {
+    const migrationPath = path.resolve("supabase/migrations/005_collections.sql");
+    assert.ok(fs.existsSync(migrationPath), "005_collections.sql must exist");
+    const sql = fs.readFileSync(migrationPath, "utf-8");
+    assert.ok(sql.includes("CREATE TABLE IF NOT EXISTS public.collections"), "defines collections table");
+    assert.ok(sql.includes("CREATE TABLE IF NOT EXISTS public.collection_items"), "defines collection_items table");
+    assert.ok(sql.includes("chk_collections_title_length"), "validates title length");
+    assert.ok(sql.includes("chk_collections_desc_length"), "validates description length");
+    assert.ok(sql.includes("unique_collection_prompt"), "enforces unique collection prompt membership");
+    assert.ok(sql.includes("concurrency_version INTEGER NOT NULL DEFAULT 1"), "optimistic concurrency version column");
+  });
+
+  test("T-9.2", "9.0", "Public ID immutability trigger and automatic version bump triggers defined in migration", () => {
+    const sql = fs.readFileSync(path.resolve("supabase/migrations/005_collections.sql"), "utf-8");
+    assert.ok(sql.includes("prevent_collection_public_id_change"), "prevents public_id mutation");
+    assert.ok(sql.includes("bump_collection_version_on_item_change"), "bumps version on item insert/delete");
+    assert.ok(sql.includes("trg_prevent_collection_public_id_change"), "attaches immutability trigger");
+    assert.ok(sql.includes("trg_bump_collection_version"), "attaches version bump trigger");
+  });
+
+  test("T-9.3", "9.0", "Atomic stored procedure reorder_collection_items enforces concurrency version and item array validation", () => {
+    const sql = fs.readFileSync(path.resolve("supabase/migrations/005_collections.sql"), "utf-8");
+    assert.ok(sql.includes("reorder_collection_items"), "defines reorder_collection_items function");
+    assert.ok(sql.includes("FOR UPDATE"), "locks collection row during reorder");
+    assert.ok(sql.includes("v_current_version <> p_expected_version"), "checks expected version");
+    assert.ok(sql.includes("CONFLICT: Collection has been modified"), "raises conflict on mismatch");
+    assert.ok(sql.includes("v_matched_count <> v_existing_count"), "rejects foreign or missing IDs");
+  });
+
+  test("T-9.4", "9.0", "Row Level Security policies enforce private-by-default isolation and public visibility restrictions", () => {
+    const sql = fs.readFileSync(path.resolve("supabase/migrations/005_collections.sql"), "utf-8");
+    assert.ok(sql.includes("ALTER TABLE public.collections ENABLE ROW LEVEL SECURITY"), "RLS enabled on collections");
+    assert.ok(sql.includes("ALTER TABLE public.collection_items ENABLE ROW LEVEL SECURITY"), "RLS enabled on collection_items");
+    assert.ok(sql.includes("user_id = auth.uid() OR visibility = 'PUBLIC'"), "collections select policy");
+    assert.ok(sql.includes("p.published = true"), "restricts collection_items to published prompts for public read");
+  });
+
+  test("T-9.5", "9.0", "Data access layer (src/lib/data/collections.ts) excludes unpublished prompts and respects creator privacy", () => {
+    const dataPath = path.resolve("src/lib/data/collections.ts");
+    assert.ok(fs.existsSync(dataPath), "collections.ts must exist");
+    const code = fs.readFileSync(dataPath, "utf-8");
+    assert.ok(code.includes("getOwnerCollections"), "exports getOwnerCollections");
+    assert.ok(code.includes("getOwnerCollectionById"), "exports getOwnerCollectionById");
+    assert.ok(code.includes("getPublicCollectionByPublicId"), "exports getPublicCollectionByPublicId");
+    assert.ok(code.includes("profileRow?.is_public && profileRow.username"), "only attributes active public creator profiles");
+    assert.ok(code.includes('eq("prompts.published", true)'), "filters by published prompts");
+  });
+
+  test("T-9.6", "9.0", "Server actions (src/app/actions/collections.ts) handle optimistic concurrency, version increment, and idempotency", () => {
+    const actionsPath = path.resolve("src/app/actions/collections.ts");
+    assert.ok(fs.existsSync(actionsPath), "actions/collections.ts must exist");
+    const code = fs.readFileSync(actionsPath, "utf-8");
+    assert.ok(code.includes("createCollectionAction"), "exports createCollectionAction");
+    assert.ok(code.includes("updateCollectionAction"), "exports updateCollectionAction");
+    assert.ok(code.includes("deleteCollectionAction"), "exports deleteCollectionAction");
+    assert.ok(code.includes("addPromptToCollectionAction"), "exports addPromptToCollectionAction");
+    assert.ok(code.includes("removePromptFromCollectionAction"), "exports removePromptFromCollectionAction");
+    assert.ok(code.includes("reorderCollectionItemsAction"), "exports reorderCollectionItemsAction");
+    assert.ok(code.includes('visibility: "PRIVATE"'), "defaults new collections to PRIVATE");
+  });
+
+  test("T-9.7", "9.0", "Accessible collection UI components provide Move up/down controls and AddToCollectionButton", () => {
+    const buttonPath = path.resolve("src/components/collections/AddToCollectionButton.tsx");
+    assert.ok(fs.existsSync(buttonPath), "AddToCollectionButton.tsx must exist");
+    const buttonCode = fs.readFileSync(buttonPath, "utf-8");
+    assert.ok(buttonCode.includes("role=\"dialog\""), "modal dialog role");
+    assert.ok(buttonCode.includes("aria-modal=\"true\""), "modal aria attribute");
+
+    const detailPath = path.resolve("src/components/collections/CollectionDetailClient.tsx");
+    assert.ok(fs.existsSync(detailPath), "CollectionDetailClient.tsx must exist");
+    const detailCode = fs.readFileSync(detailPath, "utf-8");
+    assert.ok(detailCode.includes("handleMove(index, \"up\")"), "provides accessible move up control");
+    assert.ok(detailCode.includes("handleMove(index, \"down\")"), "provides accessible move down control");
+  });
+
+  test("T-9.8", "9.0", "Public collection pages enforce noindex, follow and exclude collection URLs from sitemaps", () => {
+    const publicPagePath = path.resolve("src/app/collections/[publicId]/page.tsx");
+    assert.ok(fs.existsSync(publicPagePath), "public collection page must exist");
+    const pageCode = fs.readFileSync(publicPagePath, "utf-8");
+    assert.ok(pageCode.includes("index: false"), "sets robots index: false");
+    assert.ok(pageCode.includes("follow: true"), "sets robots follow: true");
+    assert.ok(pageCode.includes("notFound()"), "returns genuine 404 on missing/private collection");
+
+    const sitemapPath = path.resolve("src/app/sitemap.ts");
+    const sitemapCode = fs.readFileSync(sitemapPath, "utf-8");
+    assert.ok(!sitemapCode.includes("/collections/"), "collections excluded from sitemaps");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;
