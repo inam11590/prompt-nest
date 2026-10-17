@@ -1,0 +1,2456 @@
+[
+  {
+    "importKey": "unsplash-portrait-01",
+    "id": "step10-up-01",
+    "slug": "candid-golden-hour-freckled-portrait",
+    "title": "Candid Golden Hour Freckled Portrait",
+    "shortDescription": "Warm sunset ambient lighting highlighting natural skin texture, delicate freckles, and soft catchlights in an open meadow.",
+    "prompt": "A candid outdoor close-up portrait of a woman bathed in warm golden hour sunset light. Shot on 85mm f/1.4 prime lens, shallow depth of field with creamy bokeh, warm amber backlight illuminating flyaway hair, natural un-retouched skin textures with visible freckles, gentle head tilt, contemplative natural gaze directly into the lens, Kodachrome warm color temperature, realistic human anatomy, 8k resolution.",
+    "category": "portraits",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "portrait",
+      "golden-hour",
+      "freckles",
+      "85mm",
+      "natural-light",
+      "kodachrome"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Close-up portrait of a woman with freckles bathed in golden sunset light",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#332219",
+    "publishedAt": "2024-09-01T10:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Becca Tapert",
+      "authorUrl": "https://unsplash.com/@beccatapert",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Becca Tapert",
+      "authorUrl": "https://unsplash.com/@beccatapert",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-portrait-02",
+    "id": "step10-up-02",
+    "slug": "studio-rembrandt-monochrome-male-portrait",
+    "title": "Studio Rembrandt Monochrome Male Portrait",
+    "shortDescription": "Dramatic black-and-white studio headshot utilizing classic Rembrandt lighting, crisp facial contours, and deep shadow play.",
+    "prompt": "Monochrome fine art studio portrait of a man in his late 20s featuring classic Rembrandt key lighting. Deep rich blacks and luminous midtones, crisp catchlights in expressive dark eyes, structured jawline with subtle stubble, textured charcoal background, shot on medium format Hasselblad 500C/M with Ilford HP5 Plus 400 film, fine silver gelatin grain, f/4 aperture, sharp subject isolation.",
+    "category": "portraits",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "portrait",
+      "black-and-white",
+      "rembrandt-lighting",
+      "studio",
+      "monochrome",
+      "hasselblad"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Expressive studio portrait of a smiling man with balanced lighting",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#1e1e1e",
+    "publishedAt": "2024-09-02T11:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Joseph Gonzalez",
+      "authorUrl": "https://unsplash.com/@miracletwentyone",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Joseph Gonzalez",
+      "authorUrl": "https://unsplash.com/@miracletwentyone",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-portrait-03",
+    "id": "step10-up-03",
+    "slug": "editorial-summer-sunlight-motion-portrait",
+    "title": "Editorial Summer Sunlight Motion Portrait",
+    "shortDescription": "Sun-dappled casual outdoor portrait with gentle windblown hair, warm radiant skin, and natural organic motion.",
+    "prompt": "Editorial candid summer portrait of a young woman standing outdoors in bright, soft sunlight. Gentle breeze catching wavy hair strands across the face, soft squint with joyful relaxed expression, natural sun-kissed skin tone, organic linen blouse, blurred meadow green background, 50mm f/1.8 lens, natural flare, Kodak Portra 400 color grading, realistic micro-textures.",
+    "category": "portraits",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "portrait",
+      "summer",
+      "sunlight",
+      "editorial",
+      "motion",
+      "candid"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Summer natural light portrait of a smiling woman outdoors",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#403328",
+    "publishedAt": "2024-09-03T12:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Valerie Elash",
+      "authorUrl": "https://unsplash.com/@valerieelash",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Valerie Elash",
+      "authorUrl": "https://unsplash.com/@valerieelash",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-portrait-04",
+    "id": "step10-up-04",
+    "slug": "urban-streetwear-twilight-gaze-portrait",
+    "title": "Urban Streetwear Twilight Gaze Portrait",
+    "shortDescription": "Moody metropolitan evening street portrait with ambient shopfront reflections and direct cinematic eye contact.",
+    "prompt": "Atmospheric street portrait of a young man wearing a dark textured streetwear hoodie on an urban sidewalk at twilight. Subtle neon reflections in rain-slicked asphalt behind, sharp focused dark eyes, soft moody key light from a storefront window, shallow depth of field, 35mm f/1.4 prime lens, muted slate blue and amber palette, natural facial pores and authentic texture.",
+    "category": "portraits",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "portrait",
+      "streetwear",
+      "urban",
+      "night-city",
+      "cinematic",
+      "moody"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Moody urban street portrait of a young man gazing forward",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#22252a",
+    "publishedAt": "2024-09-04T13:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Jurica Koletić",
+      "authorUrl": "https://unsplash.com/@juricakoletic",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Jurica Koletić",
+      "authorUrl": "https://unsplash.com/@juricakoletic",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-portrait-05",
+    "id": "step10-up-05",
+    "slug": "vibrant-fashion-color-pop-studio-portrait",
+    "title": "Vibrant Fashion Color-Pop Studio Portrait",
+    "shortDescription": "High-contrast editorial studio headshot featuring vivid complementary hues, bold styling, and clean studio lighting.",
+    "prompt": "High-fashion color block studio portrait of a woman with braided hair wearing a vibrant coral turtleneck against a clean turquoise seamless backdrop. Dual softbox strobe lighting creating crisp jawline definition and round specular catchlights, satin skin finish without artificial blurring, bold editorial magazine aesthetic, 105mm macro f/8 aperture, razor-sharp eyelash and iris detail.",
+    "category": "portraits",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "portrait",
+      "fashion",
+      "color-block",
+      "studio",
+      "editorial",
+      "beauty"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "High-energy color-blocked fashion portrait with vivid styling",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#3d2e38",
+    "publishedAt": "2024-09-05T14:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Aiony Haust",
+      "authorUrl": "https://unsplash.com/@aiony",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Aiony Haust",
+      "authorUrl": "https://unsplash.com/@aiony",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-portrait-01",
+    "id": "step10-mj-01",
+    "slug": "ethereal-cybernetic-humanoid-porcelain-portrait",
+    "title": "Ethereal Cybernetic Humanoid Porcelain Portrait",
+    "shortDescription": "Surreal fusion of classical alabaster sculpture and futuristic optical glass circuitry in a contemplative close-up.",
+    "prompt": "Surreal conceptual portrait of a serene humanoid figure with smooth matte porcelain skin and translucent optical glass filigree along the temples and jawline. Internal fiber-optic illumination casting subtle cyan and rose luminescence, soft volumetric fog, monochromatic minimalist background, Hasselblad 100MP detail, cinematic rim light, fine art gallery installation aesthetic. Identity instructions: When using reference photos, preserve the uploaded person's natural facial structure, eye shape, and proportions without claiming exact replica.",
+    "category": "portraits",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "concept-art",
+      "cybernetic",
+      "surrealism",
+      "fine-art",
+      "porcelain"
+    ],
+    "imageUrl": "/images/midjourney/mj-portrait-01.jpg",
+    "imageAlt": "Conceptual porcelain humanoid portrait with subtle glass circuitry",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#151b23",
+    "publishedAt": "2024-09-06T15:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-portrait-01",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-portrait-02",
+    "id": "step10-mj-02",
+    "slug": "renaissance-chiaroscuro-astronomer-portrait",
+    "title": "Renaissance Chiaroscuro Astronomer Portrait",
+    "shortDescription": "Baroque oil painting aesthetic depicting a scholar studying an antique brass astrolabe by candlelight.",
+    "prompt": "A masterwork portrait in the style of Caravaggio and Rembrandt depicting a contemplative 17th-century astronomer illuminated by a solitary wax candle. Deep dramatic chiaroscuro, heavy impasto brushwork textures, warm sienna and umber palette, rich velvet scholar robes with fur trim, delicate reflection of candlelight in aged dark eyes, brass astrolabe on weathered oak desk. Personal portrait guidance: instruct model to retain user facial contours and natural nose profile.",
+    "category": "portraits",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "midjourney",
+      "renaissance",
+      "chiaroscuro",
+      "baroque",
+      "oil-painting",
+      "candlelight"
+    ],
+    "imageUrl": "/images/midjourney/mj-portrait-02.jpg",
+    "imageAlt": "Baroque chiaroscuro portrait of an astronomer by candlelight",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#22140a",
+    "publishedAt": "2024-09-07T16:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-portrait-02",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-portrait-03",
+    "id": "step10-mj-03",
+    "slug": "bioluminescent-deep-sea-diver-portrait",
+    "title": "Bioluminescent Deep-Sea Diver Portrait",
+    "shortDescription": "Sci-fi underwater environmental portrait with glowing abyssal sea flora and vintage brass diving helmet reflections.",
+    "prompt": "Cinematic close-up portrait of an abyssal explorer peering through the illuminated scratched glass visor of a pressurized atmospheric diving suit. Ambient bioluminescent jellyfish casting ethereal cyan and violet gradients, underwater particulate backscatter in deep marine trench, condensation drops on interior visor glass, intense focused human expression, 35mm anamorphic lens with horizontal blue lens flares.",
+    "category": "portraits",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "underwater",
+      "bioluminescent",
+      "sci-fi",
+      "anamorphic",
+      "deep-sea"
+    ],
+    "imageUrl": "/images/midjourney/mj-portrait-03.jpg",
+    "imageAlt": "Deep sea explorer portrait illuminated by bioluminescent marine life",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#081b29",
+    "publishedAt": "2024-09-08T17:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-portrait-03",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-portrait-04",
+    "id": "step10-mj-04",
+    "slug": "solarpunk-botanist-greenhouse-portrait",
+    "title": "Solarpunk Botanist Greenhouse Portrait",
+    "shortDescription": "Optimistic eco-futurist environmental portrait surrounded by automated hydroponic flora and warm greenhouse sunlight.",
+    "prompt": "Solarpunk aesthetic environmental portrait of a young botanist smiling in an expansive geodesic glass biodome conservatory. Wearing practical work overalls made of hemp canvas with brass multi-tools, cascading vibrant green Monstera and passionflower vines, soft diffused morning sunlight streaming through hexagon glass panels, micro-droplets in humid air, cinematic portrait photography, 50mm f/1.4 lens.",
+    "category": "portraits",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "midjourney",
+      "solarpunk",
+      "greenhouse",
+      "botanical",
+      "optimistic",
+      "environmental"
+    ],
+    "imageUrl": "/images/midjourney/mj-portrait-04.jpg",
+    "imageAlt": "Solarpunk botanist portrait surrounded by lush tropical greenhouse flora",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#1d2e1f",
+    "publishedAt": "2024-09-09T18:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-portrait-04",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-portrait-05",
+    "id": "step10-mj-05",
+    "slug": "monochrome-film-noir-detective-portrait",
+    "title": "Monochrome Film Noir Detective Portrait",
+    "shortDescription": "Gritty 1940s detective character study with venetian blind shadow slats and curling cigarette smoke in rainy night.",
+    "prompt": "Authentic 1940s film noir black-and-white portrait of a tired private detective sitting in a shadowy corner office. Venetian blind shadows casting crisp diagonal lines across the tired face and felt fedora hat, curling cigarette smoke illuminated by an incandescent desk lamp, rain streaking down the exterior window pane, classic tri-X 400 film grain, high contrast deep blacks and silvery whites, 35mm lens.",
+    "category": "portraits",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "midjourney",
+      "film-noir",
+      "black-and-white",
+      "detective",
+      "shadows",
+      "vintage"
+    ],
+    "imageUrl": "/images/midjourney/mj-portrait-05.jpg",
+    "imageAlt": "Film noir detective portrait with venetian blind shadow patterns",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#111113",
+    "publishedAt": "2024-09-10T19:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-portrait-05",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-nature-01",
+    "id": "step10-un-01",
+    "slug": "misty-alpine-mountain-sunrise-valley",
+    "title": "Misty Alpine Mountain Sunrise Valley",
+    "shortDescription": "Dramatic alpine peaks rising above a rolling sea of low-altitude morning fog bathed in first peach sunlight.",
+    "prompt": "Majestic alpine mountain range at dawn with sharp jagged granite peaks piercing through dense valleys of morning fog. Soft peach and golden sunlight grazing mountain ridges, pristine evergreen pine trees in the foreground with morning frost, wide-angle landscape photography shot on Sony A7R V with 16-35mm f/2.8 lens at f/11, crisp natural depth of field, balanced high-dynamic-range exposure.",
+    "category": "nature",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "nature",
+      "mountains",
+      "sunrise",
+      "fog",
+      "alpine",
+      "landscape"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Misty morning mountain landscape with sunrise illuminating alpine peaks",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#1b2528",
+    "publishedAt": "2024-09-11T10:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "V2F",
+      "authorUrl": "https://unsplash.com/@v2f",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "V2F",
+      "authorUrl": "https://unsplash.com/@v2f",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-nature-02",
+    "id": "step10-un-02",
+    "slug": "glacial-mirror-lake-pine-reflection",
+    "title": "Glacial Mirror Lake Pine Reflection",
+    "shortDescription": "Still turquoise alpine lake perfectly mirroring forested mountain slopes and overcast dramatic cloud cover.",
+    "prompt": "A perfectly still glacial alpine lake acting as a natural mirror reflecting surrounding pine forests and steep limestone cliffs. Crystal-clear water with visible smooth pebbles along the shallow shore, overcast diffused daylight, deep emerald and teal water tones, tranquil wilderness atmosphere, Hasselblad medium format capture, neutral density filter, silky surface reflection, 8k resolution.",
+    "category": "nature",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "nature",
+      "lake",
+      "reflection",
+      "glacial",
+      "pine-forest",
+      "serene"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Pristine mountain lake with clear water and forest reflections",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#1e302b",
+    "publishedAt": "2024-09-12T11:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Luca Bravo",
+      "authorUrl": "https://unsplash.com/@lucabravo",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Luca Bravo",
+      "authorUrl": "https://unsplash.com/@lucabravo",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-nature-03",
+    "id": "step10-un-03",
+    "slug": "yosemite-valley-granite-monolith-sunset",
+    "title": "Yosemite Valley Granite Monolith Sunset",
+    "shortDescription": "Iconic glacial valley landscape with towering granite cliff faces bathed in dramatic evening alpenglow.",
+    "prompt": "Panoramic sunset view over a glacial granite valley reminiscent of Yosemite National Park. Massive vertical granite monoliths illuminated in warm fiery magenta and gold alpenglow, winding river running through the verdant valley floor below, long exposure capturing gentle river water, Nikon Z9 with 24-70mm f/2.8 lens at f/8, rich color contrast and micro-textures in stone.",
+    "category": "nature",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "DALL-E 3"
+    ],
+    "tags": [
+      "nature",
+      "granite",
+      "sunset",
+      "valley",
+      "monolith",
+      "yosemite"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Breathtaking national park valley with sunset alpenglow on cliff faces",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#32252a",
+    "publishedAt": "2024-09-13T12:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Bailey Zindel",
+      "authorUrl": "https://unsplash.com/@baileyzindel",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Bailey Zindel",
+      "authorUrl": "https://unsplash.com/@baileyzindel",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-nature-04",
+    "id": "step10-un-04",
+    "slug": "sunbeams-through-dense-temperate-rainforest",
+    "title": "Sunbeams Through Dense Temperate Rainforest",
+    "shortDescription": "Volumetric god-rays filtering through lush moss-draped ancient redwood canopy in morning moisture.",
+    "prompt": "Ethereal morning light rays piercing down through the dense canopy of an ancient temperate rainforest. Thick moss-covered tree trunks, lush green ferns carpeting the forest floor, visible atmospheric dust particles floating in golden god-rays, damp rich soil textures, 35mm lens, f/5.6 aperture, cinematic nature documentary visual style, National Geographic photography award.",
+    "category": "nature",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "nature",
+      "forest",
+      "sunbeams",
+      "light-rays",
+      "rainforest",
+      "greenery"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Sunlight rays piercing through ancient misty forest trees",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#1d2b1f",
+    "publishedAt": "2024-09-14T13:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "David Marcu",
+      "authorUrl": "https://unsplash.com/@davidmarcu",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "David Marcu",
+      "authorUrl": "https://unsplash.com/@davidmarcu",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-nature-05",
+    "id": "step10-un-05",
+    "slug": "autumn-beech-forest-winding-trail",
+    "title": "Autumn Beech Forest Winding Trail",
+    "shortDescription": "Golden amber canopy and fallen copper leaves lining a winding dirt hiking pathway in crisp October air.",
+    "prompt": "A winding dirt hiking path curving through a dense autumn beech woodland. Golden yellow and deep amber foliage creating a natural vaulted tunnel overhead, ground covered in a thick carpet of fallen copper leaves, soft morning fog rolling through distant tree trunks, shot on Canon EOS R5 with 50mm f/2.0 lens, warm organic color grading, peaceful forest path, hyper-detailed leaves.",
+    "category": "nature",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "nature",
+      "autumn",
+      "fall-colors",
+      "forest-path",
+      "beech-trees",
+      "serene"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Golden autumn trail winding through glowing orange and red forest trees",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#3a2512",
+    "publishedAt": "2024-09-15T14:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Federico Respini",
+      "authorUrl": "https://unsplash.com/@federicorespini",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Federico Respini",
+      "authorUrl": "https://unsplash.com/@federicorespini",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-nature-01",
+    "id": "step10-mj-06",
+    "slug": "bioluminescent-crystal-canyon-chasm",
+    "title": "Bioluminescent Crystal Canyon Chasm",
+    "shortDescription": "Surreal subterranean canyon with glowing amethyst geodes, ethereal subterranean mist, and mineral waterfall.",
+    "prompt": "A breathtaking underground cavern chasm surrounded by colossal glowing purple amethyst and turquoise fluorite crystals. A cascading mineral waterfall glowing with pale cyan bioluminescence falling into a subterranean reflection pool, soft atmospheric vapor, volumetric lighting filtering through an overhead cave fissure, Unreal Engine 5 render, cinematic wide angle, 8k resolution.",
+    "category": "nature",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "crystals",
+      "bioluminescent",
+      "cavern",
+      "fantasy",
+      "geodes"
+    ],
+    "imageUrl": "/images/midjourney/mj-nature-01.jpg",
+    "imageAlt": "Subterranean fantasy canyon with towering glowing crystal pillars",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#181026",
+    "publishedAt": "2024-09-16T15:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-nature-01",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-nature-02",
+    "id": "step10-mj-07",
+    "slug": "floating-islands-aurora-borealis-fjord",
+    "title": "Floating Islands Aurora Borealis Fjord",
+    "shortDescription": "Nordic fjord fantasy landscape featuring floating mossy landmasses beneath vivid emerald and violet auroral curtains.",
+    "prompt": "Surreal Nordic fantasy landscape at midnight featuring anti-gravity mossy basalt landmasses floating silently above a deep Arctic fjord. Brilliant swirling emerald-green and violet Aurora Borealis dancing across a starry night sky, calm fjord water reflecting the northern lights, dusting of fresh powder snow on dark stone, wide-angle 14mm lens, cinematic fine art digital matte painting.",
+    "category": "nature",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "aurora",
+      "floating-islands",
+      "fjord",
+      "arctic",
+      "fantasy"
+    ],
+    "imageUrl": "/images/midjourney/mj-nature-02.jpg",
+    "imageAlt": "Floating mossy basalt islands above an Arctic fjord under aurora lights",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#0a1e1b",
+    "publishedAt": "2024-09-17T16:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-nature-02",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-nature-03",
+    "id": "step10-mj-08",
+    "slug": "giant-ancient-baobab-sunset-savannah",
+    "title": "Giant Ancient Baobab Sunset Savannah",
+    "shortDescription": "Gigantic mythical ancient baobab tree with sprawling roots and firefly swarms on an African sunset horizon.",
+    "prompt": "An ancient gargantuan baobab tree standing majestic on a vast arid savannah at sunset. Gnarled textured bark with immense winding surface roots, silhouetted acacia trees in distant background, blazing crimson and tangerine sky with giant golden sun touching the horizon, thousands of glowing golden fireflies gathering around the canopy, wide-angle cinematic shot, high dynamic range.",
+    "category": "nature",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "midjourney",
+      "baobab",
+      "savannah",
+      "sunset",
+      "ancient-tree",
+      "fireflies"
+    ],
+    "imageUrl": "/images/midjourney/mj-nature-03.jpg",
+    "imageAlt": "Monumental baobab tree on savannah against fiery crimson sunset",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#3d1a08",
+    "publishedAt": "2024-09-18T17:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-nature-03",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-nature-04",
+    "id": "step10-mj-09",
+    "slug": "volcanic-black-sand-icelandic-waterfall",
+    "title": "Volcanic Black Sand Icelandic Waterfall",
+    "shortDescription": "Dramatic monolithic waterfall cascading over basalt hexagonal columns onto jet-black volcanic sand.",
+    "prompt": "Dramatic Icelandic waterfall thundering down massive geometric basalt column cliffs into a foaming black sand riverbed. Dark moody overcast sky, sea spray mist catching low cold northern light, vibrant neon green moss clinging to dark basalt pillars, long exposure water motion blur, Hasselblad H6D-100c, 24mm f/8, atmospheric fine art landscape photography.",
+    "category": "nature",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "midjourney",
+      "iceland",
+      "waterfall",
+      "basalt",
+      "black-sand",
+      "volcanic"
+    ],
+    "imageUrl": "/images/midjourney/mj-nature-04.jpg",
+    "imageAlt": "Icelandic waterfall thundering onto black sand between basalt columns",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#181a1d",
+    "publishedAt": "2024-09-19T18:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-nature-04",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-nature-05",
+    "id": "step10-mj-10",
+    "slug": "serene-japanese-zen-bamboo-grove-rain",
+    "title": "Serene Japanese Zen Bamboo Grove in Rain",
+    "shortDescription": "Towering green bamboo culms in tranquil Kyoto rain with mossy stone lantern and rain-streaked gravel path.",
+    "prompt": "Tranquil rain falling softly inside an ancient bamboo forest in Kyoto, Japan. Tall straight emerald bamboo stalks swaying gently, rain droplets glistening on narrow leaves, ancient weathered stone toro lantern covered in velvet moss, dark wet stepping stones leading through the misty path, muted serene green and gray tones, cinematic peaceful Zen aesthetic, 8k resolution.",
+    "category": "nature",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "bamboo",
+      "kyoto",
+      "zen",
+      "rain",
+      "japan"
+    ],
+    "imageUrl": "/images/midjourney/mj-nature-05.jpg",
+    "imageAlt": "Peaceful Kyoto bamboo grove with rain droplets on mossy stone path",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#17281a",
+    "publishedAt": "2024-09-20T19:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-nature-05",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-arch-01",
+    "id": "step10-ua-01",
+    "slug": "minimalist-wabi-sabi-concrete-courtyard-interior",
+    "title": "Minimalist Wabi-Sabi Concrete Courtyard Interior",
+    "shortDescription": "Serene open-concept living pavilion showcasing smooth cast concrete, timber slats, and private bonsai courtyard.",
+    "prompt": "Minimalist Japanese-inspired modern living interior blending board-formed concrete walls with warm white oak louvers. Sunken seating lounge with charcoal linen upholstery, sliding floor-to-ceiling glass doors opening onto an interior courtyard with a single sculpted pine tree and gravel garden, soft morning skylight, architectural digest photography, tilt-shift lens, perfect vertical lines.",
+    "category": "architecture",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "DALL-E 3"
+    ],
+    "tags": [
+      "architecture",
+      "minimalism",
+      "wabi-sabi",
+      "concrete",
+      "interior-design",
+      "zen"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Minimalist modern living interior with concrete texture and clean geometry",
+    "width": 900,
+    "height": 675,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "4/3",
+    "dominantColor": "#2a2a2b",
+    "publishedAt": "2024-09-21T10:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Jae Park",
+      "authorUrl": "https://unsplash.com/@jaepark",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Jae Park",
+      "authorUrl": "https://unsplash.com/@jaepark",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-arch-02",
+    "id": "step10-ua-02",
+    "slug": "scandinavian-warm-minimal-living-lounge",
+    "title": "Scandinavian Warm Minimal Living Lounge",
+    "shortDescription": "Luminous Nordic living space featuring light oak parquet, curved bouclé sofa, and diffuse daylight.",
+    "prompt": "Spacious Scandinavian open-plan living room with warm minimal aesthetic. Cream bouclé curved sectional sofa, travertine low coffee table with ceramic books, sheer linen curtains diffusing soft Nordic daylight, pale oak herringbone parquet flooring, matte white plaster walls, warm organic interior styling, architectural photography, Hasselblad 50MP, balanced clean exposure.",
+    "category": "architecture",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "DALL-E 3"
+    ],
+    "tags": [
+      "architecture",
+      "scandinavian",
+      "interior",
+      "living-room",
+      "boucle",
+      "nordic"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Scandinavian modern living room with bright natural lighting and cozy styling",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#343029",
+    "publishedAt": "2024-09-22T11:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Spacejoy",
+      "authorUrl": "https://unsplash.com/@spacejoy",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Spacejoy",
+      "authorUrl": "https://unsplash.com/@spacejoy",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-arch-03",
+    "id": "step10-ua-03",
+    "slug": "modernist-mediterranean-villa-reflection-pool",
+    "title": "Modernist Mediterranean Villa Reflection Pool",
+    "shortDescription": "Stucco architectural villa with clean geometric pergolas and calm turquoise water pool under bright coastal sun.",
+    "prompt": "Modernist white-stucco villa exterior in the Mediterranean coast with clean cubist geometric volumes. Crisp angular pergola casting striped linear shadows across warm limestone terrace, turquoise infinity reflection pool meeting the horizon, potted olive trees in terracotta planters, bright midday summer sun with blue sky, architectural photography, Canon TS-E 24mm tilt-shift.",
+    "category": "architecture",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "architecture",
+      "villa",
+      "mediterranean",
+      "pool",
+      "modernist",
+      "luxury"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Sunlit luxury Mediterranean villa with geometric lines and swimming pool",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#2d3540",
+    "publishedAt": "2024-09-23T12:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Frames For Your Heart",
+      "authorUrl": "https://unsplash.com/@framesforyourheart",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Frames For Your Heart",
+      "authorUrl": "https://unsplash.com/@framesforyourheart",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-arch-04",
+    "id": "step10-ua-04",
+    "slug": "dramatic-glass-skyscraper-low-angle-perspective",
+    "title": "Dramatic Glass Skyscraper Low-Angle Perspective",
+    "shortDescription": "Geometric upward perspective of curtain-wall glass corporate towers converging into deep blue sky.",
+    "prompt": "Dizzying low-angle architectural perspective looking straight up into the converging facades of modern glass and steel skyscrapers. Mirror-like reflections of puffy white clouds and blue sky in thousands of glass panels, sharp diagonal steel structural mullions, crisp architectural symmetry, high contrast metropolitan grandeur, ultra wide-angle 12mm lens, razor-sharp focus from base to summit.",
+    "category": "architecture",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "architecture",
+      "skyscraper",
+      "perspective",
+      "glass",
+      "urban",
+      "modern"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Low angle perspective looking up at towering glass skyscrapers",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#1a2530",
+    "publishedAt": "2024-09-24T13:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Sean Pollock",
+      "authorUrl": "https://unsplash.com/@seanpollock",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Sean Pollock",
+      "authorUrl": "https://unsplash.com/@seanpollock",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-arch-05",
+    "id": "step10-ua-05",
+    "slug": "brutalist-concrete-auditorium-geometric-staircase",
+    "title": "Brutalist Concrete Auditorium Geometric Staircase",
+    "shortDescription": "Monumental sculptural concrete spiral staircase ascending through cavernous raw textured brutalist atrium.",
+    "prompt": "Monolithic brutalist interior featuring a dramatic sweeping helical staircase cast from raw board-marked concrete. Sweeping circular skylight at the apex casting a cone of dramatic natural light, subtle texture in the exposed aggregate, dark shadow pockets, minimalist architectural photography, monochrome gray tones with subtle warm concrete highlights, 24mm wide angle, museum interior.",
+    "category": "architecture",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "architecture",
+      "brutalism",
+      "concrete",
+      "staircase",
+      "geometric",
+      "monumental"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Bold architectural villa exterior with clean concrete and glass pavilions",
+    "width": 900,
+    "height": 675,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "4/3",
+    "dominantColor": "#222421",
+    "publishedAt": "2024-09-25T14:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "R Architecture",
+      "authorUrl": "https://unsplash.com/@rarchitecture_melbourne",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "R Architecture",
+      "authorUrl": "https://unsplash.com/@rarchitecture_melbourne",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-arch-01",
+    "id": "step10-mj-11",
+    "slug": "organic-zaha-inspired-futuristic-desert-museum",
+    "title": "Organic Futuristic Desert Museum",
+    "shortDescription": "Fluid aerodynamic white composite cultural pavilion undulating seamlessly out of golden desert sand dunes.",
+    "prompt": "Futuristic parametric cultural museum in the style of Zaha Hadid rising organically from golden desert sand dunes. Sinuous aerodynamic curves of pristine pearl-white composite materials, continuous sweeping glass curtain walls, sunken courtyard with turquoise reflection water, golden hour desert sunlight casting long curvilinear shadows, architectural render in Lumion and Octane, 8k resolution.",
+    "category": "architecture",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "parametric",
+      "futuristic",
+      "desert",
+      "museum",
+      "curvilinear"
+    ],
+    "imageUrl": "/images/midjourney/mj-arch-01.jpg",
+    "imageAlt": "Parametric fluid white architecture rising from undulating desert sand",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#3a2a1c",
+    "publishedAt": "2024-09-26T15:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-arch-01",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-arch-02",
+    "id": "step10-mj-12",
+    "slug": "cyberpunk-tokyo-high-density-megastructure",
+    "title": "Cyberpunk High-Density Megastructure",
+    "shortDescription": "Sprawling vertical metropolis with neon-lit skybridges, holographic adverts, and hovering transit vehicles.",
+    "prompt": "Massive vertical cyberpunk megastructure in rainy neo-Tokyo at midnight. Interconnected skybridges between towering brutalist towers, layered neon signs in kanji, glowing magenta and electric blue holographic advertisements reflecting off wet metal walkways, flying transit vehicles trailing light streaks in the mist, ultra-detailed architectural concept art, Octane render.",
+    "category": "architecture",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "cyberpunk",
+      "megastructure",
+      "neon",
+      "sci-fi",
+      "cityscape"
+    ],
+    "imageUrl": "/images/midjourney/mj-arch-02.jpg",
+    "imageAlt": "Towering cyberpunk megastructure with glowing neon signs and skybridges",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#120f24",
+    "publishedAt": "2024-09-27T16:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-arch-02",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-arch-03",
+    "id": "step10-mj-13",
+    "slug": "biophilic-hanging-gardens-treehouse-atrium",
+    "title": "Biophilic Hanging Gardens Treehouse Atrium",
+    "shortDescription": "Multi-tiered sustainable timber residential atrium built seamlessly around a living giant cedar tree.",
+    "prompt": "Sustainable biophilic residential interior wrapped around the trunk of a monumental living cedar tree. Curved engineered timber walkways, cascading vertical hanging ferns, large glass skylights filtering natural daylight, modern minimalist furniture integrated into wooden platforms, tranquil water rill running through stone floor, architectural photography in Dwell magazine style.",
+    "category": "architecture",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "DALL-E 3"
+    ],
+    "tags": [
+      "midjourney",
+      "biophilic",
+      "sustainable",
+      "timber",
+      "interior",
+      "treehouse"
+    ],
+    "imageUrl": "/images/midjourney/mj-arch-03.jpg",
+    "imageAlt": "Multi-level timber interior built around an immense indoor living tree",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#222a1b",
+    "publishedAt": "2024-09-28T17:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-arch-03",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-arch-04",
+    "id": "step10-mj-14",
+    "slug": "neo-gothic-cyber-cathedral-interior",
+    "title": "Neo-Gothic Cyber Cathedral Interior",
+    "shortDescription": "Colossal gothic cathedral nave hybridized with fiber-optic stained glass windows and floating data monoliths.",
+    "prompt": "Interior nave of a monumental dark gothic cathedral fused with cybernetic architecture. Towering ribbed stone vaulting, glowing stained-glass rose window embedded with pulsing blue holographic circuit diagrams, atmospheric incense haze illuminated by vertical light shafts, polished obsidian stone floor reflecting holographic icons, dark fantasy sci-fi concept art.",
+    "category": "architecture",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "midjourney",
+      "gothic",
+      "cathedral",
+      "sci-fi",
+      "cybernetic",
+      "monumental"
+    ],
+    "imageUrl": "/images/midjourney/mj-arch-04.jpg",
+    "imageAlt": "Gothic cathedral nave with glowing cybernetic stained glass rose window",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#0f111a",
+    "publishedAt": "2024-09-29T18:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-arch-04",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-arch-05",
+    "id": "step10-mj-15",
+    "slug": "subterranean-lunar-habitat-observatory",
+    "title": "Subterranean Lunar Habitat Observatory",
+    "shortDescription": "Pressurized lunar base interior featuring a massive panoramic quartz observation dome overlooking Earth.",
+    "prompt": "Inside the central observation dome of an architectural lunar colony habitat. Matte gray titanium structural ribs, circular panoramic quartz window looking out onto the illuminated blue Earth and deep starry vacuum, sleek white ergonomic workstation consoles, soft diffused amber ambient floor lighting, hyper-realistic hard sci-fi architectural render, 8k resolution.",
+    "category": "architecture",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "lunar",
+      "space-habitat",
+      "observatory",
+      "earth-view",
+      "sci-fi"
+    ],
+    "imageUrl": "/images/midjourney/mj-arch-05.jpg",
+    "imageAlt": "Futuristic lunar colony observation dome overlooking glowing Earth",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#111822",
+    "publishedAt": "2024-09-30T19:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-arch-05",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-food-01",
+    "id": "step10-uf-01",
+    "slug": "artisan-wood-fired-neapolitan-pizza-rustic",
+    "title": "Artisan Wood-Fired Neapolitan Pizza",
+    "shortDescription": "Mouth-watering close-up of blistered sourdough crust, melted buffalo mozzarella, and fresh basil leaves on dark slate.",
+    "prompt": "Commercial food photography of a freshly baked artisanal Neapolitan pizza straight from a wood-fired oven. Crispy charred leopard-spotted crust blisters, bubbling melted buffalo mozzarella, glossy San Marzano tomato sauce, fresh vibrant basil leaves drizzled with extra virgin olive oil, resting on a dark slate board with light dusting of flour, 45-degree angle, 90mm macro f/4 lens, steaming hot.",
+    "category": "food-product",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "DALL-E 3"
+    ],
+    "tags": [
+      "food",
+      "pizza",
+      "artisan",
+      "culinary",
+      "macro",
+      "commercial-photography"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Gourmet wood-fired pizza with bubbling cheese and fresh basil",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#352216",
+    "publishedAt": "2024-10-01T10:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Chad Montano",
+      "authorUrl": "https://unsplash.com/@briewilly",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Chad Montano",
+      "authorUrl": "https://unsplash.com/@briewilly",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-food-02",
+    "id": "step10-uf-02",
+    "slug": "vibrant-organic-quinoa-grain-nourish-bowl",
+    "title": "Vibrant Organic Quinoa Nourish Bowl",
+    "shortDescription": "Top-down flat-lay food photography of an artfully arranged ceramic bowl with ripe avocado, microgreens, and citrus.",
+    "prompt": "Top-down overhead flat-lay food photography of a colorful gourmet salad bowl. Tri-color organic quinoa, fan-sliced ripe Hass avocado, shaved watermelon radishes, roasted chickpeas, purple cabbage, and delicate pea shoot microgreens, handmade charcoal stoneware bowl on weathered gray linen tablecloth, soft natural window light, crisp culinary styling, 50mm f/5.6 lens.",
+    "category": "food-product",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "DALL-E 3"
+    ],
+    "tags": [
+      "food",
+      "salad",
+      "healthy",
+      "flat-lay",
+      "organic",
+      "culinary"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Overhead top-down view of a vibrant organic vegetable nourish bowl",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#283020",
+    "publishedAt": "2024-10-02T11:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Eiliv Aceron",
+      "authorUrl": "https://unsplash.com/@eilivaceron",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Eiliv Aceron",
+      "authorUrl": "https://unsplash.com/@eilivaceron",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-food-03",
+    "id": "step10-uf-03",
+    "slug": "luxury-amber-perfume-bottle-studio-lighting",
+    "title": "Luxury Amber Glass Perfume Bottle",
+    "shortDescription": "High-end cosmetic product photography with amber faceted glass flacon, metallic brass cap, and water ripples.",
+    "prompt": "Commercial luxury product photography of a heavy faceted amber glass fragrance bottle standing in shallow rippling clear water. Metallic brushed-brass spray atomizer cap, golden amber liquid refracting studio backlight, dramatic dark gradient studio background, razor-sharp focus on embossed typography label, Hasselblad 120mm macro f/11, high-end perfume campaign visual.",
+    "category": "food-product",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "product",
+      "perfume",
+      "luxury",
+      "cosmetic",
+      "studio-lighting",
+      "commercial"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Elegant luxury perfume bottle product with dramatic studio lighting",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#38291a",
+    "publishedAt": "2024-10-03T12:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Clem Onojeghuo",
+      "authorUrl": "https://unsplash.com/@clemono",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Clem Onojeghuo",
+      "authorUrl": "https://unsplash.com/@clemono",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-food-04",
+    "id": "step10-uf-04",
+    "slug": "deconstructed-dark-chocolate-raspberry-tart",
+    "title": "Deconstructed Dark Chocolate Raspberry Tart",
+    "shortDescription": "Michelin-star pastry plating with glossy chocolate ganache, fresh raspberries, and edible gold leaf flake.",
+    "prompt": "Michelin-star dessert food photography of a deconstructed dark chocolate ganache tart. Glossy mirror-glaze chocolate domes, fresh plump red raspberries with morning dew drops, quenelle of Madagascar vanilla bean gelato, delicate edible 24k gold leaf flakes, dark matte stoneware ceramic plate with raspberry coulis drizzle, 100mm f/2.8 macro lens, soft studio side light.",
+    "category": "food-product",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "DALL-E 3"
+    ],
+    "tags": [
+      "food",
+      "dessert",
+      "chocolate",
+      "pastry",
+      "michelin-star",
+      "macro"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Gourmet chocolate dessert plate with fresh berries and artistic garnish",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#301d24",
+    "publishedAt": "2024-10-04T13:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Brooke Lark",
+      "authorUrl": "https://unsplash.com/@brookelark",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Brooke Lark",
+      "authorUrl": "https://unsplash.com/@brookelark",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-food-05",
+    "id": "step10-uf-05",
+    "slug": "minimalist-matte-black-wireless-headphones",
+    "title": "Minimalist Matte Black Wireless Headphones",
+    "shortDescription": "Clean industrial design product showcase of premium over-ear headphones floating against dark gradient.",
+    "prompt": "Industrial design commercial product photograph of premium over-ear wireless headphones. Matte black anodized aluminum headband, memory foam leather ear cushions with plush stitch detail, subtle copper accent ring on ear cup, floating dynamically in mid-air against a seamless dark graphite studio backdrop, twin strip softbox rim lighting defining silhouette, 90mm lens at f/8.",
+    "category": "food-product",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "product",
+      "headphones",
+      "technology",
+      "industrial-design",
+      "audio",
+      "minimalism"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "High-end studio product photograph of over-ear audio headphones",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#1a1a1c",
+    "publishedAt": "2024-10-05T14:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Kaphoto",
+      "authorUrl": "https://unsplash.com/@kaphoto",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Kaphoto",
+      "authorUrl": "https://unsplash.com/@kaphoto",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-food-01",
+    "id": "step10-mj-16",
+    "slug": "cosmic-galactic-swirl-mirror-glaze-cake",
+    "title": "Cosmic Galactic Swirl Mirror Glaze Cake",
+    "shortDescription": "Surreal culinary artwork of an entremet cake coated in deep space nebulae mirror glaze and edible stardust.",
+    "prompt": "Surreal culinary artwork of a spherical French entremet cake coated in a high-gloss mirror glaze depicting deep galactic space. Swirls of deep indigo, magenta, and turquoise nebula dust, flecks of edible gold glitter representing stars, resting on a floating black obsidian pedestal, soft dramatic spotlight, macro food photography in Octane render, ultra-realistic culinary fantasy.",
+    "category": "food-product",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "cake",
+      "galaxy",
+      "culinary-art",
+      "mirror-glaze",
+      "fantasy-food"
+    ],
+    "imageUrl": "/images/midjourney/mj-food-01.jpg",
+    "imageAlt": "Spherical entremet cake decorated with swirling galaxy nebula mirror glaze",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#150e24",
+    "publishedAt": "2024-10-06T15:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-food-01",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-food-02",
+    "id": "step10-mj-17",
+    "slug": "futuristic-holographic-sneaker-product-render",
+    "title": "Futuristic Holographic Sneaker Product Render",
+    "shortDescription": "Avant-garde concept athletic footwear with pneumatic air chambers and iridescent holographic mesh uppers.",
+    "prompt": "Commercial 3D concept product render of a futuristic avant-garde sneaker floating in mid-air. Semi-translucent polymer sole with visible interior liquid damping cells, iridescent holographic fabric upper shifting between violet and neon green, woven carbon-fiber heel counter, studio product lighting on wet reflective concrete pedestal, KeyShot and Octane render, 8k resolution.",
+    "category": "food-product",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "sneaker",
+      "footwear",
+      "futuristic",
+      "product-design",
+      "holographic"
+    ],
+    "imageUrl": "/images/midjourney/mj-food-02.jpg",
+    "imageAlt": "Futuristic concept athletic sneaker with glowing translucent sole",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#121b22",
+    "publishedAt": "2024-10-07T16:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-food-02",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-food-03",
+    "id": "step10-mj-18",
+    "slug": "ancient-alchemical-elixir-potion-vial",
+    "title": "Ancient Alchemical Elixir Potion Vial",
+    "shortDescription": "Intricate filigree bronze potion bottle filled with glowing emerald luminescent liquid on a velvet desk.",
+    "prompt": "Close-up macro fantasy product photograph of an ornate Renaissance alchemist potion bottle. Blown emerald-green glass flacon wrapped in aged bronze filigree dragon motifs, glowing swirling liquid with suspended golden flakes inside, sitting on an antique scholar desk beside dried lavender sprigs, candlelight rim illumination, shallow depth of field, 100mm macro lens.",
+    "category": "food-product",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "midjourney",
+      "potion",
+      "alchemy",
+      "fantasy-product",
+      "glass",
+      "macro"
+    ],
+    "imageUrl": "/images/midjourney/mj-food-03.jpg",
+    "imageAlt": "Ornate antique potion vial filled with glowing emerald elixir",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#15251a",
+    "publishedAt": "2024-10-08T17:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-food-03",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-food-04",
+    "id": "step10-mj-19",
+    "slug": "zero-gravity-exploding-citrus-cocktail",
+    "title": "Zero-Gravity Exploding Citrus Cocktail",
+    "shortDescription": "High-speed freeze-motion shot of levitating blood orange wedges, sparkling tonic droplets, and ice crystal shards.",
+    "prompt": "High-speed 1/8000s commercial beverage photography of a zero-gravity cocktail explosion. Floating crystal coupe glass surrounded by levitating blood orange slices, clear ice cubes, and thousands of suspended effervescent tonic droplets frozen in mid-air, dramatic dual strobe rim lighting, gradient deep crimson to charcoal studio background, razor-sharp droplet reflections.",
+    "category": "food-product",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "cocktail",
+      "high-speed",
+      "beverage",
+      "liquid-splash",
+      "citrus"
+    ],
+    "imageUrl": "/images/midjourney/mj-food-04.jpg",
+    "imageAlt": "High-speed freeze motion shot of floating citrus cocktail droplets",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#331317",
+    "publishedAt": "2024-10-09T18:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-food-04",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-food-05",
+    "id": "step10-mj-20",
+    "slug": "precision-mechanical-tourbillon-wrist-watch",
+    "title": "Precision Mechanical Tourbillon Wristwatch",
+    "shortDescription": "Macro horological product shot showcasing exposed gears, sapphire crystal caseback, and Geneva stripes.",
+    "prompt": "Horology luxury product macro photograph of a skeletonized mechanical tourbillon luxury wristwatch. Polished rose gold bezel, intricate exposed titanium gears with rubies and Geneva striping finish, anti-reflective sapphire crystal face with crisp Roman numerals, resting on rich black alligator leather, directional softbox strobe revealing metallic brushed finishes, 105mm macro f/16.",
+    "category": "food-product",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "midjourney",
+      "watch",
+      "horology",
+      "luxury-product",
+      "macro",
+      "precision"
+    ],
+    "imageUrl": "/images/midjourney/mj-food-05.jpg",
+    "imageAlt": "Macro horological shot of skeleton mechanical wristwatch with exposed gears",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#221c15",
+    "publishedAt": "2024-10-10T19:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-food-05",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-fashion-01",
+    "id": "step10-ufas-01",
+    "slug": "high-contrast-neon-editorial-street-fashion",
+    "title": "High-Contrast Neon Editorial Street Fashion",
+    "shortDescription": "Striking editorial street fashion portrait with electric yellow oversized blazer, graphic pose, and high fashion attitude.",
+    "prompt": "Editorial high-fashion street portrait of a model wearing an oversized neon chartreuse tailored blazer and black sunglasses. Strong graphic pose against an urban concrete architectural backdrop, sharp high-contrast midday sunlight creating crisp angular shadows, clean editorial color grading, Vogue magazine aesthetic, shot on 50mm f/2.8 lens, high dynamic range.",
+    "category": "fashion-cinematic",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "fashion",
+      "editorial",
+      "street-style",
+      "neon",
+      "sunglasses",
+      "vogue"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Bold editorial street fashion model in vibrant yellow styling",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#323018",
+    "publishedAt": "2024-10-11T10:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Dom Hill",
+      "authorUrl": "https://unsplash.com/@domhill",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Dom Hill",
+      "authorUrl": "https://unsplash.com/@domhill",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-fashion-02",
+    "id": "step10-ufas-02",
+    "slug": "autumn-minimalist-beige-trench-coat-editorial",
+    "title": "Autumn Minimalist Beige Trench Coat Editorial",
+    "shortDescription": "Elegant Parisian fashion still with classic double-breasted camel trench coat and soft autumn breeze.",
+    "prompt": "Elegant haute couture autumn fashion portrait featuring a model in a classic double-breasted camel wool trench coat walking along a stone Paris bridge. Gentle morning river breeze swaying coat hem, soft overcast French daylight, muted neutral beige and slate color palette, cinematic 85mm f/1.8 lens, shallow depth of field, sophisticated luxury brand aesthetic.",
+    "category": "fashion-cinematic",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "fashion",
+      "trench-coat",
+      "autumn",
+      "paris",
+      "minimalist",
+      "editorial"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Fashion model wearing classic neutral trench coat in autumn daylight",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#3d362c",
+    "publishedAt": "2024-10-12T11:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Ksenia Chernaya",
+      "authorUrl": "https://unsplash.com/@kseniachernaya",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Ksenia Chernaya",
+      "authorUrl": "https://unsplash.com/@kseniachernaya",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-fashion-03",
+    "id": "step10-ufas-03",
+    "slug": "vintage-roadtrip-convertible-cinematic-film-still",
+    "title": "Vintage Roadtrip Convertible Film Still",
+    "shortDescription": "35mm nostalgic cinematic frame of a traveler in a classic vintage convertible on an open desert highway at dusk.",
+    "prompt": "Cinematic 35mm film still of a woman in vintage tortoiseshell sunglasses riding in an open-top vintage cherry-red convertible down a desert highway. Golden twilight sky with pastel lilac and pink horizon, warm breeze blowing hair, warm Kodachrome 64 color tones, authentic film grain, anamorphic 2.39:1 aspect ratio aesthetic, retro Americana nostalgia.",
+    "category": "fashion-cinematic",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "cinematic",
+      "film-still",
+      "road-trip",
+      "vintage",
+      "35mm",
+      "americana"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Cinematic nostalgic road trip photograph of traveler enjoying highway drive",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#3c2a23",
+    "publishedAt": "2024-10-13T12:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Averie Woodard",
+      "authorUrl": "https://unsplash.com/@averiewoodard",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Averie Woodard",
+      "authorUrl": "https://unsplash.com/@averiewoodard",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-fashion-04",
+    "id": "step10-ufas-04",
+    "slug": "bohemian-linen-summer-editorial-countryside",
+    "title": "Bohemian Linen Summer Editorial",
+    "shortDescription": "Sunlit countryside meadow fashion scene with flowing cream linen dress and delicate floral embroidery.",
+    "prompt": "Haute bohemian summer fashion editorial in an open wheat field. Model in a flowing ivory embroidered linen maxi gown with billowy sleeves, soft golden late-afternoon sun backlighting the silhouette, wind rustling through ripe golden wheat stems, 85mm prime lens at f/1.4 with soft dreamy background blur, romantic French countryside mood.",
+    "category": "fashion-cinematic",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "fashion",
+      "bohemian",
+      "summer",
+      "linen",
+      "countryside",
+      "meadow"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Summer bohemian fashion portrait in warm sunlit golden field",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#40321f",
+    "publishedAt": "2024-10-14T13:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Freestocks",
+      "authorUrl": "https://unsplash.com/@freestocks",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Freestocks",
+      "authorUrl": "https://unsplash.com/@freestocks",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "unsplash-fashion-05",
+    "id": "step10-ufas-05",
+    "slug": "dramatic-haute-couture-runway-backlight-silhouette",
+    "title": "Haute Couture Runway Backlight Silhouette",
+    "shortDescription": "Monumental runway moment with billowing sheer fabric catching bright spotlights and rim reflections.",
+    "prompt": "Dramatic high-fashion runway show climax with a model walking toward the camera back-lit by powerful stage spotlights. Billowing sheer black silk tulle cape catching brilliant rim illumination, crisp silhouette against lens flare fog, high-contrast black and white with subtle warm specular highlights, fashion week catwalk photography, 70-200mm f/2.8 lens.",
+    "category": "fashion-cinematic",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "fashion",
+      "runway",
+      "silhouette",
+      "backlight",
+      "couture",
+      "catwalk"
+    ],
+    "imageUrl": "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=80",
+    "imageAlt": "Dramatic fashion runway silhouette with billowing fabric under spotlights",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#1d1a1b",
+    "publishedAt": "2024-10-15T14:00:00Z",
+    "status": "published",
+    "published": true,
+    "sourceType": "unsplash",
+    "promptType": "recreation",
+    "assetStatus": "READY",
+    "sourceAttribution": {
+      "source": "Unsplash",
+      "author": "Tamara Bellis",
+      "authorUrl": "https://unsplash.com/@tamarabellis",
+      "license": "Unsplash Free License"
+    },
+    "imageProvenance": {
+      "source": "Unsplash API/CDN",
+      "license": "Unsplash Free License",
+      "author": "Tamara Bellis",
+      "authorUrl": "https://unsplash.com/@tamarabellis",
+      "permissionEvidence": "Official Unsplash Free License compliant sourcing",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-fashion-01",
+    "id": "step10-mj-21",
+    "slug": "cyber-couture-chromatic-liquid-mercury-dress",
+    "title": "Cyber Couture Chromatic Liquid Mercury Gown",
+    "shortDescription": "Futuristic fashion editorial featuring a flowing gown crafted of undulating liquid chrome and prismatic reflections.",
+    "prompt": "Avant-garde haute couture fashion editorial featuring a model wearing a dynamic sculpted dress made of undulating liquid mercury. Prismatic rainbow chromatic reflections in the fluid chrome surfaces, dark minimalist architectural runway, sharp directional studio strobes, ultra-clean fashion editorial in Harper's Bazaar style, 85mm f/1.8 lens, Octane 8k render.",
+    "category": "fashion-cinematic",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "avant-garde",
+      "liquid-chrome",
+      "futuristic-fashion",
+      "couture",
+      "prismatic"
+    ],
+    "imageUrl": "/images/midjourney/mj-fashion-01.jpg",
+    "imageAlt": "Futuristic liquid chrome sculpted evening gown with iridescent reflections",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#1a1a24",
+    "publishedAt": "2024-10-16T15:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-fashion-01",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-fashion-02",
+    "id": "step10-mj-22",
+    "slug": "dune-desert-nomad-silk-couture-storm",
+    "title": "Dune Desert Silk Couture in Sandstorm",
+    "shortDescription": "Cinematic desert wanderer fashion frame with billowy saffron silk blowing across sweeping desert dunes.",
+    "prompt": "Cinematic sci-fi fashion still in the visual style of Denis Villeneuve's Dune. A solitary figure draped in twenty yards of flowing saffron and sand-colored silk robes walking along the crest of a colossal desert dune during a brewing dust storm, diffused golden hour sun through haze, 70mm IMAX cinematography aesthetic, dramatic scale and fabric motion.",
+    "category": "fashion-cinematic",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "cinematic",
+      "dune",
+      "desert",
+      "silk",
+      "imax"
+    ],
+    "imageUrl": "/images/midjourney/mj-fashion-02.jpg",
+    "imageAlt": "Cinematic figure in flowing saffron silk robes on desert dune ridge",
+    "width": 900,
+    "height": 600,
+    "aspectRatio": "landscape",
+    "aspectRatioValue": "3/2",
+    "dominantColor": "#3a2818",
+    "publishedAt": "2024-10-17T16:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-fashion-02",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-fashion-03",
+    "id": "step10-mj-23",
+    "slug": "blade-runner-neon-rain-trench-coat-cinematic",
+    "title": "Blade Runner Neon Rain Trench Coat",
+    "shortDescription": "Gritty cyberpunk cinematic scene of an operative in a translucent raincoat in downpour beneath neon signs.",
+    "prompt": "Cyberpunk neo-noir cinematic movie still in the style of Blade Runner 2049. A figure wearing a translucent high-collar PVC raincoat reflecting neon orange and cobalt blue billboards standing on a rain-slicked city bridge at midnight, heavy vertical raindrops, steam rising from street grates, Arri Alexa 65 camera, anamorphic lens flare, moody color grading.",
+    "category": "fashion-cinematic",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "midjourney",
+      "blade-runner",
+      "cyberpunk",
+      "rain",
+      "cinematic",
+      "neon"
+    ],
+    "imageUrl": "/images/midjourney/mj-fashion-03.jpg",
+    "imageAlt": "Cyberpunk character in translucent raincoat under neon rainfall",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#101625",
+    "publishedAt": "2024-10-18T17:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-fashion-03",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-fashion-04",
+    "id": "step10-mj-24",
+    "slug": "victorian-steampunk-airship-captain-gown",
+    "title": "Victorian Steampunk Airship Captain Gown",
+    "shortDescription": "Gothic steampunk ballgown with brass clockwork corsetry and brocade train on an airship observation deck.",
+    "prompt": "Steampunk high-fashion portrait of an airship commander in an elaborate Victorian gown. Deep burgundy silk damask skirt with train, polished brass and leather underbust corset with working clockwork gears, vintage brass aviator goggles pushed up in styled hair, standing on the mahogany open observation deck of a flying dirigible above evening clouds, cinematic warm lighting.",
+    "category": "fashion-cinematic",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "Stable Diffusion XL"
+    ],
+    "tags": [
+      "midjourney",
+      "steampunk",
+      "victorian",
+      "airship",
+      "corset",
+      "fantasy-fashion"
+    ],
+    "imageUrl": "/images/midjourney/mj-fashion-04.jpg",
+    "imageAlt": "Steampunk Victorian gown with brass clockwork corsetry on airship deck",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#291519",
+    "publishedAt": "2024-10-19T18:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-fashion-04",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  },
+  {
+    "importKey": "mj-fashion-05",
+    "id": "step10-mj-25",
+    "slug": "surrealist-cloud-couture-ethereal-ballerina",
+    "title": "Surrealist Cloud Couture Ethereal Ballerina",
+    "shortDescription": "Dreamlike surreal fashion still with an ethereal ballerina wearing a tutu spun from cumulus clouds in golden dawn.",
+    "prompt": "Surrealist high-fashion fine art scene of a graceful ballerina performing in mid-air above calm waters at sunrise. Her voluminous gown tutu is organically composed of billowy soft white cumulus clouds with glowing edges, iridescent satin pointe shoes, golden hour reflection in mirror-smooth ocean water below, painterly soft morning pastel tones, 8k resolution.",
+    "category": "fashion-cinematic",
+    "model": "Midjourney v6.1",
+    "compatibleModels": [
+      "Midjourney v6.1",
+      "FLUX.1 [dev]"
+    ],
+    "tags": [
+      "midjourney",
+      "surrealism",
+      "ballerina",
+      "clouds",
+      "ethereal",
+      "fine-art"
+    ],
+    "imageUrl": "/images/midjourney/mj-fashion-05.jpg",
+    "imageAlt": "Surreal ethereal ballerina floating with dress made of morning clouds",
+    "width": 900,
+    "height": 1200,
+    "aspectRatio": "portrait",
+    "aspectRatioValue": "3/4",
+    "dominantColor": "#332a35",
+    "publishedAt": "2024-10-20T19:00:00Z",
+    "status": "draft",
+    "published": false,
+    "sourceType": "midjourney",
+    "promptType": "recreation",
+    "assetStatus": "DRAFT_PENDING_ASSET",
+    "sourceAttribution": {
+      "source": "Midjourney",
+      "author": "PromptNest Studio / User Archive",
+      "authorUrl": "https://prompt-nest-pi.vercel.app",
+      "license": "Authorized Creator License"
+    },
+    "imageProvenance": {
+      "source": "Midjourney Archive",
+      "license": "Pending Owner File Supply",
+      "manifestKey": "mj-fashion-05",
+      "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
+      "originalPromptSupplied": false
+    }
+  }
+]

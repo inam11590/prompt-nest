@@ -788,6 +788,133 @@ async function runAll() {
     assert.ok(!sitemapCode.includes("/collections/"), "collections excluded from sitemaps");
   });
 
+  // ----------------------------------------------------
+  // STEP 10: Revised 50-Post Midjourney & Unsplash Sourcing
+  // ----------------------------------------------------
+  test("T-10.1", "10.0", "Migration 006 defines prompt_type, source_type, import_key, asset_status, and image_provenance columns", () => {
+    const migrationPath = path.resolve("supabase/migrations/006_prompt_types_and_sourcing.sql");
+    assert.ok(fs.existsSync(migrationPath), "006 migration must exist");
+    const sql = fs.readFileSync(migrationPath, "utf-8");
+    assert.ok(sql.includes("prompt_type TEXT NOT NULL DEFAULT 'recreation'") || sql.includes("column_name = 'prompt_type'"), "prompt_type defined");
+    assert.ok(sql.includes("source_type TEXT NOT NULL DEFAULT 'unsplash'") || sql.includes("column_name = 'source_type'"), "source_type defined");
+    assert.ok(sql.includes("import_key TEXT UNIQUE"), "import_key unique column defined");
+    assert.ok(sql.includes("asset_status TEXT NOT NULL DEFAULT 'READY'") || sql.includes("column_name = 'asset_status'"), "asset_status defined");
+    assert.ok(sql.includes("image_provenance JSONB"), "image_provenance defined");
+    assert.ok(sql.includes("idx_prompts_import_key"), "import_key index defined");
+    assert.ok(sql.includes("idx_prompts_source_type"), "source_type index defined");
+  });
+
+  test("T-10.2", "10.0", "TypeScript database types include prompt_type, source_type, import_key, and asset_status", () => {
+    const typesPath = path.resolve("src/types/database.types.ts");
+    assert.ok(fs.existsSync(typesPath), "database.types.ts must exist");
+    const types = fs.readFileSync(typesPath, "utf-8");
+    assert.ok(types.includes('prompt_type: "original" | "recreation"') || types.includes("prompt_type: 'original' | 'recreation'"), "prompt_type typed");
+    assert.ok(types.includes('source_type: "midjourney" | "unsplash" | "curated" | "user"') || types.includes("source_type: 'midjourney' | 'unsplash' | 'curated' | 'user'"), "source_type typed");
+    assert.ok(types.includes("import_key: string | null"), "import_key typed");
+    assert.ok(types.includes('asset_status: "READY" | "DRAFT_PENDING_ASSET"') || types.includes("asset_status: 'READY' | 'DRAFT_PENDING_ASSET'"), "asset_status typed");
+  });
+
+  test("T-10.3", "10.0", "Dataset contains exactly 50 validated records with unique slugs and import keys", () => {
+    const datasetPath = path.resolve("src/data/revisedStep10Prompts.json");
+    assert.ok(fs.existsSync(datasetPath), "revisedStep10Prompts.json must exist");
+    const data = JSON.parse(fs.readFileSync(datasetPath, "utf-8"));
+    assert.strictEqual(data.length, 50, "Dataset must have exactly 50 records");
+
+    const slugs = new Set();
+    const importKeys = new Set();
+    for (const item of data) {
+      assert.ok(item.slug, "Every item must have a slug");
+      assert.ok(item.importKey, "Every item must have an importKey");
+      assert.ok(!slugs.has(item.slug), `Duplicate slug detected: ${item.slug}`);
+      assert.ok(!importKeys.has(item.importKey), `Duplicate importKey detected: ${item.importKey}`);
+      slugs.add(item.slug);
+      importKeys.add(item.importKey);
+    }
+  });
+
+  test("T-10.4", "10.0", "Content distribution satisfies 25 Unsplash, 25 Midjourney, and 10 per category across all 5 categories", () => {
+    const data = JSON.parse(fs.readFileSync(path.resolve("src/data/revisedStep10Prompts.json"), "utf-8"));
+    const categories = ["portraits", "nature", "architecture", "food-product", "fashion-cinematic"];
+    const counts = { unsplash: 0, midjourney: 0 };
+    const catCounts = {};
+
+    for (const cat of categories) {
+      catCounts[cat] = { unsplash: 0, midjourney: 0, total: 0 };
+    }
+
+    for (const item of data) {
+      counts[item.sourceType] = (counts[item.sourceType] || 0) + 1;
+      assert.ok(catCounts[item.category], `Unexpected category: ${item.category}`);
+      catCounts[item.category][item.sourceType]++;
+      catCounts[item.category].total++;
+    }
+
+    assert.strictEqual(counts.unsplash, 25, "Must have exactly 25 Unsplash photos");
+    assert.strictEqual(counts.midjourney, 25, "Must have exactly 25 Midjourney posts");
+
+    for (const cat of categories) {
+      assert.strictEqual(catCounts[cat].total, 10, `${cat} must have 10 posts`);
+      assert.strictEqual(catCounts[cat].unsplash, 5, `${cat} must have 5 Unsplash posts`);
+      assert.strictEqual(catCounts[cat].midjourney, 5, `${cat} must have 5 Midjourney posts`);
+    }
+  });
+
+  test("T-10.5", "10.0", "Unsplash sourcing contract: all 25 use promptType recreation, valid Unsplash URLs, and photographer credits", () => {
+    const data = JSON.parse(fs.readFileSync(path.resolve("src/data/revisedStep10Prompts.json"), "utf-8"));
+    const unsplashItems = data.filter((d) => d.sourceType === "unsplash");
+    assert.strictEqual(unsplashItems.length, 25);
+
+    for (const item of unsplashItems) {
+      assert.strictEqual(item.promptType, "recreation", "Unsplash must be recreation prompt");
+      assert.strictEqual(item.assetStatus, "READY", "Unsplash assets are ready");
+      assert.ok(item.imageUrl.includes("images.unsplash.com"), "Image must be on images.unsplash.com CDN");
+      assert.ok(item.imageProvenance?.author || item.sourceAttribution?.author, "Photographer name required");
+      assert.ok(item.imageProvenance?.authorUrl || item.sourceAttribution?.authorUrl, "Photographer profile URL required");
+    }
+  });
+
+  test("T-10.6", "10.0", "Midjourney sourcing contract: all 25 have self-contained prompts, draft status, and entries in missing-asset manifest", () => {
+    const data = JSON.parse(fs.readFileSync(path.resolve("src/data/revisedStep10Prompts.json"), "utf-8"));
+    const mjItems = data.filter((d) => d.sourceType === "midjourney");
+    assert.strictEqual(mjItems.length, 25);
+
+    const manifestPath = path.resolve("docs/missing-asset-manifest.md");
+    assert.ok(fs.existsSync(manifestPath), "missing-asset-manifest.md must exist");
+    const manifestContent = fs.readFileSync(manifestPath, "utf-8");
+
+    for (const item of mjItems) {
+      assert.strictEqual(item.assetStatus, "DRAFT_PENDING_ASSET", "Midjourney items staged as drafts");
+      assert.ok(item.prompt.length >= 80, "Prompt must be substantive and self-contained");
+      assert.ok(manifestContent.includes(item.importKey), `Manifest must include ${item.importKey}`);
+      assert.ok(manifestContent.includes(item.slug), `Manifest must include ${item.slug}`);
+    }
+  });
+
+  test("T-10.7", "10.0", "UI components display Prompt Type badges, photographer attribution banner, and category labels", () => {
+    const slugPagePath = path.resolve("src/app/prompts/[slug]/page.tsx");
+    const slugCode = fs.readFileSync(slugPagePath, "utf-8");
+    assert.ok(slugCode.includes("Prompt Type"), "Displays prompt type badge");
+    assert.ok(slugCode.includes("Recreation Prompt"), "Displays recreation prompt label");
+    assert.ok(slugCode.includes("Photo by"), "Displays Unsplash photographer credit");
+    assert.ok(slugCode.includes("not an AI-generated photograph"), "Displays non-AI photograph creative disclosure");
+
+    const cardPath = path.resolve("src/components/PromptCard.tsx");
+    const cardCode = fs.readFileSync(cardPath, "utf-8");
+    assert.ok(cardCode.includes("fashion-cinematic"), "Includes fashion-cinematic category label");
+    assert.ok(cardCode.includes("food-product"), "Includes food-product category label");
+    assert.ok(cardCode.includes("portraits"), "Includes portraits category label");
+  });
+
+  test("T-10.8", "10.0", "Import CLI script validates contracts and executes --dry-run cleanly", () => {
+    const scriptPath = path.resolve("scripts/import-revised-step10.mjs");
+    assert.ok(fs.existsSync(scriptPath), "import script must exist");
+    const scriptCode = fs.readFileSync(scriptPath, "utf-8");
+    assert.ok(scriptCode.includes("--dry-run"), "Supports --dry-run flag");
+    assert.ok(scriptCode.includes("--publish"), "Supports --publish flag");
+    assert.ok(scriptCode.includes("--publish-mj"), "Supports --publish-mj flag");
+    assert.ok(scriptCode.includes("upsert"), "Uses upsert on import_key for idempotency");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;

@@ -50,11 +50,14 @@ export const siteConfig: SiteConfig = {
   ],
   categories: [
     { id: "all", name: "All Prompts", slug: "all", description: "Browse all curated prompts" },
-    { id: "photography", name: "Photography", slug: "photography", description: "Portraits, film styles, street photography, and real-world optics" },
+    { id: "portraits", name: "Portraits", slug: "portraits", description: "Studio lighting, candid natural emotion, diverse character studies, and cinematic portraiture" },
+    { id: "nature", name: "Nature & Landscapes", slug: "nature", description: "Dramatic weather, atmospheric environments, mountains, and pristine wilderness" },
+    { id: "architecture", name: "Architecture & Interiors", slug: "architecture", description: "Modern interiors, brutalist facades, organic structures, and sustainable villas" },
+    { id: "food-product", name: "Food & Product", slug: "food-product", description: "Culinary styling, luxury product design, macro textures, and studio commercial lighting" },
+    { id: "fashion-cinematic", name: "Fashion & Cinematic", slug: "fashion-cinematic", description: "Editorial couture, mood lighting, film stills, and avant-garde aesthetic scenes" },
+    { id: "photography", name: "Photography", slug: "photography", description: "Film styles, 35mm grain, street photography, and real-world optics" },
     { id: "digital-art", name: "Digital Art", slug: "digital-art", description: "Concept art, sci-fi illustrations, and matte paintings" },
-    { id: "architecture", name: "Architecture", slug: "architecture", description: "Modern interiors, brutalist facades, and organic structures" },
     { id: "character-design", name: "Characters", slug: "character-design", description: "Stylized characters, heroic figures, and expressive expressions" },
-    { id: "nature", name: "Nature & Landscapes", slug: "nature", description: "Dramatic weather, atmospheric environments, and pristine wilderness" },
     { id: "graphic-design", name: "Graphic & UI", slug: "graphic-design", description: "Isometric renders, packaging, 3D icons, and clean layouts" },
   ],
   footerLinks: {

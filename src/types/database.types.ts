@@ -78,6 +78,11 @@ export interface Database {
           status: "draft" | "published" | "archived";
           author_id: string | null;
           submission_id: string | null;
+          prompt_type: "original" | "recreation";
+          source_type: "midjourney" | "unsplash" | "curated" | "user";
+          import_key: string | null;
+          asset_status: "READY" | "DRAFT_PENDING_ASSET";
+          image_provenance: Json;
           created_at: string;
           updated_at: string;
         };
@@ -106,6 +111,11 @@ export interface Database {
           status?: "draft" | "published" | "archived";
           author_id?: string | null;
           submission_id?: string | null;
+          prompt_type?: "original" | "recreation";
+          source_type?: "midjourney" | "unsplash" | "curated" | "user";
+          import_key?: string | null;
+          asset_status?: "READY" | "DRAFT_PENDING_ASSET";
+          image_provenance?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -134,6 +144,11 @@ export interface Database {
           status?: "draft" | "published" | "archived";
           author_id?: string | null;
           submission_id?: string | null;
+          prompt_type?: "original" | "recreation";
+          source_type?: "midjourney" | "unsplash" | "curated" | "user";
+          import_key?: string | null;
+          asset_status?: "READY" | "DRAFT_PENDING_ASSET";
+          image_provenance?: Json;
           created_at?: string;
           updated_at?: string;
         };

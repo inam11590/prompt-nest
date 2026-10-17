@@ -53,6 +53,9 @@ export function PromptCard({
     "character-design": "Character Design",
     nature: "Nature",
     "graphic-design": "Graphic & UI",
+    portraits: "Portraits",
+    "food-product": "Food & Product",
+    "fashion-cinematic": "Fashion & Cinematic",
   };
 
   return (

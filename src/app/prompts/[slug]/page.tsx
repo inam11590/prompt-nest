@@ -120,6 +120,9 @@ async function PromptDetailContent({ params }: PromptPageProps) {
     "character-design": "Character Design",
     nature: "Nature",
     "graphic-design": "Graphic & UI",
+    portraits: "Portraits",
+    "food-product": "Food & Product",
+    "fashion-cinematic": "Fashion & Cinematic",
   };
 
   const formattedDate = new Date(prompt.publishedAt).toLocaleDateString("en-US", {
@@ -254,6 +257,22 @@ async function PromptDetailContent({ params }: PromptPageProps) {
                     <Sparkles className="h-3 w-3" aria-hidden="true" />
                     <span>{prompt.model}</span>
                   </Link>
+
+                  {/* Prompt Type Badge (Original vs Recreation) */}
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold border ${
+                      prompt.promptType === "original"
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                        : "bg-purple-500/10 border-purple-500/30 text-purple-300"
+                    }`}
+                    title={
+                      prompt.promptType === "original"
+                        ? "Original generation prompt used to produce this image"
+                        : "Recreation prompt crafted to recreate the aesthetic, lighting, and composition of this reference"
+                    }
+                  >
+                    {prompt.promptType === "original" ? "Original Generation Prompt" : "Recreation Prompt"}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -311,6 +330,38 @@ async function PromptDetailContent({ params }: PromptPageProps) {
                     <span>@{prompt.author.username}</span>
                     <ExternalLink className="h-3 w-3" />
                   </Link>
+                </div>
+              )}
+
+              {/* Unsplash Attribution & Creative Disclosure Banner */}
+              {(prompt.sourceType === "unsplash" || prompt.sourceAttribution.source === "Unsplash") && (
+                <div className="rounded-xl border border-blue-500/20 bg-blue-950/20 p-3.5 text-xs text-blue-200/90 leading-relaxed">
+                  <p className="font-semibold text-blue-300 mb-1">
+                    📷 Reference Photo by{" "}
+                    <a
+                      href={prompt.sourceAttribution.authorUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-white inline-flex items-center gap-0.5"
+                    >
+                      {prompt.sourceAttribution.author}
+                      <ExternalLink className="h-3 w-3 inline" />
+                    </a>{" "}
+                    on Unsplash
+                  </p>
+                  <p className="text-[11px] text-blue-200/70">
+                    This reference photograph was captured by a human photographer and is shared under the Unsplash Free License. This prompt is a <strong>recreation prompt</strong> crafted to emulate its lighting, optics, and aesthetic in AI image tools—not an AI-generated photograph.
+                  </p>
+                </div>
+              )}
+
+              {/* Personal Portrait Identity Notice */}
+              {prompt.category === "portraits" && (
+                <div className="rounded-xl border border-zinc-700/60 bg-zinc-900/40 p-3.5 text-xs text-zinc-300 leading-relaxed">
+                  <span className="font-semibold text-zinc-200 block mb-0.5">👤 Personal Portrait Identity Notice</span>
+                  <span className="text-[11px] text-zinc-400 block">
+                    When adapting this prompt with personal reference photos, instruct your image model to treat the uploaded photo as the sole facial identity authority while preserving natural skin textures and facial proportions. Results depend on image tool and reference quality.
+                  </span>
                 </div>
               )}
 

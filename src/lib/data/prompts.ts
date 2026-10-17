@@ -52,6 +52,11 @@ export function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
       authorUrl: "https://unsplash.com",
       license: "Unsplash Free License",
     },
+    importKey: row.import_key || undefined,
+    sourceType: (row.source_type as PromptItem["sourceType"]) || undefined,
+    promptType: (row.prompt_type as PromptItem["promptType"]) || undefined,
+    assetStatus: (row.asset_status as PromptItem["assetStatus"]) || undefined,
+    imageProvenance: (row.image_provenance as unknown as PromptItem["imageProvenance"]) || undefined,
     authorId: row.author_id || undefined,
   };
 }

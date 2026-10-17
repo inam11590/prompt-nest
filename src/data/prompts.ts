@@ -11,7 +11,10 @@ export type PromptCategory =
   | "architecture"
   | "character-design"
   | "nature"
-  | "graphic-design";
+  | "graphic-design"
+  | "portraits"
+  | "food-product"
+  | "fashion-cinematic";
 
 export interface PromptItem {
   id: string;
@@ -41,6 +44,19 @@ export interface PromptItem {
     authorUrl: string;
     license: string;
   };
+  importKey?: string; // Stable idempotent import identifier
+  sourceType?: "midjourney" | "unsplash" | "curated" | "user"; // Source origin
+  promptType?: "original" | "recreation"; // 'original' generation prompt vs 'recreation' prompt
+  assetStatus?: "READY" | "DRAFT_PENDING_ASSET"; // Asset readiness state
+  imageProvenance?: {
+    source?: string;
+    license?: string;
+    author?: string;
+    authorUrl?: string;
+    permissionEvidence?: string;
+    originalPromptSupplied?: boolean;
+    dimensions?: { width: number; height: number };
+  };
   authorId?: string; // Optional creator user ID
   author?: {
     username: string;
@@ -49,7 +65,9 @@ export interface PromptItem {
   };
 }
 
-export const STARTER_PROMPTS: PromptItem[] = [
+import { PUBLISHED_STEP10_PROMPTS } from "./revisedStep10Prompts";
+
+const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
   {
     id: "prompt-1",
     slug: "cinematic-35mm-tokyo-dusk-portrait",
@@ -374,6 +392,11 @@ export const STARTER_PROMPTS: PromptItem[] = [
       license: "Unsplash Free License",
     },
   },
+];
+
+export const STARTER_PROMPTS: PromptItem[] = [
+  ...ORIGINAL_STARTER_PROMPTS,
+  ...PUBLISHED_STEP10_PROMPTS,
 ];
 
 export function getPromptBySlug(slug: string): PromptItem | undefined {
