@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   getArticleBySlug,
-  getAllPublishedArticleSlugs,
   getRelatedArticles,
 } from "@/lib/data/articles";
 import { siteConfig } from "@/config/site";

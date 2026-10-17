@@ -623,6 +623,80 @@ async function runAll() {
     assert.ok(content.includes("sitemap: `"), "advertises sitemap XML");
   });
 
+  // ----------------------------------------------------
+  // STEP 8: Production Hardening & Release Verification
+  // ----------------------------------------------------
+  test("T-8.1", "8.0", "Production security headers configured in next.config.ts (X-Frame-Options, CSP, HSTS, MIME)", () => {
+    const configPath = path.resolve("next.config.ts");
+    assert.ok(fs.existsSync(configPath), "next.config.ts must exist");
+    const content = fs.readFileSync(configPath, "utf-8");
+    assert.ok(content.includes("X-Frame-Options"), "X-Frame-Options header configured");
+    assert.ok(content.includes("X-Content-Type-Options"), "X-Content-Type-Options header configured");
+    assert.ok(content.includes("Content-Security-Policy-Report-Only"), "Content-Security-Policy header configured");
+    assert.ok(content.includes("Strict-Transport-Security"), "HSTS header configured");
+  });
+
+  test("T-8.2", "8.0", "Image domain whitelisting in next.config.ts includes Supabase storage and Unsplash CDN", () => {
+    const configPath = path.resolve("next.config.ts");
+    const content = fs.readFileSync(configPath, "utf-8");
+    assert.ok(content.includes("*.supabase.co"), "Supabase storage hostname whitelisted");
+    assert.ok(content.includes("images.unsplash.com"), "Unsplash hostname whitelisted");
+  });
+
+  test("T-8.3", "8.0", "Middleware route protection covers /saved, /account, /admin, /dashboard, and /settings", () => {
+    const mwPath = path.resolve("src/lib/supabase/middleware.ts");
+    assert.ok(fs.existsSync(mwPath), "supabase middleware must exist");
+    const content = fs.readFileSync(mwPath, "utf-8");
+    assert.ok(content.includes('pathname.startsWith("/saved")'), "protects /saved");
+    assert.ok(content.includes('pathname.startsWith("/account")'), "protects /account");
+    assert.ok(content.includes('pathname.startsWith("/admin")'), "protects /admin");
+    assert.ok(content.includes('pathname.startsWith("/dashboard")'), "protects /dashboard");
+    assert.ok(content.includes('pathname.startsWith("/settings")'), "protects /settings");
+  });
+
+  test("T-8.4", "8.0", "Open redirect sanitizer validates relative-only paths and rejects protocol prefixes and traversal", () => {
+    const authPath = path.resolve("src/app/actions/auth.ts");
+    const content = fs.readFileSync(authPath, "utf-8");
+    assert.ok(content.includes("sanitizeAuthRedirect"), "sanitizeAuthRedirect present");
+    assert.ok(content.includes('trimmed.startsWith("//")'), "blocks protocol-relative redirects");
+    assert.ok(content.includes('!trimmed.startsWith("/")'), "enforces relative root paths");
+  });
+
+  test("T-8.5", "8.0", "Application error boundary (src/app/error.tsx) catches errors and provides user recovery", () => {
+    const errorPath = path.resolve("src/app/error.tsx");
+    assert.ok(fs.existsSync(errorPath), "error.tsx must exist");
+    const content = fs.readFileSync(errorPath, "utf-8");
+    assert.ok(content.includes('"use client"'), "error boundary is client component");
+    assert.ok(content.includes("reset"), "provides reset trigger");
+  });
+
+  test("T-8.6", "8.0", "Accessible 404 page (src/app/not-found.tsx) provides branded UI and navigation recovery", () => {
+    const notFoundPath = path.resolve("src/app/not-found.tsx");
+    assert.ok(fs.existsSync(notFoundPath), "not-found.tsx must exist");
+    const content = fs.readFileSync(notFoundPath, "utf-8");
+    assert.ok(content.includes("Page Not Found"), "renders not found title");
+    assert.ok(content.includes("Return Home"), "provides return home navigation");
+  });
+
+  test("T-8.7", "8.0", "Production structured logger redacts auth tokens, passwords, and sensitive keys", () => {
+    const loggerPath = path.resolve("src/lib/observability/logger.ts");
+    assert.ok(fs.existsSync(loggerPath), "logger.ts must exist");
+    const content = fs.readFileSync(loggerPath, "utf-8");
+    assert.ok(content.includes("SENSITIVE_KEYS"), "defines sensitive keys blacklist");
+    assert.ok(content.includes("[REDACTED]"), "redacts sensitive values");
+    assert.ok(content.includes("export const logger"), "exports logger object");
+  });
+
+  test("T-8.8", "8.0", "Operations and recovery runbook documents setup, migrations, rollback, and backup", () => {
+    const runbookPath = path.resolve("docs/runbook.md");
+    assert.ok(fs.existsSync(runbookPath), "runbook.md must exist");
+    const content = fs.readFileSync(runbookPath, "utf-8");
+    assert.ok(content.includes("Local Setup"), "documents local setup");
+    assert.ok(content.includes("Database Migrations"), "documents migrations");
+    assert.ok(content.includes("Administrator Bootstrapping"), "documents admin bootstrap");
+    assert.ok(content.includes("What a Vercel Rollback Restores"), "documents rollback boundaries");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;

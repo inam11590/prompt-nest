@@ -45,13 +45,15 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Route protection: /saved, /account, and /admin require an authenticated user
+  // Route protection: /saved, /account, /admin, /dashboard, and /settings require an authenticated user
   const pathname = request.nextUrl.pathname;
   if (
     !user &&
     (pathname.startsWith("/saved") ||
       pathname.startsWith("/account") ||
-      pathname.startsWith("/admin"))
+      pathname.startsWith("/admin") ||
+      pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/settings"))
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
