@@ -8,14 +8,17 @@ import type { Database } from "@/types/database.types";
  * Returns null if Supabase environment variables are unconfigured.
  */
 export async function createClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
     return null;
   }
 
+  supabaseUrl = supabaseUrl.replace(/\/rest\/v1\/?$/, "").replace(/\/+$/, "");
+
   const cookieStore = await cookies();
+
 
   return createServerClient<Database>(supabaseUrl, supabaseKey, {
     cookies: {
@@ -41,14 +44,17 @@ export async function createClient() {
  * NEVER expose this client or SUPABASE_SERVICE_ROLE_KEY to browser bundles.
  */
 export function createAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !serviceRoleKey) {
     return null;
   }
 
+  supabaseUrl = supabaseUrl.replace(/\/rest\/v1\/?$/, "").replace(/\/+$/, "");
+
   return createServerClient<Database>(supabaseUrl, serviceRoleKey, {
+
     cookies: {
       getAll() {
         return [];
