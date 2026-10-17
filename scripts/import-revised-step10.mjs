@@ -178,8 +178,21 @@ console.log(`- Pending Owner Media:        ${pendingAssetsCount} (Staged as draf
 console.log("-----------------------------------------------------");
 
 // 3. Database Upsert Handling
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+let serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl) {
+  const envLocalPath = path.join(rootDir, ".env.local");
+  if (fs.existsSync(envLocalPath)) {
+    const envContent = fs.readFileSync(envLocalPath, "utf-8");
+    const urlMatch = envContent.match(/NEXT_PUBLIC_SUPABASE_URL=["']?([^"'\r\n]+)/);
+    const serviceMatch = envContent.match(/SUPABASE_SERVICE_ROLE_KEY=["']?([^"'\r\n]+)/);
+    const anonMatch = envContent.match(/NEXT_PUBLIC_SUPABASE_ANON_KEY=["']?([^"'\r\n]+)/);
+    if (urlMatch) supabaseUrl = urlMatch[1].trim();
+    if (serviceMatch) serviceRoleKey = serviceMatch[1].trim();
+    else if (anonMatch) serviceRoleKey = anonMatch[1].trim();
+  }
+}
 
 if (isDryRun || !supabaseUrl || !serviceRoleKey) {
   if (isDryRun) {
