@@ -53,7 +53,6 @@ export function PromptCard({
     "character-design": "Character Design",
     nature: "Nature",
     "graphic-design": "Graphic & UI",
-    cricket: "Cricket",
   };
 
   return (

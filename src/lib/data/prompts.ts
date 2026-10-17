@@ -53,10 +53,6 @@ export function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
       license: "Unsplash Free License",
     },
     authorId: row.author_id || undefined,
-    promptMatchExample: row.prompt_match_example || undefined,
-    styleInspiration: row.style_inspiration || undefined,
-    isCricketIdentity: row.is_cricket_identity ?? (row.category === "cricket"),
-    imageProvenance: (row.image_provenance as unknown as PromptItem["imageProvenance"]) || undefined,
   };
 }
 
@@ -98,7 +94,7 @@ export async function getPrompts(options: GetPromptsOptions = {}): Promise<GetPr
     if (query.trim()) {
       const q = query.trim().replace(/"/g, '""');
       dbQuery = dbQuery.or(
-        `title.ilike."%${q}%",short_description.ilike."%${q}%",prompt.ilike."%${q}%",prompt_match_example.ilike."%${q}%",style_inspiration.ilike."%${q}%",category.ilike."%${q}%",model.ilike."%${q}%"`
+        `title.ilike."%${q}%",short_description.ilike."%${q}%",prompt.ilike."%${q}%",category.ilike."%${q}%",model.ilike."%${q}%"`
       );
     }
 
@@ -145,8 +141,6 @@ export async function getPrompts(options: GetPromptsOptions = {}): Promise<GetPr
         item.title.toLowerCase().includes(q) ||
         item.shortDescription.toLowerCase().includes(q) ||
         item.prompt.toLowerCase().includes(q) ||
-        (item.promptMatchExample && item.promptMatchExample.toLowerCase().includes(q)) ||
-        (item.styleInspiration && item.styleInspiration.toLowerCase().includes(q)) ||
         item.tags.some((t) => t.toLowerCase().includes(q)) ||
         item.model.toLowerCase().includes(q);
       if (!matches) return false;

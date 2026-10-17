@@ -11,7 +11,6 @@ import {
   SlidersHorizontal,
   ArrowLeft,
   BookOpen,
-  User,
 } from "lucide-react";
 import {
   getPromptBySlug,
@@ -121,7 +120,6 @@ async function PromptDetailContent({ params }: PromptPageProps) {
     "character-design": "Character Design",
     nature: "Nature",
     "graphic-design": "Graphic & UI",
-    cricket: "Cricket",
   };
 
   const formattedDate = new Date(prompt.publishedAt).toLocaleDateString("en-US", {
@@ -316,103 +314,21 @@ async function PromptDetailContent({ params }: PromptPageProps) {
                 </div>
               )}
 
-              {/* Cricket Identity Workflow Notice (when applicable) */}
-              {prompt.isCricketIdentity && (
-                <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4 flex flex-col gap-2 shadow-sm">
-                  <div className="flex items-center gap-2 text-xs font-bold text-blue-400">
-                    <User className="h-4 w-4" />
-                    <span>Personal Photo Identity Preserving Prompt</span>
-                  </div>
-                  <p className="text-xs text-text-muted leading-relaxed">
-                    Designed to preserve your identity. Results depend on the image tool and reference photo.
-                  </p>
-                  {prompt.styleInspiration && (
-                    <div className="pt-2 border-t border-blue-500/10 text-[11px] text-text-faint">
-                      <span className="font-semibold text-text-muted">Style Inspiration:</span> {prompt.styleInspiration}. Depicts an original fictional cricket concept; does not reproduce or claim endorsement from the named player.
-                    </div>
-                  )}
+              {/* Prompt Text Section with Copy Button */}
+              <section
+                aria-labelledby="prompt-heading"
+                className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 shadow-lg"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <h2 id="prompt-heading" className="text-xs font-bold uppercase tracking-wider text-text-faint">
+                    Prompt Text
+                  </h2>
+                  <CopyPromptButton promptText={prompt.prompt} label="Copy Prompt" />
                 </div>
-              )}
-
-              {prompt.promptMatchExample ? (
-                <>
-                  {/* Mode A: "Use my photo" */}
-                  <section
-                    aria-labelledby="mode-a-heading"
-                    className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 shadow-lg"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-md bg-blue-600/20 border border-blue-500/30 px-2 py-0.5 text-[10px] font-bold text-blue-400">
-                            MODE A
-                          </span>
-                          <h2 id="mode-a-heading" className="text-xs font-bold uppercase tracking-wider text-white">
-                            Use My Photo
-                          </h2>
-                        </div>
-                        <p className="mt-1 text-[11px] text-text-muted">
-                          Upload your personal photo to your AI tool as the sole identity reference, then paste this prompt.
-                        </p>
-                      </div>
-                      <CopyPromptButton
-                        promptText={prompt.prompt}
-                        label="Copy 'Use my photo' Prompt"
-                        className="self-start sm:self-auto shrink-0"
-                      />
-                    </div>
-                    <div className="rounded-xl border border-surface-border-subtle bg-surface-raised p-4 font-mono text-xs leading-relaxed text-foreground select-all break-words whitespace-pre-wrap">
-                      {prompt.prompt}
-                    </div>
-                  </section>
-
-                  {/* Mode B: "Match this example" */}
-                  <section
-                    aria-labelledby="mode-b-heading"
-                    className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 shadow-lg"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-md bg-purple-600/20 border border-purple-500/30 px-2 py-0.5 text-[10px] font-bold text-purple-400">
-                            MODE B
-                          </span>
-                          <h2 id="mode-b-heading" className="text-xs font-bold uppercase tracking-wider text-white">
-                            Match This Example
-                          </h2>
-                        </div>
-                        <p className="mt-1 text-[11px] text-text-muted">
-                          Dual-reference mode: Reference A is your photo (face/identity). Reference B is this example image (composition, pose & colors).
-                        </p>
-                      </div>
-                      <CopyPromptButton
-                        promptText={prompt.promptMatchExample}
-                        label="Copy 'Match this example' Prompt"
-                        className="self-start sm:self-auto shrink-0 bg-purple-700 hover:bg-purple-600"
-                      />
-                    </div>
-                    <div className="rounded-xl border border-surface-border-subtle bg-surface-raised p-4 font-mono text-xs leading-relaxed text-foreground select-all break-words whitespace-pre-wrap">
-                      {prompt.promptMatchExample}
-                    </div>
-                  </section>
-                </>
-              ) : (
-                /* Standard Single Prompt Text Section with Copy Button */
-                <section
-                  aria-labelledby="prompt-heading"
-                  className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 shadow-lg"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <h2 id="prompt-heading" className="text-xs font-bold uppercase tracking-wider text-text-faint">
-                      Prompt Text
-                    </h2>
-                    <CopyPromptButton promptText={prompt.prompt} label="Copy Prompt" />
-                  </div>
-                  <div className="rounded-xl border border-surface-border-subtle bg-surface-raised p-4 font-mono text-xs leading-relaxed text-foreground select-all break-words whitespace-pre-wrap">
-                    {prompt.prompt}
-                  </div>
-                </section>
-              )}
+                <div className="rounded-xl border border-surface-border-subtle bg-surface-raised p-4 font-mono text-xs leading-relaxed text-foreground select-all break-words whitespace-pre-wrap">
+                  {prompt.prompt}
+                </div>
+              </section>
 
               {/* Optional: Negative Prompt Section (only rendered when explicitly stored) */}
               {prompt.negativePrompt && (

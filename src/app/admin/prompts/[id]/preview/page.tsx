@@ -37,7 +37,6 @@ const categoryLabels: Record<string, string> = {
   "character-design": "Character Design",
   nature: "Nature",
   "graphic-design": "Graphic Design",
-  cricket: "Cricket",
 };
 
 async function PreviewContent({ params }: AdminPreviewPageProps) {

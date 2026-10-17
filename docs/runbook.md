@@ -73,9 +73,6 @@ All database changes are non-destructive and tracked under `supabase/migrations/
 5. [`supabase/migrations/005_collections.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/005_collections.sql):
    - Creates `public.collections` and `public.collection_items` tables.
    - Enforces immutable public identifiers, automatic version bump triggers, atomic stored procedure `reorder_collection_items`, and strict private-by-default RLS.
-6. [`supabase/migrations/006_cricket_prompt_variants.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/006_cricket_prompt_variants.sql):
-   - Adds `prompt_match_example` (TEXT, Mode B prompt), `style_inspiration` (TEXT), `is_cricket_identity` (BOOLEAN), and `image_provenance` (JSONB) columns to `public.prompts`.
-   - Creates indexes `idx_prompts_style_inspiration`, `idx_prompts_is_cricket_identity`, and `idx_prompts_category_cricket`.
 
 ---
 
@@ -170,23 +167,3 @@ Before deploying any future release:
 - [ ] Ensure all database migrations have been executed in target Supabase project.
 - [ ] Push to `origin main` to trigger automatic Vercel deployment.
 - [ ] Smoke-test homepage (`/`), search/filtering, prompt detail (`/prompts/[slug]`), blog (`/blog`), and `/admin`.
-
----
-
-## 9. Cricket Prompt Dataset Operations
-
-PromptNest includes a production cricket prompt collection containing exactly 50 complete image-and-prompt posts across 5 star inspirations (Virat Kohli, Hardik Pandya, Babar Azam, Shoaib Akhtar, MS Dhoni) and 25 cricket-lover concepts.
-
-### Prompt Contract Standards
-- **Mode A ("Use my photo")**: The uploaded personal photo is the sole facial identity reference. Strictly preserves natural facial proportions, skin tone, and recognizable features without celebrity face swapping.
-- **Mode B ("Match this example")**: Dual-reference composition (Reference A = sole identity authority, Reference B = wardrobe, pose, and stadium lighting authority only).
-- **Identity Notice**: All cricket prompt pages display the mandatory notice: `"Designed to preserve your identity. Results depend on the image tool and reference photo."`
-
-### Importer CLI
-```bash
-# 1. Pre-flight contract validation (dry-run, 0 database writes)
-node scripts/import-cricket.mjs --dry-run
-
-# 2. Database import & publication (requires Supabase credentials in .env.local)
-node scripts/import-cricket.mjs --publish
-```
