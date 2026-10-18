@@ -47,6 +47,18 @@
       "authorUrl": "https://unsplash.com/@beccatapert",
       "permissionEvidence": "Official Unsplash Free License compliant sourcing",
       "originalPromptSupplied": false
+    },
+    "occasion": "casual",
+    "setting": "outdoor",
+    "lighting": "golden_hour",
+    "framing": "close_up",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "casual",
+      "setting": "outdoor",
+      "lighting": "golden_hour",
+      "framing": "close_up",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -97,6 +109,18 @@
       "authorUrl": "https://unsplash.com/@miracletwentyone",
       "permissionEvidence": "Official Unsplash Free License compliant sourcing",
       "originalPromptSupplied": false
+    },
+    "occasion": "professional",
+    "setting": "studio",
+    "lighting": "dramatic",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "professional",
+      "setting": "studio",
+      "lighting": "dramatic",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -147,6 +171,18 @@
       "authorUrl": "https://unsplash.com/@valerieelash",
       "permissionEvidence": "Official Unsplash Free License compliant sourcing",
       "originalPromptSupplied": false
+    },
+    "occasion": "casual",
+    "setting": "outdoor",
+    "lighting": "natural",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "casual",
+      "setting": "outdoor",
+      "lighting": "natural",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -197,6 +233,18 @@
       "authorUrl": "https://unsplash.com/@juricakoletic",
       "permissionEvidence": "Official Unsplash Free License compliant sourcing",
       "originalPromptSupplied": false
+    },
+    "occasion": "cinematic",
+    "setting": "urban",
+    "lighting": "neon",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "cinematic",
+      "setting": "urban",
+      "lighting": "neon",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -247,6 +295,18 @@
       "authorUrl": "https://unsplash.com/@aiony",
       "permissionEvidence": "Official Unsplash Free License compliant sourcing",
       "originalPromptSupplied": false
+    },
+    "occasion": "fashion",
+    "setting": "studio",
+    "lighting": "soft_studio",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "fashion",
+      "setting": "studio",
+      "lighting": "soft_studio",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -295,6 +355,18 @@
       "manifestKey": "mj-portrait-01",
       "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
       "originalPromptSupplied": false
+    },
+    "occasion": "professional",
+    "setting": "outdoor",
+    "lighting": "natural",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "professional",
+      "setting": "outdoor",
+      "lighting": "natural",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -343,6 +415,18 @@
       "manifestKey": "mj-portrait-02",
       "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
       "originalPromptSupplied": false
+    },
+    "occasion": "professional",
+    "setting": "outdoor",
+    "lighting": "dramatic",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "professional",
+      "setting": "outdoor",
+      "lighting": "dramatic",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -391,6 +475,18 @@
       "manifestKey": "mj-portrait-03",
       "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
       "originalPromptSupplied": false
+    },
+    "occasion": "professional",
+    "setting": "indoor",
+    "lighting": "natural",
+    "framing": "close_up",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "professional",
+      "setting": "indoor",
+      "lighting": "natural",
+      "framing": "close_up",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -440,6 +536,18 @@
       "manifestKey": "mj-portrait-04",
       "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
       "originalPromptSupplied": false
+    },
+    "occasion": "professional",
+    "setting": "indoor",
+    "lighting": "natural",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "professional",
+      "setting": "indoor",
+      "lighting": "natural",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -488,6 +596,18 @@
       "manifestKey": "mj-portrait-05",
       "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
       "originalPromptSupplied": false
+    },
+    "occasion": "cinematic",
+    "setting": "outdoor",
+    "lighting": "dramatic",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "cinematic",
+      "setting": "outdoor",
+      "lighting": "dramatic",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -2010,6 +2130,18 @@
       "authorUrl": "https://unsplash.com/@domhill",
       "permissionEvidence": "Official Unsplash Free License compliant sourcing",
       "originalPromptSupplied": false
+    },
+    "occasion": "fashion",
+    "setting": "studio",
+    "lighting": "neon",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "fashion",
+      "setting": "studio",
+      "lighting": "neon",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -2060,6 +2192,18 @@
       "authorUrl": "https://unsplash.com/@kseniachernaya",
       "permissionEvidence": "Official Unsplash Free License compliant sourcing",
       "originalPromptSupplied": false
+    },
+    "occasion": "fashion",
+    "setting": "outdoor",
+    "lighting": "natural",
+    "framing": "full_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "fashion",
+      "setting": "outdoor",
+      "lighting": "natural",
+      "framing": "full_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -2110,6 +2254,18 @@
       "authorUrl": "https://unsplash.com/@averiewoodard",
       "permissionEvidence": "Official Unsplash Free License compliant sourcing",
       "originalPromptSupplied": false
+    },
+    "occasion": "cinematic",
+    "setting": "outdoor",
+    "lighting": "natural",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "cinematic",
+      "setting": "outdoor",
+      "lighting": "natural",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -2160,6 +2316,18 @@
       "authorUrl": "https://unsplash.com/@freestocks",
       "permissionEvidence": "Official Unsplash Free License compliant sourcing",
       "originalPromptSupplied": false
+    },
+    "occasion": "fashion",
+    "setting": "outdoor",
+    "lighting": "natural",
+    "framing": "full_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "fashion",
+      "setting": "outdoor",
+      "lighting": "natural",
+      "framing": "full_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -2210,6 +2378,18 @@
       "authorUrl": "https://unsplash.com/@tamarabellis",
       "permissionEvidence": "Official Unsplash Free License compliant sourcing",
       "originalPromptSupplied": false
+    },
+    "occasion": "fashion",
+    "setting": "indoor",
+    "lighting": "dramatic",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "fashion",
+      "setting": "indoor",
+      "lighting": "dramatic",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -2258,6 +2438,18 @@
       "manifestKey": "mj-fashion-01",
       "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
       "originalPromptSupplied": false
+    },
+    "occasion": "fashion",
+    "setting": "studio",
+    "lighting": "natural",
+    "framing": "full_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "fashion",
+      "setting": "studio",
+      "lighting": "natural",
+      "framing": "full_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -2306,6 +2498,18 @@
       "manifestKey": "mj-fashion-02",
       "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
       "originalPromptSupplied": false
+    },
+    "occasion": "cinematic",
+    "setting": "outdoor",
+    "lighting": "golden_hour",
+    "framing": "upper_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "cinematic",
+      "setting": "outdoor",
+      "lighting": "golden_hour",
+      "framing": "upper_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -2355,6 +2559,18 @@
       "manifestKey": "mj-fashion-03",
       "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
       "originalPromptSupplied": false
+    },
+    "occasion": "cinematic",
+    "setting": "urban",
+    "lighting": "neon",
+    "framing": "full_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "cinematic",
+      "setting": "urban",
+      "lighting": "neon",
+      "framing": "full_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -2403,6 +2619,18 @@
       "manifestKey": "mj-fashion-04",
       "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
       "originalPromptSupplied": false
+    },
+    "occasion": "fashion",
+    "setting": "outdoor",
+    "lighting": "natural",
+    "framing": "full_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "fashion",
+      "setting": "outdoor",
+      "lighting": "natural",
+      "framing": "full_body",
+      "workflow": "personal_photo_only"
     }
   },
   {
@@ -2451,6 +2679,18 @@
       "manifestKey": "mj-fashion-05",
       "permissionEvidence": "Manifest tracking for owner-supplied Midjourney artwork",
       "originalPromptSupplied": false
+    },
+    "occasion": "fashion",
+    "setting": "outdoor",
+    "lighting": "golden_hour",
+    "framing": "full_body",
+    "workflow": "personal_photo_only",
+    "generationParameters": {
+      "occasion": "fashion",
+      "setting": "outdoor",
+      "lighting": "golden_hour",
+      "framing": "full_body",
+      "workflow": "personal_photo_only"
     }
   }
 ]

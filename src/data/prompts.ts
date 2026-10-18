@@ -21,6 +21,89 @@ export type PromptCategory =
   | "streetwear-fashion"
   | "outdoor-travel";
 
+export type StyleOccasion =
+  | "professional"
+  | "casual"
+  | "sports"
+  | "fashion"
+  | "cinematic";
+
+export type StyleSetting =
+  | "studio"
+  | "outdoor"
+  | "urban"
+  | "stadium"
+  | "indoor";
+
+export type StyleLighting =
+  | "natural"
+  | "soft_studio"
+  | "dramatic"
+  | "neon"
+  | "golden_hour";
+
+export type StyleFraming =
+  | "close_up"
+  | "upper_body"
+  | "full_body";
+
+export type StyleWorkflow =
+  | "personal_photo_only"
+  | "personal_photo_plus_example";
+
+export const STYLE_FACETS = {
+  occasion: {
+    key: "occasion",
+    label: "Occasion",
+    options: [
+      { id: "professional", label: "Professional" },
+      { id: "casual", label: "Casual" },
+      { id: "sports", label: "Sports" },
+      { id: "fashion", label: "Fashion" },
+      { id: "cinematic", label: "Cinematic" },
+    ],
+  },
+  setting: {
+    key: "setting",
+    label: "Setting",
+    options: [
+      { id: "studio", label: "Studio" },
+      { id: "outdoor", label: "Outdoor" },
+      { id: "urban", label: "Urban" },
+      { id: "stadium", label: "Stadium" },
+      { id: "indoor", label: "Indoor" },
+    ],
+  },
+  lighting: {
+    key: "lighting",
+    label: "Lighting",
+    options: [
+      { id: "natural", label: "Natural Daylight" },
+      { id: "soft_studio", label: "Soft Studio" },
+      { id: "dramatic", label: "Dramatic" },
+      { id: "neon", label: "Neon" },
+      { id: "golden_hour", label: "Golden Hour" },
+    ],
+  },
+  framing: {
+    key: "framing",
+    label: "Framing",
+    options: [
+      { id: "close_up", label: "Close-Up" },
+      { id: "upper_body", label: "Upper Body" },
+      { id: "full_body", label: "Full Body" },
+    ],
+  },
+  workflow: {
+    key: "workflow",
+    label: "Workflow",
+    options: [
+      { id: "personal_photo_only", label: "Photo Only (Mode A)" },
+      { id: "personal_photo_plus_example", label: "Photo + Ref (Mode B)" },
+    ],
+  },
+} as const;
+
 export interface PromptItem {
   id: string;
   slug: string;
@@ -40,6 +123,7 @@ export interface PromptItem {
   aspectRatioValue: string; // e.g. "4/5", "3/4", "16/9", "1/1"
   dominantColor: string; // for reserving space and smooth loading without layout shift
   publishedAt: string; // ISO 8601 publication date
+  published?: boolean; // publication boolean flag
   status?: "draft" | "published" | "archived"; // publication lifecycle state
   updatedAt?: string; // ISO 8601 timestamp for concurrency checks
   negativePrompt?: string; // Optional: only present when explicitly stored
@@ -69,6 +153,12 @@ export interface PromptItem {
     displayName: string | null;
     avatarUrl?: string | null;
   };
+  // Step 11: Controlled Style Facets for Portrait Discovery
+  occasion?: StyleOccasion;
+  setting?: StyleSetting;
+  lighting?: StyleLighting;
+  framing?: StyleFraming;
+  workflow?: StyleWorkflow;
 }
 
 import { PUBLISHED_STEP10_PROMPTS } from "./revisedStep10Prompts";
@@ -100,6 +190,11 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@agk42",
       license: "Unsplash Free License",
     },
+    occasion: "cinematic",
+    setting: "urban",
+    lighting: "neon",
+    framing: "close_up",
+    workflow: "personal_photo_only",
   },
   {
     id: "prompt-2",
@@ -262,6 +357,11 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@aiony",
       license: "Unsplash Free License",
     },
+    occasion: "fashion",
+    setting: "studio",
+    lighting: "dramatic",
+    framing: "upper_body",
+    workflow: "personal_photo_only",
   },
   {
     id: "prompt-8",
@@ -316,6 +416,11 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@fakurian",
       license: "Unsplash Free License",
     },
+    occasion: "cinematic",
+    setting: "studio",
+    lighting: "neon",
+    framing: "close_up",
+    workflow: "personal_photo_only",
   },
   {
     id: "prompt-10",
@@ -428,7 +533,14 @@ export function getAllPromptSlugs(): string[] {
  */
 export function getRelatedPrompts(currentPrompt: PromptItem, limit = 6): PromptItem[] {
   const scored = STARTER_PROMPTS
-    .filter((p) => p.slug !== currentPrompt.slug)
+    .filter(
+      (p) =>
+        p.slug !== currentPrompt.slug &&
+        p.id !== currentPrompt.id &&
+        p.published !== false &&
+        p.status !== "draft" &&
+        p.assetStatus !== "DRAFT_PENDING_ASSET"
+    )
     .map((candidate) => {
       let score = 0;
 
@@ -437,14 +549,31 @@ export function getRelatedPrompts(currentPrompt: PromptItem, limit = 6): PromptI
         score += 10;
       }
 
-      // 2. Shared tags match
+      // 2. Shared style facets (Step 11 portrait discovery)
+      if (currentPrompt.occasion && candidate.occasion === currentPrompt.occasion) {
+        score += 6;
+      }
+      if (currentPrompt.setting && candidate.setting === currentPrompt.setting) {
+        score += 5;
+      }
+      if (currentPrompt.lighting && candidate.lighting === currentPrompt.lighting) {
+        score += 4;
+      }
+      if (currentPrompt.framing && candidate.framing === currentPrompt.framing) {
+        score += 3;
+      }
+      if (currentPrompt.workflow && candidate.workflow === currentPrompt.workflow) {
+        score += 3;
+      }
+
+      // 3. Shared tags match
       const currentTags = new Set(currentPrompt.tags.map((t) => t.toLowerCase()));
       const sharedTagsCount = candidate.tags.filter((t) =>
         currentTags.has(t.toLowerCase())
       ).length;
-      score += sharedTagsCount * 3;
+      score += sharedTagsCount * 2;
 
-      // 3. Compatible AI model overlap
+      // 4. Compatible AI model overlap
       const currentModels = new Set([
         currentPrompt.model,
         ...(currentPrompt.compatibleModels || []),
@@ -454,7 +583,7 @@ export function getRelatedPrompts(currentPrompt: PromptItem, limit = 6): PromptI
         ...(candidate.compatibleModels || []),
       ];
       const modelOverlap = candidateModels.filter((m) => currentModels.has(m)).length;
-      score += modelOverlap * 2;
+      score += modelOverlap * 1;
 
       return { candidate, score };
     })

@@ -1,4 +1,14 @@
-import { STARTER_PROMPTS, type PromptItem, type PromptCategory, type AIModel } from "@/data/prompts";
+import {
+  STARTER_PROMPTS,
+  type PromptItem,
+  type PromptCategory,
+  type AIModel,
+  type StyleOccasion,
+  type StyleSetting,
+  type StyleLighting,
+  type StyleFraming,
+  type StyleWorkflow,
+} from "@/data/prompts";
 import { createClient, createPublicClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database.types";
 
@@ -11,6 +21,11 @@ export interface GetPromptsOptions {
   sort?: "newest" | "title-asc" | "title-desc";
   page?: number;
   pageSize?: number;
+  occasion?: StyleOccasion | string;
+  setting?: StyleSetting | string;
+  lighting?: StyleLighting | string;
+  framing?: StyleFraming | string;
+  workflow?: StyleWorkflow | string;
 }
 
 export interface GetPromptsResult {
@@ -59,6 +74,11 @@ export function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
     assetStatus: (row.asset_status as PromptItem["assetStatus"]) || undefined,
     imageProvenance: (row.image_provenance as unknown as PromptItem["imageProvenance"]) || undefined,
     authorId: row.author_id || undefined,
+    occasion: (row.occasion || (row.generation_parameters as Record<string, unknown>)?.occasion || undefined) as StyleOccasion | undefined,
+    setting: (row.setting || (row.generation_parameters as Record<string, unknown>)?.setting || undefined) as StyleSetting | undefined,
+    lighting: (row.lighting || (row.generation_parameters as Record<string, unknown>)?.lighting || undefined) as StyleLighting | undefined,
+    framing: (row.framing || (row.generation_parameters as Record<string, unknown>)?.framing || undefined) as StyleFraming | undefined,
+    workflow: (row.workflow || (row.generation_parameters as Record<string, unknown>)?.workflow || undefined) as StyleWorkflow | undefined,
   };
 }
 
@@ -76,49 +96,91 @@ export async function getPrompts(options: GetPromptsOptions = {}): Promise<GetPr
     sort = "newest",
     page = 1,
     pageSize = 8,
+    occasion = "all",
+    setting = "all",
+    lighting = "all",
+    framing = "all",
+    workflow = "all",
   } = options;
 
   const supabase = createPublicClient();
 
   if (supabase) {
-    let dbQuery = supabase
-      .from("prompts")
-      .select("*", { count: "exact" })
-      .eq("published", true);
+    const buildQuery = (useJsonFacetFallback = false) => {
+      let q = supabase
+        .from("prompts")
+        .select("*", { count: "exact" })
+        .eq("published", true);
 
-    // Category filter
-    if (category && category !== "all") {
-      dbQuery = dbQuery.eq("category", category);
+      // Category filter
+      if (category && category !== "all") {
+        q = q.eq("category", category);
+      }
+
+      // Model filter (match primary or compatible_models contains)
+      if (model && model !== "All Models") {
+        q = q.or(`model.eq."${model}",compatible_models.cs.{"${model}"}`);
+      }
+
+      // Style facet filters
+      if (occasion && occasion !== "all") {
+        q = useJsonFacetFallback
+          ? q.filter("generation_parameters->>occasion", "eq", occasion)
+          : q.eq("occasion", occasion);
+      }
+      if (setting && setting !== "all") {
+        q = useJsonFacetFallback
+          ? q.filter("generation_parameters->>setting", "eq", setting)
+          : q.eq("setting", setting);
+      }
+      if (lighting && lighting !== "all") {
+        q = useJsonFacetFallback
+          ? q.filter("generation_parameters->>lighting", "eq", lighting)
+          : q.eq("lighting", lighting);
+      }
+      if (framing && framing !== "all") {
+        q = useJsonFacetFallback
+          ? q.filter("generation_parameters->>framing", "eq", framing)
+          : q.eq("framing", framing);
+      }
+      if (workflow && workflow !== "all") {
+        q = useJsonFacetFallback
+          ? q.filter("generation_parameters->>workflow", "eq", workflow)
+          : q.eq("workflow", workflow);
+      }
+
+      // Search query
+      if (query.trim()) {
+        const cleanQ = query.trim().replace(/"/g, '""');
+        q = q.or(
+          `title.ilike."%${cleanQ}%",short_description.ilike."%${cleanQ}%",prompt.ilike."%${cleanQ}%",category.ilike."%${cleanQ}%",model.ilike."%${cleanQ}%"`
+        );
+      }
+
+      // Sorting
+      if (sort === "title-asc") {
+        q = q.order("title", { ascending: true });
+      } else if (sort === "title-desc") {
+        q = q.order("title", { ascending: false });
+      } else {
+        q = q.order("published_at", { ascending: false });
+      }
+
+      // Pagination
+      const fromIndex = (page - 1) * pageSize;
+      const toIndex = fromIndex + pageSize - 1;
+      return q.range(fromIndex, toIndex);
+    };
+
+    let { data, count, error } = await buildQuery(false);
+
+    // If direct column is not yet in the DB schema cache, retry using generation_parameters JSON filter
+    if (error && error.message && error.message.includes("column")) {
+      const retryResult = await buildQuery(true);
+      data = retryResult.data;
+      count = retryResult.count;
+      error = retryResult.error;
     }
-
-    // Model filter (match primary or compatible_models contains)
-    if (model && model !== "All Models") {
-      dbQuery = dbQuery.or(`model.eq."${model}",compatible_models.cs.{"${model}"}`);
-    }
-
-    // Search query
-    if (query.trim()) {
-      const q = query.trim().replace(/"/g, '""');
-      dbQuery = dbQuery.or(
-        `title.ilike."%${q}%",short_description.ilike."%${q}%",prompt.ilike."%${q}%",category.ilike."%${q}%",model.ilike."%${q}%"`
-      );
-    }
-
-    // Sorting
-    if (sort === "title-asc") {
-      dbQuery = dbQuery.order("title", { ascending: true });
-    } else if (sort === "title-desc") {
-      dbQuery = dbQuery.order("title", { ascending: false });
-    } else {
-      dbQuery = dbQuery.order("published_at", { ascending: false });
-    }
-
-    // Pagination
-    const fromIndex = (page - 1) * pageSize;
-    const toIndex = fromIndex + pageSize - 1;
-    dbQuery = dbQuery.range(fromIndex, toIndex);
-
-    const { data, count, error } = await dbQuery;
 
     if (error) {
       console.error("Supabase getPrompts query failed:", error);
@@ -141,6 +203,12 @@ export async function getPrompts(options: GetPromptsOptions = {}): Promise<GetPr
       const isCompatible = item.compatibleModels?.includes(model as AIModel);
       if (!isPrimary && !isCompatible) return false;
     }
+    if (occasion && occasion !== "all" && item.occasion !== occasion) return false;
+    if (setting && setting !== "all" && item.setting !== setting) return false;
+    if (lighting && lighting !== "all" && item.lighting !== lighting) return false;
+    if (framing && framing !== "all" && item.framing !== framing) return false;
+    if (workflow && workflow !== "all" && item.workflow !== workflow) return false;
+
     if (query.trim()) {
       const q = query.toLowerCase().trim();
       const matches =

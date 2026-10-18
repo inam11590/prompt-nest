@@ -84,6 +84,11 @@ export interface Database {
           asset_status: "READY" | "DRAFT_PENDING_ASSET";
           image_provenance: Json;
           prompt_dual: string | null;
+          occasion: string | null;
+          setting: string | null;
+          lighting: string | null;
+          framing: string | null;
+          workflow: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -118,6 +123,11 @@ export interface Database {
           asset_status?: "READY" | "DRAFT_PENDING_ASSET";
           image_provenance?: Json;
           prompt_dual?: string | null;
+          occasion?: string | null;
+          setting?: string | null;
+          lighting?: string | null;
+          framing?: string | null;
+          workflow?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -152,6 +162,11 @@ export interface Database {
           asset_status?: "READY" | "DRAFT_PENDING_ASSET";
           image_provenance?: Json;
           prompt_dual?: string | null;
+          occasion?: string | null;
+          setting?: string | null;
+          lighting?: string | null;
+          framing?: string | null;
+          workflow?: string | null;
           created_at?: string;
           updated_at?: string;
         };

@@ -78,6 +78,10 @@ All database changes are non-destructive and tracked under `supabase/migrations/
    - Creates supporting indexes for high-speed catalog filtering and idempotent batch upserts.
 7. [`supabase/migrations/007_prompt_transformation_variants.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/007_prompt_transformation_variants.sql):
    - Non-destructively adds nullable `prompt_dual TEXT` column to `public.prompts` to support dual-reference "Use my photo + example" transformation modes.
+8. [`supabase/migrations/008_style_facets_and_metadata.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/008_style_facets_and_metadata.sql):
+   - Non-destructively adds nullable `occasion`, `setting`, `lighting`, `framing`, and `workflow` columns to `public.prompts` with check constraints for controlled vocabularies.
+   - Creates partial indexes (`idx_prompts_occasion`, `idx_prompts_setting`, `idx_prompts_lighting`, `idx_prompts_framing`, `idx_prompts_workflow`) for sub-millisecond facet filtering.
+   - Zero-downtime, fully idempotent (`IF NOT EXISTS`), and maintains dual-storage resilience in `generation_parameters` JSON fallback.
 
 ---
 
@@ -162,6 +166,20 @@ node scripts/import-personal-transformations.mjs --publish
 
 # 3. Promote a single verified concept to live published status after asset supply
 node scripts/import-personal-transformations.mjs --promote transform-sports-01
+```
+
+### Style Facet Classification & Sync CLI (`scripts/classify-style-facets.mjs`)
+For classifying and synchronizing controlled style facets (`occasion`, `setting`, `lighting`, `framing`, `workflow`) across personal-photo transformations and portrait prompts:
+
+```bash
+# 1. Dry-run classification analysis (inspect counts and facet coverage without writes)
+node scripts/classify-style-facets.mjs --dry-run
+
+# 2. Apply classifications to local datasets (src/data/*.json and src/data/personalTransformationPrompts.ts)
+node scripts/classify-style-facets.mjs --apply
+
+# 3. Synchronize classified facets to Supabase PostgreSQL (updates both columns & generation_parameters)
+node scripts/classify-style-facets.mjs --sync-db
 ```
 
 ---

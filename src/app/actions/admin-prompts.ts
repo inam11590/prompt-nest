@@ -9,6 +9,16 @@ import {
   uploadToStorage,
 } from "@/lib/storage/image";
 import type { AIModel, PromptCategory } from "@/data/prompts";
+import type { Database, Json } from "@/types/database.types";
+
+type PromptInsert = Database["public"]["Tables"]["prompts"]["Insert"];
+type PromptUpdate = Database["public"]["Tables"]["prompts"]["Update"];
+
+export const VALID_OCCASIONS = ["professional", "casual", "sports", "fashion", "cinematic"] as const;
+export const VALID_SETTINGS = ["studio", "outdoor", "urban", "stadium", "indoor"] as const;
+export const VALID_LIGHTINGS = ["natural", "soft_studio", "dramatic", "neon", "golden_hour"] as const;
+export const VALID_FRAMINGS = ["close_up", "upper_body", "full_body"] as const;
+export const VALID_WORKFLOWS = ["personal_photo_only", "personal_photo_plus_example"] as const;
 
 export interface ActionResult<T = unknown> {
   success: boolean;
@@ -171,7 +181,20 @@ export async function createPromptAction(formData: FormData): Promise<ActionResu
 
     const compatibleModels = (compatibleModelsRaw.length > 0 ? compatibleModelsRaw : [model]) as AIModel[];
 
-    let generationParameters: Record<string, string | number> | null = null;
+    const occasionRaw = (formData.get("occasion") as string)?.trim();
+    const settingRaw = (formData.get("setting") as string)?.trim();
+    const lightingRaw = (formData.get("lighting") as string)?.trim();
+    const framingRaw = (formData.get("framing") as string)?.trim();
+    const workflowRaw = (formData.get("workflow") as string)?.trim();
+    const promptDual = (formData.get("promptDual") as string)?.trim() || null;
+
+    const occasion = occasionRaw && (VALID_OCCASIONS as readonly string[]).includes(occasionRaw) ? occasionRaw : null;
+    const setting = settingRaw && (VALID_SETTINGS as readonly string[]).includes(settingRaw) ? settingRaw : null;
+    const lighting = lightingRaw && (VALID_LIGHTINGS as readonly string[]).includes(lightingRaw) ? lightingRaw : null;
+    const framing = framingRaw && (VALID_FRAMINGS as readonly string[]).includes(framingRaw) ? framingRaw : null;
+    const workflow = workflowRaw && (VALID_WORKFLOWS as readonly string[]).includes(workflowRaw) ? workflowRaw : null;
+
+    let generationParameters: Record<string, unknown> = {};
     if (generationParamsRaw) {
       try {
         generationParameters = JSON.parse(generationParamsRaw);
@@ -179,6 +202,12 @@ export async function createPromptAction(formData: FormData): Promise<ActionResu
         // Ignore invalid json or treat as text
       }
     }
+    if (occasion) generationParameters.occasion = occasion;
+    if (setting) generationParameters.setting = setting;
+    if (lighting) generationParameters.lighting = lighting;
+    if (framing) generationParameters.framing = framing;
+    if (workflow) generationParameters.workflow = workflow;
+    if (promptDual) generationParameters.prompt_dual = promptDual;
 
     let sourceAttribution = {
       source: "PromptNest Administrator",
@@ -198,7 +227,7 @@ export async function createPromptAction(formData: FormData): Promise<ActionResu
     const isPublished = status === "published";
     const nowIso = new Date().toISOString();
 
-    const insertPayload = {
+    const insertPayload: PromptInsert = {
       id: promptId,
       slug,
       title,
@@ -216,18 +245,37 @@ export async function createPromptAction(formData: FormData): Promise<ActionResu
       aspect_ratio_value: aspectRatioValue,
       dominant_color: dominantColor,
       negative_prompt: negativePrompt,
-      generation_parameters: generationParameters,
-      source_attribution: sourceAttribution,
+      generation_parameters: generationParameters as Json,
+      source_attribution: sourceAttribution as Json,
       status,
       published: isPublished,
       published_at: isPublished ? nowIso : nowIso,
       created_at: nowIso,
       updated_at: nowIso,
+      occasion,
+      setting,
+      lighting,
+      framing,
+      workflow,
+      prompt_dual: promptDual,
     };
 
-    const { error: insertError } = await supabase
+    let { error: insertError } = await supabase
       .from("prompts")
       .insert(insertPayload);
+
+    if (insertError && insertError.message.includes("column")) {
+      const fallbackPayload: PromptInsert = { ...insertPayload };
+      delete fallbackPayload.occasion;
+      delete fallbackPayload.setting;
+      delete fallbackPayload.lighting;
+      delete fallbackPayload.framing;
+      delete fallbackPayload.workflow;
+      delete fallbackPayload.prompt_dual;
+
+      const fallbackRes = await supabase.from("prompts").insert(fallbackPayload);
+      insertError = fallbackRes.error;
+    }
 
     if (insertError) {
       console.error("createPromptAction insert error:", insertError);
@@ -248,6 +296,11 @@ export async function createPromptAction(formData: FormData): Promise<ActionResu
           status,
           category,
           model,
+          occasion,
+          setting,
+          lighting,
+          framing,
+          workflow,
         },
         changed_fields: Object.keys(insertPayload).filter((k) => k !== "prompt"),
       });
@@ -385,7 +438,33 @@ export async function updatePromptAction(
       ? compatibleModelsRaw
       : current.compatible_models) as AIModel[];
 
-    let generationParameters = current.generation_parameters;
+    const occasionRaw = (formData.get("occasion") as string)?.trim();
+    const settingRaw = (formData.get("setting") as string)?.trim();
+    const lightingRaw = (formData.get("lighting") as string)?.trim();
+    const framingRaw = (formData.get("framing") as string)?.trim();
+    const workflowRaw = (formData.get("workflow") as string)?.trim();
+    const promptDual = (formData.get("promptDual") as string)?.trim() || null;
+
+    const occasion = occasionRaw && (VALID_OCCASIONS as readonly string[]).includes(occasionRaw)
+      ? occasionRaw
+      : occasionRaw === "unset" ? null : current.occasion || null;
+    const setting = settingRaw && (VALID_SETTINGS as readonly string[]).includes(settingRaw)
+      ? settingRaw
+      : settingRaw === "unset" ? null : current.setting || null;
+    const lighting = lightingRaw && (VALID_LIGHTINGS as readonly string[]).includes(lightingRaw)
+      ? lightingRaw
+      : lightingRaw === "unset" ? null : current.lighting || null;
+    const framing = framingRaw && (VALID_FRAMINGS as readonly string[]).includes(framingRaw)
+      ? framingRaw
+      : framingRaw === "unset" ? null : current.framing || null;
+    const workflow = workflowRaw && (VALID_WORKFLOWS as readonly string[]).includes(workflowRaw)
+      ? workflowRaw
+      : workflowRaw === "unset" ? null : current.workflow || null;
+
+    let generationParameters: Record<string, unknown> =
+      current.generation_parameters && typeof current.generation_parameters === "object" && !Array.isArray(current.generation_parameters)
+        ? (current.generation_parameters as Record<string, unknown>)
+        : {};
     if (generationParamsRaw) {
       try {
         generationParameters = JSON.parse(generationParamsRaw);
@@ -393,11 +472,17 @@ export async function updatePromptAction(
         // Keep existing if unparseable
       }
     }
+    if (occasion) generationParameters.occasion = occasion;
+    if (setting) generationParameters.setting = setting;
+    if (lighting) generationParameters.lighting = lighting;
+    if (framing) generationParameters.framing = framing;
+    if (workflow) generationParameters.workflow = workflow;
+    if (promptDual) generationParameters.prompt_dual = promptDual;
 
     const isPublished = status === "published";
     const nowIso = new Date().toISOString();
 
-    const updatePayload = {
+    const updatePayload: PromptUpdate = {
       title,
       slug: finalSlug,
       short_description: shortDescription,
@@ -414,17 +499,36 @@ export async function updatePromptAction(
       aspect_ratio_value: aspectRatioValue,
       dominant_color: dominantColor,
       negative_prompt: negativePrompt,
-      generation_parameters: generationParameters,
+      generation_parameters: generationParameters as Json,
       status,
       published: isPublished,
       published_at: isPublished && !current.published ? nowIso : current.published_at,
       updated_at: nowIso,
+      occasion,
+      setting,
+      lighting,
+      framing,
+      workflow,
+      prompt_dual: promptDual,
     };
 
-    const { error: updateError } = await supabase
+    let { error: updateError } = await supabase
       .from("prompts")
       .update(updatePayload)
       .eq("id", promptId);
+
+    if (updateError && updateError.message.includes("column")) {
+      const fallbackPayload: PromptUpdate = { ...updatePayload };
+      delete fallbackPayload.occasion;
+      delete fallbackPayload.setting;
+      delete fallbackPayload.lighting;
+      delete fallbackPayload.framing;
+      delete fallbackPayload.workflow;
+      delete fallbackPayload.prompt_dual;
+
+      const fallbackRes = await supabase.from("prompts").update(fallbackPayload).eq("id", promptId);
+      updateError = fallbackRes.error;
+    }
 
     if (updateError) {
       console.error("updatePromptAction error:", updateError);
@@ -435,7 +539,7 @@ export async function updatePromptAction(
     const changedFields: string[] = [];
     for (const [key, val] of Object.entries(updatePayload)) {
       if (key !== "prompt" && key !== "updated_at") {
-        const curVal = current[key as keyof typeof current];
+        const curVal = (current as Record<string, unknown>)[key];
         if (JSON.stringify(val) !== JSON.stringify(curVal)) {
           changedFields.push(key);
         }
@@ -452,12 +556,22 @@ export async function updatePromptAction(
           slug: current.slug,
           title: current.title,
           status: current.status,
+          occasion: current.occasion,
+          setting: current.setting,
+          lighting: current.lighting,
+          framing: current.framing,
+          workflow: current.workflow,
         },
         new_state: {
           id: promptId,
           slug: finalSlug,
           title,
           status,
+          occasion,
+          setting,
+          lighting,
+          framing,
+          workflow,
         },
         changed_fields: changedFields,
       });

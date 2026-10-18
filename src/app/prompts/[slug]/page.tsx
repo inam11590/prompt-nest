@@ -11,6 +11,8 @@ import {
   SlidersHorizontal,
   ArrowLeft,
   BookOpen,
+  Download,
+  Palette,
 } from "lucide-react";
 import {
   getPromptBySlug,
@@ -226,19 +228,32 @@ async function PromptDetailContent({ params }: PromptPageProps) {
                 dominantColor={prompt.dominantColor}
               />
 
-              {/* Image Attribution */}
-              <div className="flex items-center justify-between text-xs text-text-faint px-1">
+              {/* Image Attribution & Authorized Download Action */}
+              <div className="flex flex-wrap items-center justify-between text-xs text-text-faint px-1 gap-2">
                 <span>Photo by {prompt.sourceAttribution.author}</span>
-                <a
-                  href={prompt.sourceAttribution.authorUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 hover:text-text-muted hover:underline"
-                  aria-label={`Photo by ${prompt.sourceAttribution.author} on ${prompt.sourceAttribution.source} (opens in new tab)`}
-                >
-                  <span>{prompt.sourceAttribution.source}</span>
-                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                </a>
+                <div className="flex items-center gap-3">
+                  {(!prompt.assetStatus || prompt.assetStatus === "READY") && prompt.imageUrl && (
+                    <a
+                      href={prompt.imageUrl}
+                      download
+                      className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                      aria-label={`Download reference image: ${prompt.title}`}
+                    >
+                      <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                      <span>Download Image</span>
+                    </a>
+                  )}
+                  <a
+                    href={prompt.sourceAttribution.authorUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 hover:text-text-muted hover:underline"
+                    aria-label={`Photo by ${prompt.sourceAttribution.author} on ${prompt.sourceAttribution.source} (opens in new tab)`}
+                  >
+                    <span>{prompt.sourceAttribution.source}</span>
+                    <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -375,7 +390,71 @@ async function PromptDetailContent({ params }: PromptPageProps) {
               <PromptTransformationTabs
                 promptText={prompt.prompt}
                 promptDual={prompt.promptDual}
+                exampleImageUrl={prompt.imageUrl}
+                exampleImageAlt={prompt.imageAlt}
+                assetStatus={prompt.assetStatus}
+                sourceUrl={prompt.sourceAttribution?.authorUrl}
+                sourceLicense={prompt.sourceAttribution?.license}
               />
+
+              {/* Controlled Style Facets (Portrait & Creative Discovery) */}
+              {(prompt.occasion || prompt.setting || prompt.lighting || prompt.framing || prompt.workflow) && (
+                <div className="rounded-xl border border-surface-border bg-surface p-4">
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-text-faint mb-2.5">
+                    <Palette className="h-3.5 w-3.5 text-blue-400" aria-hidden="true" />
+                    <span>Style Facets &amp; Discovery</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                    {prompt.occasion && (
+                      <Link
+                        href={`/?occasion=${encodeURIComponent(prompt.occasion)}#gallery`}
+                        className="rounded-lg bg-surface-raised p-2 border border-surface-border-subtle hover:border-blue-500/40 transition-colors"
+                      >
+                        <span className="text-[10px] uppercase font-semibold text-text-faint block">Occasion</span>
+                        <span className="font-medium text-foreground capitalize">{prompt.occasion}</span>
+                      </Link>
+                    )}
+                    {prompt.setting && (
+                      <Link
+                        href={`/?setting=${encodeURIComponent(prompt.setting)}#gallery`}
+                        className="rounded-lg bg-surface-raised p-2 border border-surface-border-subtle hover:border-blue-500/40 transition-colors"
+                      >
+                        <span className="text-[10px] uppercase font-semibold text-text-faint block">Setting</span>
+                        <span className="font-medium text-foreground capitalize">{prompt.setting}</span>
+                      </Link>
+                    )}
+                    {prompt.lighting && (
+                      <Link
+                        href={`/?lighting=${encodeURIComponent(prompt.lighting)}#gallery`}
+                        className="rounded-lg bg-surface-raised p-2 border border-surface-border-subtle hover:border-blue-500/40 transition-colors"
+                      >
+                        <span className="text-[10px] uppercase font-semibold text-text-faint block">Lighting</span>
+                        <span className="font-medium text-foreground capitalize">{prompt.lighting.replace("_", " ")}</span>
+                      </Link>
+                    )}
+                    {prompt.framing && (
+                      <Link
+                        href={`/?framing=${encodeURIComponent(prompt.framing)}#gallery`}
+                        className="rounded-lg bg-surface-raised p-2 border border-surface-border-subtle hover:border-blue-500/40 transition-colors"
+                      >
+                        <span className="text-[10px] uppercase font-semibold text-text-faint block">Framing</span>
+                        <span className="font-medium text-foreground capitalize">{prompt.framing.replace("_", " ")}</span>
+                      </Link>
+                    )}
+                    {prompt.workflow && (
+                      <Link
+                        href={`/?workflow=${encodeURIComponent(prompt.workflow)}#gallery`}
+                        className="rounded-lg bg-surface-raised p-2 border border-surface-border-subtle hover:border-blue-500/40 transition-colors col-span-2 sm:col-span-1"
+                      >
+                        <span className="text-[10px] uppercase font-semibold text-text-faint block">Workflow</span>
+                        <span className="font-medium text-foreground">
+                          {prompt.workflow === "personal_photo_plus_example" ? "Photo + Ref (Mode B)" : "Photo Only (Mode A)"}
+                        </span>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Optional: Negative Prompt Section (only rendered when explicitly stored) */}
               {prompt.negativePrompt && (

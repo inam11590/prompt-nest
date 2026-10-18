@@ -1062,6 +1062,193 @@ async function runAll() {
     assert.ok(scriptCode.includes("hasPromptDualColumn"), "Handles missing remote schema column gracefully");
   });
 
+  // ----------------------------------------------------
+  // STEP 11: Controlled Style Facets & Discovery
+  // ----------------------------------------------------
+  test("T-11.1", "11.0", "Controlled style facets schema migration (008) adds occasion, setting, lighting, framing, workflow and indexes", () => {
+    const migrationPath = path.resolve("supabase/migrations/008_style_facets_and_metadata.sql");
+    assert.ok(fs.existsSync(migrationPath), "008_style_facets_and_metadata.sql must exist");
+    const sql = fs.readFileSync(migrationPath, "utf-8");
+    assert.ok(sql.includes("column_name = 'occasion'"), "Migration defines occasion column");
+    assert.ok(sql.includes("column_name = 'setting'"), "Migration defines setting column");
+    assert.ok(sql.includes("column_name = 'lighting'"), "Migration defines lighting column");
+    assert.ok(sql.includes("column_name = 'framing'"), "Migration defines framing column");
+    assert.ok(sql.includes("column_name = 'workflow'"), "Migration defines workflow column");
+    assert.ok(sql.includes("CREATE INDEX IF NOT EXISTS idx_prompts_occasion"), "Migration creates index for occasion");
+    assert.ok(sql.includes("CREATE INDEX IF NOT EXISTS idx_prompts_setting"), "Migration creates index for setting");
+    assert.ok(sql.includes("CREATE INDEX IF NOT EXISTS idx_prompts_lighting"), "Migration creates index for lighting");
+    assert.ok(sql.includes("CREATE INDEX IF NOT EXISTS idx_prompts_framing"), "Migration creates index for framing");
+    assert.ok(sql.includes("CREATE INDEX IF NOT EXISTS idx_prompts_workflow"), "Migration creates index for workflow");
+  });
+
+  test("T-11.2", "11.0", "Style facet union types and UI facet metadata defined in src/data/prompts.ts", () => {
+    const promptsPath = path.resolve("src/data/prompts.ts");
+    assert.ok(fs.existsSync(promptsPath), "prompts.ts must exist");
+    const code = fs.readFileSync(promptsPath, "utf-8");
+    assert.ok(code.includes("export type StyleOccasion"), "Defines StyleOccasion union type");
+    assert.ok(code.includes("export type StyleSetting"), "Defines StyleSetting union type");
+    assert.ok(code.includes("export type StyleLighting"), "Defines StyleLighting union type");
+    assert.ok(code.includes("export type StyleFraming"), "Defines StyleFraming union type");
+    assert.ok(code.includes("export type StyleWorkflow"), "Defines StyleWorkflow union type");
+    assert.ok(code.includes("export const STYLE_FACETS"), "Defines STYLE_FACETS UI metadata mapping");
+    assert.ok(code.includes("personal_photo_only"), "Defines Mode A personal_photo_only workflow");
+    assert.ok(code.includes("personal_photo_plus_example"), "Defines Mode B personal_photo_plus_example workflow");
+  });
+
+  test("T-11.3", "11.0", "Classifier script scripts/classify-style-facets.mjs exists and supports dry-run, apply, and sync-db", () => {
+    const scriptPath = path.resolve("scripts/classify-style-facets.mjs");
+    assert.ok(fs.existsSync(scriptPath), "classify-style-facets.mjs must exist");
+    const scriptCode = fs.readFileSync(scriptPath, "utf-8");
+    assert.ok(scriptCode.includes("--dry-run"), "Supports --dry-run CLI flag");
+    assert.ok(scriptCode.includes("--apply"), "Supports --apply CLI flag");
+    assert.ok(scriptCode.includes("--sync-db"), "Supports --sync-db CLI flag");
+    assert.ok(scriptCode.includes("inferFacets"), "Exports inferFacets classification engine");
+  });
+
+  test("T-11.4", "11.0", "Personal transformations dataset contains 100% assigned style facets across all 50 items", () => {
+    const data = JSON.parse(fs.readFileSync(path.resolve("src/data/personalTransformationPrompts.json"), "utf-8"));
+    assert.strictEqual(data.length, 50, "Must have exactly 50 transformation items");
+    const allowedOccasions = ["professional", "casual", "sports", "fashion", "cinematic"];
+    const allowedSettings = ["studio", "outdoor", "urban", "stadium", "indoor"];
+    const allowedLightings = ["natural", "soft_studio", "dramatic", "neon", "golden_hour"];
+    const allowedFramings = ["close_up", "upper_body", "full_body"];
+    const allowedWorkflows = ["personal_photo_only", "personal_photo_plus_example"];
+
+    for (const item of data) {
+      assert.ok(allowedOccasions.includes(item.occasion), `Valid occasion in ${item.importKey}: ${item.occasion}`);
+      assert.ok(allowedSettings.includes(item.setting), `Valid setting in ${item.importKey}: ${item.setting}`);
+      assert.ok(allowedLightings.includes(item.lighting), `Valid lighting in ${item.importKey}: ${item.lighting}`);
+      assert.ok(allowedFramings.includes(item.framing), `Valid framing in ${item.importKey}: ${item.framing}`);
+      assert.ok(allowedWorkflows.includes(item.workflow), `Valid workflow in ${item.importKey}: ${item.workflow}`);
+    }
+  });
+
+  test("T-11.5", "11.0", "Revised portraits dataset contains valid style facets for portrait and fashion items", () => {
+    const data = JSON.parse(fs.readFileSync(path.resolve("src/data/revisedStep10Prompts.json"), "utf-8"));
+    const portraits = data.filter((x) => x.category === "portraits" || x.category === "fashion-cinematic");
+    assert.ok(portraits.length >= 20, "At least 20 portrait/fashion items in revised dataset");
+    for (const item of portraits) {
+      assert.ok(item.occasion, `Must have occasion in ${item.importKey}`);
+      assert.ok(item.setting, `Must have setting in ${item.importKey}`);
+      assert.ok(item.lighting, `Must have lighting in ${item.importKey}`);
+      assert.ok(item.framing, `Must have framing in ${item.importKey}`);
+      assert.ok(item.workflow, `Must have workflow in ${item.importKey}`);
+    }
+  });
+
+  test("T-11.6", "11.0", "getPrompts data layer supports filtering by occasion, setting, lighting, framing, and workflow", () => {
+    const dataCode = fs.readFileSync(path.resolve("src/lib/data/prompts.ts"), "utf-8");
+    assert.ok(dataCode.includes("occasion?: StyleOccasion | string;"), "GetPromptsOptions includes occasion");
+    assert.ok(dataCode.includes("setting?: StyleSetting | string;"), "GetPromptsOptions includes setting");
+    assert.ok(dataCode.includes("lighting?: StyleLighting | string;"), "GetPromptsOptions includes lighting");
+    assert.ok(dataCode.includes("framing?: StyleFraming | string;"), "GetPromptsOptions includes framing");
+    assert.ok(dataCode.includes("workflow?: StyleWorkflow | string;"), "GetPromptsOptions includes workflow");
+    assert.ok(dataCode.includes("useJsonFacetFallback"), "Provides schema-resilient JSON facet fallback");
+  });
+
+  test("T-11.7", "11.0", "getRelatedPrompts weights shared style facets (occasion +6, setting +5, lighting +4, framing +3, workflow +3)", () => {
+    const promptsCode = fs.readFileSync(path.resolve("src/data/prompts.ts"), "utf-8");
+    assert.ok(
+      promptsCode.includes("candidate.occasion === currentPrompt.occasion") || promptsCode.includes("target.occasion === candidate.occasion"),
+      "Evaluates matching occasion"
+    );
+    assert.ok(
+      promptsCode.includes("candidate.setting === currentPrompt.setting") || promptsCode.includes("target.setting === candidate.setting"),
+      "Evaluates matching setting"
+    );
+    assert.ok(
+      promptsCode.includes("candidate.lighting === currentPrompt.lighting") || promptsCode.includes("target.lighting === candidate.lighting"),
+      "Evaluates matching lighting"
+    );
+    assert.ok(
+      promptsCode.includes("candidate.framing === currentPrompt.framing") || promptsCode.includes("target.framing === candidate.framing"),
+      "Evaluates matching framing"
+    );
+    assert.ok(
+      promptsCode.includes("candidate.workflow === currentPrompt.workflow") || promptsCode.includes("target.workflow === candidate.workflow"),
+      "Evaluates matching workflow"
+    );
+  });
+
+  test("T-11.8", "11.0", "HomePage server component parses searchParams and executes getPrompts server-side", () => {
+    const pageCode = fs.readFileSync(path.resolve("src/app/page.tsx"), "utf-8");
+    assert.ok(pageCode.includes("searchParams: Promise<"), "Accepts searchParams Promise");
+    assert.ok(pageCode.includes("await searchParams"), "Awaits resolved searchParams");
+    assert.ok(pageCode.includes("await getPrompts("), "Executes getPrompts on the server");
+    assert.ok(pageCode.includes("initialPrompts={prompts}"), "Passes server initialPrompts to client component");
+  });
+
+  test("T-11.9", "11.0", "HomePageClient synchronizes all style facets with URL query parameters", () => {
+    const clientCode = fs.readFileSync(path.resolve("src/components/HomePageClient.tsx"), "utf-8");
+    assert.ok(clientCode.includes('searchParams.get("occasion")'), "Reads occasion from URL");
+    assert.ok(clientCode.includes('searchParams.get("setting")'), "Reads setting from URL");
+    assert.ok(clientCode.includes('searchParams.get("lighting")'), "Reads lighting from URL");
+    assert.ok(clientCode.includes('searchParams.get("framing")'), "Reads framing from URL");
+    assert.ok(clientCode.includes('searchParams.get("workflow")'), "Reads workflow from URL");
+    assert.ok(clientCode.includes('current.set("occasion"'), "Updates occasion in URL");
+    assert.ok(clientCode.includes("handleResetFilters"), "Supports resetting all filters");
+  });
+
+  test("T-11.10", "11.0", "Hero component renders style facets toolbar and removable active filter chips", () => {
+    const heroCode = fs.readFileSync(path.resolve("src/components/Hero.tsx"), "utf-8");
+    assert.ok(heroCode.includes("STYLE_FACETS.occasion"), "Renders occasion options in toolbar");
+    assert.ok(heroCode.includes("STYLE_FACETS.setting"), "Renders setting options in toolbar");
+    assert.ok(heroCode.includes("STYLE_FACETS.lighting"), "Renders lighting options in toolbar");
+    assert.ok(heroCode.includes("STYLE_FACETS.framing"), "Renders framing options in toolbar");
+    assert.ok(heroCode.includes("STYLE_FACETS.workflow"), "Renders workflow options in toolbar");
+    assert.ok(heroCode.includes("onRemoveOccasion"), "Supports removing occasion chip");
+    assert.ok(heroCode.includes("Clear all"), "Provides Clear all button");
+  });
+
+  test("T-11.11", "11.0", "MobileFilterDrawer implements accessible dialog with focus trap, Escape dismissal, and active count badge", () => {
+    const drawerPath = path.resolve("src/components/MobileFilterDrawer.tsx");
+    assert.ok(fs.existsSync(drawerPath), "MobileFilterDrawer.tsx must exist");
+    const drawerCode = fs.readFileSync(drawerPath, "utf-8");
+    assert.ok(drawerCode.includes('role="dialog"'), "Declares dialog accessibility role");
+    assert.ok(drawerCode.includes('aria-modal="true"'), "Declares aria-modal attribute");
+    assert.ok(drawerCode.includes("activeFilterCount"), "Renders active filter count badge");
+    assert.ok(drawerCode.includes('e.key === "Escape"'), "Dismisses on Escape key");
+    assert.ok(drawerCode.includes("onApplyFilters"), "Supports applying staged filters");
+    assert.ok(drawerCode.includes("onResetFilters"), "Supports resetting filters");
+  });
+
+  test("T-11.12", "11.0", "PromptTransformationTabs provides 3-step guide, Mode A vs Mode B workflows, and mandatory identity disclaimer", () => {
+    const compCode = fs.readFileSync(path.resolve("src/components/PromptTransformationTabs.tsx"), "utf-8");
+    assert.ok(compCode.includes("How to use this prompt (3 Easy Steps)"), "Renders 3-step guide");
+    assert.ok(compCode.includes("Mode A"), "Defines Mode A workflow");
+    assert.ok(compCode.includes("Mode B"), "Defines Mode B workflow");
+    assert.ok(compCode.includes("Reference-Photo Best Practices"), "Provides reference photo guidance");
+    assert.ok(
+      compCode.includes("Prompts are designed to preserve your identity. Results vary by image tool and reference photo"),
+      "Enforces exact mandatory identity notice"
+    );
+  });
+
+  test("T-11.13", "11.0", "Prompt detail page displays style facets and authorized reference image download only when READY", () => {
+    const pageCode = fs.readFileSync(path.resolve("src/app/prompts/[slug]/page.tsx"), "utf-8");
+    assert.ok(
+      pageCode.includes("Style Facets &amp; Discovery") || pageCode.includes("Style Facets & Discovery"),
+      "Renders Style Facets card"
+    );
+    assert.ok(pageCode.includes("prompt.assetStatus === \"READY\""), "Restricts download action to READY asset status");
+    assert.ok(pageCode.includes("Download Image"), "Provides Download Image action");
+  });
+
+  test("T-11.14", "11.0", "Admin editor form and actions support style facets, dual prompt, optimistic locking, and audit logs", () => {
+    const actionsCode = fs.readFileSync(path.resolve("src/app/actions/admin-prompts.ts"), "utf-8");
+    assert.ok(actionsCode.includes("VALID_OCCASIONS"), "Defines VALID_OCCASIONS validation list");
+    assert.ok(actionsCode.includes("VALID_SETTINGS"), "Defines VALID_SETTINGS validation list");
+    assert.ok(actionsCode.includes("VALID_LIGHTINGS"), "Defines VALID_LIGHTINGS validation list");
+    assert.ok(actionsCode.includes("VALID_FRAMINGS"), "Defines VALID_FRAMINGS validation list");
+    assert.ok(actionsCode.includes("VALID_WORKFLOWS"), "Defines VALID_WORKFLOWS validation list");
+    assert.ok(actionsCode.includes("expectedUpdatedAt && current.updated_at !== expectedUpdatedAt"), "Enforces optimistic locking concurrency check");
+    assert.ok(actionsCode.includes("admin_audit_logs"), "Logs updates to admin_audit_logs");
+
+    const formCode = fs.readFileSync(path.resolve("src/components/admin/PromptEditorForm.tsx"), "utf-8");
+    assert.ok(formCode.includes("Controlled Style Facets"), "Renders Controlled Style Facets form card");
+    assert.ok(formCode.includes("Dual-Reference Prompt (Mode B - Optional)"), "Renders promptDual form textarea");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;

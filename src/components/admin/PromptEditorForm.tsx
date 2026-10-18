@@ -35,6 +35,14 @@ const CATEGORIES: { value: PromptCategory; label: string }[] = [
   { value: "character-design", label: "Character Design" },
   { value: "nature", label: "Nature" },
   { value: "graphic-design", label: "Graphic Design" },
+  { value: "portraits", label: "Portraits" },
+  { value: "food-product", label: "Food & Product" },
+  { value: "fashion-cinematic", label: "Fashion & Cinematic" },
+  { value: "sports-portraits", label: "Cricket & Sports" },
+  { value: "cinematic-portraits", label: "Cinematic Portraits" },
+  { value: "editorial-portraits", label: "Professional Editorial" },
+  { value: "streetwear-fashion", label: "Streetwear & Fashion" },
+  { value: "outdoor-travel", label: "Outdoor & Travel" },
 ];
 
 const AI_MODELS: AIModel[] = [
@@ -65,6 +73,7 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(mode === "edit");
   const [shortDescription, setShortDescription] = useState(initialPrompt?.shortDescription || "");
   const [promptText, setPromptText] = useState(initialPrompt?.prompt || "");
+  const [promptDual, setPromptDual] = useState(initialPrompt?.promptDual || "");
   const [category, setCategory] = useState<PromptCategory>(
     initialPrompt?.category || "photography"
   );
@@ -84,6 +93,13 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
   const [status, setStatus] = useState<"draft" | "published" | "archived">(
     initialPrompt?.status || "draft"
   );
+
+  // Style Facet states
+  const [occasion, setOccasion] = useState(initialPrompt?.occasion || "");
+  const [setting, setSetting] = useState(initialPrompt?.setting || "");
+  const [lighting, setLighting] = useState(initialPrompt?.lighting || "");
+  const [framing, setFraming] = useState(initialPrompt?.framing || "");
+  const [workflow, setWorkflow] = useState(initialPrompt?.workflow || "");
 
   // Image states
   const [imageUrl, setImageUrl] = useState(initialPrompt?.imageUrl || "");
@@ -197,10 +213,15 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
     formData.append("height", String(height));
     formData.append("aspectRatio", aspectRatio);
     formData.append("aspectRatioValue", aspectRatioValue);
-    formData.append("dominantColor", dominantColor);
     formData.append("status", finalStatus);
     if (negativePrompt) formData.append("negativePrompt", negativePrompt);
     if (generationParameters) formData.append("generationParameters", generationParameters);
+    if (promptDual) formData.append("promptDual", promptDual);
+    if (occasion) formData.append("occasion", occasion);
+    if (setting) formData.append("setting", setting);
+    if (lighting) formData.append("lighting", lighting);
+    if (framing) formData.append("framing", framing);
+    if (workflow) formData.append("workflow", workflow);
 
     let res;
     if (mode === "create") {
@@ -398,6 +419,28 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
             </div>
 
             <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="prompt-dual-text" className="block text-xs font-medium text-foreground">
+                  Dual-Reference Prompt (Mode B - Optional)
+                </label>
+                <span className="text-[10px] text-foreground-muted">
+                  Photo [Ref A] + Style Example [Ref B] Contract
+                </span>
+              </div>
+              <textarea
+                id="prompt-dual-text"
+                rows={4}
+                value={promptDual}
+                onChange={(e) => {
+                  setPromptDual(e.target.value);
+                  setIsDirty(true);
+                }}
+                placeholder="[DUAL REFERENCE AUTHORITY CONTRACT: Ref A = Identity, Ref B = Styling]..."
+                className="w-full rounded-xl border border-surface-border bg-surface-raised p-4 font-mono text-xs text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 leading-relaxed"
+              />
+            </div>
+
+            <div>
               <label htmlFor="prompt-negative-text" className="block text-xs font-medium text-foreground mb-1.5">
                 Negative Prompt (Optional)
               </label>
@@ -429,6 +472,130 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
                 placeholder='{\n  "sampler": "DPM++ 2M Karras",\n  "steps": 30,\n  "cfg_scale": 7\n}'
                 className="w-full rounded-xl border border-surface-border bg-surface-raised p-3 font-mono text-xs text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 leading-relaxed"
               />
+            </div>
+          </div>
+
+          {/* Controlled Style Facets (Step 11 Portrait & Style Discovery) */}
+          <div className="rounded-2xl border border-surface-border bg-surface p-6 space-y-5">
+            <div>
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-foreground-muted">
+                Controlled Style Facets
+              </h2>
+              <p className="text-xs text-foreground-muted mt-0.5">
+                Standardized metadata for faceted discovery and portrait style filtering.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {/* Occasion */}
+              <div>
+                <label htmlFor="facet-occasion" className="block text-xs font-medium text-foreground mb-1.5">
+                  Occasion
+                </label>
+                <select
+                  id="facet-occasion"
+                  value={occasion}
+                  onChange={(e) => {
+                    setOccasion(e.target.value);
+                    setIsDirty(true);
+                  }}
+                  className="w-full rounded-xl border border-surface-border bg-surface-raised px-3 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                >
+                  <option value="">Unset / None</option>
+                  <option value="professional">Professional</option>
+                  <option value="casual">Casual</option>
+                  <option value="sports">Sports</option>
+                  <option value="fashion">Fashion</option>
+                  <option value="cinematic">Cinematic</option>
+                </select>
+              </div>
+
+              {/* Setting */}
+              <div>
+                <label htmlFor="facet-setting" className="block text-xs font-medium text-foreground mb-1.5">
+                  Setting
+                </label>
+                <select
+                  id="facet-setting"
+                  value={setting}
+                  onChange={(e) => {
+                    setSetting(e.target.value);
+                    setIsDirty(true);
+                  }}
+                  className="w-full rounded-xl border border-surface-border bg-surface-raised px-3 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                >
+                  <option value="">Unset / None</option>
+                  <option value="studio">Studio</option>
+                  <option value="outdoor">Outdoor</option>
+                  <option value="urban">Urban</option>
+                  <option value="stadium">Stadium</option>
+                  <option value="indoor">Indoor</option>
+                </select>
+              </div>
+
+              {/* Lighting */}
+              <div>
+                <label htmlFor="facet-lighting" className="block text-xs font-medium text-foreground mb-1.5">
+                  Lighting
+                </label>
+                <select
+                  id="facet-lighting"
+                  value={lighting}
+                  onChange={(e) => {
+                    setLighting(e.target.value);
+                    setIsDirty(true);
+                  }}
+                  className="w-full rounded-xl border border-surface-border bg-surface-raised px-3 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                >
+                  <option value="">Unset / None</option>
+                  <option value="natural">Natural Daylight</option>
+                  <option value="soft_studio">Soft Studio</option>
+                  <option value="dramatic">Dramatic</option>
+                  <option value="neon">Neon</option>
+                  <option value="golden_hour">Golden Hour</option>
+                </select>
+              </div>
+
+              {/* Framing */}
+              <div>
+                <label htmlFor="facet-framing" className="block text-xs font-medium text-foreground mb-1.5">
+                  Framing
+                </label>
+                <select
+                  id="facet-framing"
+                  value={framing}
+                  onChange={(e) => {
+                    setFraming(e.target.value);
+                    setIsDirty(true);
+                  }}
+                  className="w-full rounded-xl border border-surface-border bg-surface-raised px-3 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                >
+                  <option value="">Unset / None</option>
+                  <option value="close_up">Close-Up</option>
+                  <option value="upper_body">Upper Body</option>
+                  <option value="full_body">Full Body</option>
+                </select>
+              </div>
+
+              {/* Workflow */}
+              <div>
+                <label htmlFor="facet-workflow" className="block text-xs font-medium text-foreground mb-1.5">
+                  Workflow Mode
+                </label>
+                <select
+                  id="facet-workflow"
+                  value={workflow}
+                  onChange={(e) => {
+                    setWorkflow(e.target.value);
+                    setIsDirty(true);
+                  }}
+                  className="w-full rounded-xl border border-surface-border bg-surface-raised px-3 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                >
+                  <option value="">Unset / None</option>
+                  <option value="personal_photo_only">Photo Only (Mode A)</option>
+                  <option value="personal_photo_plus_example">Photo + Ref (Mode B)</option>
+                </select>
+              </div>
             </div>
           </div>
 

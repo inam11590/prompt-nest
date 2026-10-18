@@ -6,13 +6,26 @@ import { Header } from "@/components/Header";
 import { Hero, type SortOption } from "@/components/Hero";
 import { PromptGallery } from "@/components/PromptGallery";
 import { Footer } from "@/components/Footer";
-import { STARTER_PROMPTS, type AIModel } from "@/data/prompts";
+import {
+  STARTER_PROMPTS,
+  type AIModel,
+  type PromptItem,
+} from "@/data/prompts";
 import { createClient } from "@/lib/supabase/client";
 import { getUserBookmarkedPromptIds } from "@/app/actions/bookmarks";
 
 const PAGE_SIZE = 8;
 
-export function HomePageClient() {
+interface HomePageClientProps {
+  initialPrompts?: PromptItem[];
+  initialTotalMatching?: number;
+  initialSource?: "database" | "local";
+}
+
+export function HomePageClient({
+  initialPrompts,
+  initialTotalMatching,
+}: HomePageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
@@ -62,8 +75,14 @@ export function HomePageClient() {
   const rawPage = parseInt(searchParams.get("page") || "1", 10);
   const currentPage = rawPage > 0 ? rawPage : 1;
 
+  // Controlled Style Facets
+  const occasion = searchParams.get("occasion") || "all";
+  const setting = searchParams.get("setting") || "all";
+  const lighting = searchParams.get("lighting") || "all";
+  const framing = searchParams.get("framing") || "all";
+  const workflow = searchParams.get("workflow") || "all";
 
-  // Single URL Updater
+  // Single URL Updater for all filters, facets, search, sort, and pagination
   const updateUrl = useCallback(
     (params: {
       q?: string;
@@ -71,6 +90,11 @@ export function HomePageClient() {
       model?: string;
       sort?: SortOption;
       page?: number;
+      occasion?: string;
+      setting?: string;
+      lighting?: string;
+      framing?: string;
+      workflow?: string;
     }) => {
       const current = new URLSearchParams(searchParams.toString());
 
@@ -114,6 +138,46 @@ export function HomePageClient() {
         }
       }
 
+      if (params.occasion !== undefined) {
+        if (params.occasion && params.occasion !== "all") {
+          current.set("occasion", params.occasion);
+        } else {
+          current.delete("occasion");
+        }
+      }
+
+      if (params.setting !== undefined) {
+        if (params.setting && params.setting !== "all") {
+          current.set("setting", params.setting);
+        } else {
+          current.delete("setting");
+        }
+      }
+
+      if (params.lighting !== undefined) {
+        if (params.lighting && params.lighting !== "all") {
+          current.set("lighting", params.lighting);
+        } else {
+          current.delete("lighting");
+        }
+      }
+
+      if (params.framing !== undefined) {
+        if (params.framing && params.framing !== "all") {
+          current.set("framing", params.framing);
+        } else {
+          current.delete("framing");
+        }
+      }
+
+      if (params.workflow !== undefined) {
+        if (params.workflow && params.workflow !== "all") {
+          current.set("workflow", params.workflow);
+        } else {
+          current.delete("workflow");
+        }
+      }
+
       const queryStr = current.toString();
       const newPath = queryStr ? `/?${queryStr}` : "/";
 
@@ -124,16 +188,15 @@ export function HomePageClient() {
     [searchParams, router]
   );
 
-  // Filter and Sort Prompts
-  const filteredAndSortedPrompts = useMemo(() => {
-    // 1. Filter
+  // Client-side fallback computation when initialPrompts is not provided
+  const fallbackFilteredPrompts = useMemo(() => {
+    if (initialPrompts !== undefined) return null;
+
     const filtered = STARTER_PROMPTS.filter((prompt) => {
-      // Category filter
       if (selectedCategory !== "all" && prompt.category !== selectedCategory) {
         return false;
       }
 
-      // Model filter
       if (selectedModel !== "All Models") {
         const matchesPrimary = prompt.model === selectedModel;
         const matchesCompatible = prompt.compatibleModels?.includes(
@@ -144,7 +207,12 @@ export function HomePageClient() {
         }
       }
 
-      // Search filter across title, prompt text, description, tags, and model
+      if (occasion !== "all" && prompt.occasion !== occasion) return false;
+      if (setting !== "all" && prompt.setting !== setting) return false;
+      if (lighting !== "all" && prompt.lighting !== lighting) return false;
+      if (framing !== "all" && prompt.framing !== framing) return false;
+      if (workflow !== "all" && prompt.workflow !== workflow) return false;
+
       if (searchQuery.trim() !== "") {
         const query = searchQuery.toLowerCase().trim();
         const matchesTitle = prompt.title.toLowerCase().includes(query);
@@ -163,7 +231,6 @@ export function HomePageClient() {
       return true;
     });
 
-    // 2. Sort
     return filtered.sort((a, b) => {
       if (sortOption === "title-asc") {
         return a.title.localeCompare(b.title);
@@ -171,16 +238,36 @@ export function HomePageClient() {
       if (sortOption === "title-desc") {
         return b.title.localeCompare(a.title);
       }
-      // "newest" sort by publication date
       return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
     });
-  }, [searchQuery, selectedCategory, selectedModel, sortOption]);
+  }, [
+    initialPrompts,
+    searchQuery,
+    selectedCategory,
+    selectedModel,
+    sortOption,
+    occasion,
+    setting,
+    lighting,
+    framing,
+    workflow,
+  ]);
 
-  const totalMatching = filteredAndSortedPrompts.length;
-  const paginatedPrompts = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return filteredAndSortedPrompts.slice(start, start + PAGE_SIZE);
-  }, [filteredAndSortedPrompts, currentPage]);
+  const displayedPrompts = useMemo(() => {
+    if (initialPrompts !== undefined) {
+      return initialPrompts;
+    }
+    if (fallbackFilteredPrompts) {
+      const start = (currentPage - 1) * PAGE_SIZE;
+      return fallbackFilteredPrompts.slice(start, start + PAGE_SIZE);
+    }
+    return [];
+  }, [initialPrompts, fallbackFilteredPrompts, currentPage]);
+
+  const totalMatching =
+    initialTotalMatching !== undefined
+      ? initialTotalMatching
+      : fallbackFilteredPrompts?.length || 0;
 
   // Handlers
   const handleSearchChange = (val: string) => {
@@ -207,6 +294,26 @@ export function HomePageClient() {
     }
   };
 
+  const handleSelectOccasion = (val: string) => {
+    updateUrl({ occasion: val, page: 1 });
+  };
+
+  const handleSelectSetting = (val: string) => {
+    updateUrl({ setting: val, page: 1 });
+  };
+
+  const handleSelectLighting = (val: string) => {
+    updateUrl({ lighting: val, page: 1 });
+  };
+
+  const handleSelectFraming = (val: string) => {
+    updateUrl({ framing: val, page: 1 });
+  };
+
+  const handleSelectWorkflow = (val: string) => {
+    updateUrl({ workflow: val, page: 1 });
+  };
+
   const handleResetFilters = () => {
     startTransition(() => {
       router.push("/", { scroll: false });
@@ -225,6 +332,47 @@ export function HomePageClient() {
     updateUrl({ model: "All Models", page: 1 });
   };
 
+  const handleRemoveOccasion = () => {
+    updateUrl({ occasion: "all", page: 1 });
+  };
+
+  const handleRemoveSetting = () => {
+    updateUrl({ setting: "all", page: 1 });
+  };
+
+  const handleRemoveLighting = () => {
+    updateUrl({ lighting: "all", page: 1 });
+  };
+
+  const handleRemoveFraming = () => {
+    updateUrl({ framing: "all", page: 1 });
+  };
+
+  const handleRemoveWorkflow = () => {
+    updateUrl({ workflow: "all", page: 1 });
+  };
+
+  const handleApplyMobileFilters = (filters: {
+    model: string;
+    category: string;
+    occasion: string;
+    setting: string;
+    lighting: string;
+    framing: string;
+    workflow: string;
+  }) => {
+    updateUrl({
+      model: filters.model,
+      category: filters.category,
+      occasion: filters.occasion,
+      setting: filters.setting,
+      lighting: filters.lighting,
+      framing: filters.framing,
+      workflow: filters.workflow,
+      page: 1,
+    });
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground antialiased selection:bg-blue-600 selection:text-white">
       {/* Header */}
@@ -232,7 +380,7 @@ export function HomePageClient() {
 
       {/* Main Content Area */}
       <main className="flex-1">
-        {/* Hero Section with Search, Sort & Filters */}
+        {/* Hero Section with Search, Sort, Facets & Mobile Drawer */}
         <Hero
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
@@ -242,16 +390,32 @@ export function HomePageClient() {
           onSelectModel={handleSelectModel}
           sortOption={sortOption}
           onSortChange={handleSortChange}
+          occasion={occasion}
+          onSelectOccasion={handleSelectOccasion}
+          setting={setting}
+          onSelectSetting={handleSelectSetting}
+          lighting={lighting}
+          onSelectLighting={handleSelectLighting}
+          framing={framing}
+          onSelectFraming={handleSelectFraming}
+          workflow={workflow}
+          onSelectWorkflow={handleSelectWorkflow}
           onResetFilters={handleResetFilters}
           onRemoveSearch={handleRemoveSearch}
           onRemoveCategory={handleRemoveCategory}
           onRemoveModel={handleRemoveModel}
+          onRemoveOccasion={handleRemoveOccasion}
+          onRemoveSetting={handleRemoveSetting}
+          onRemoveLighting={handleRemoveLighting}
+          onRemoveFraming={handleRemoveFraming}
+          onRemoveWorkflow={handleRemoveWorkflow}
+          onApplyMobileFilters={handleApplyMobileFilters}
           totalResults={totalMatching}
         />
 
-        {/* Masonry-Style Prompt Gallery with pagination */}
+        {/* Masonry-Style Prompt Gallery with pagination & empty state */}
         <PromptGallery
-          prompts={paginatedPrompts}
+          prompts={displayedPrompts}
           totalMatching={totalMatching}
           currentPage={currentPage}
           pageSize={PAGE_SIZE}
@@ -261,7 +425,6 @@ export function HomePageClient() {
           bookmarkedPromptIds={bookmarkedPromptIds}
           isAuthenticated={isAuthenticated}
         />
-
       </main>
 
       {/* Footer */}
