@@ -184,7 +184,38 @@ node scripts/classify-style-facets.mjs --sync-db
 
 ---
 
-## 7. Failure Diagnosis & Health Check
+## 7. Design System, Dual Themes & Spotlight Command Palette
+
+### Typography Architecture
+PromptNest pairs three complementary typography families configured via `next/font/google` with `display: 'swap'` in `src/app/layout.tsx`:
+- **Heading Font**: `Plus Jakarta Sans` (weights 600, 700, 800) mapped to CSS variable `--font-heading`. Used for editorial headlines, display hero banners, and section titles.
+- **Body & UI Font**: `Inter` (weights 400, 500, 600) mapped to CSS variable `--font-sans`. Used for general UI controls, cards, paragraphs, and metadata.
+- **Monospace Font**: `JetBrains Mono` (weights 400, 500) mapped to CSS variable `--font-mono`. Used for prompt blocks, parameter tokens (`--ar`, `--v`), copy buttons, and keyboard shortcut pills.
+
+### Dual-Theme Token System (Obsidian Dark & Alabaster Light)
+PromptNest features an Obsidian Dark palette (default) and a crisp Alabaster Light palette:
+- **Obsidian Dark Tokens**: Canvas (`#090A0F`), Surface Card (`#11131C`), Specular Border (`rgba(255,255,255,0.08)`), Ambient Mesh Illumination (`radial-gradient(...)`).
+- **Alabaster Light Tokens**: Canvas (`#F8FAFC`), Surface Card (`#FFFFFF`), Border (`#E2E8F0`).
+- **Hydration Flash Prevention**: An inline blocking script in the `<head>` of `src/app/layout.tsx` inspects `localStorage.getItem('promptnest-theme')` or `window.matchMedia('(prefers-color-scheme: dark)')` before initial paint, applying or removing the `.dark` class immediately with zero layout shift or visual flash.
+- **Client Synchronization**: `src/components/theme/ThemeProvider.tsx` uses React 19's `useSyncExternalStore` for SSR/CSR hydration consistency without cascading re-renders.
+
+### Spotlight Command Palette (`⌘K` / `Ctrl+K`)
+- **Mount Point**: Globally mounted in `src/app/layout.tsx` as `<CommandPalette />`.
+- **Keyboard Shortcuts**:
+  - `Cmd+K` (macOS) / `Ctrl+K` (Windows/Linux): Opens the spotlight modal.
+  - `ArrowDown` / `ArrowUp`: Navigates results across grouped sections.
+  - `Enter`: Activates selected item (navigates or copies prompt).
+  - `Escape`: Closes the palette and restores prior focus.
+- **Programmatic Trigger**: Any component can open the palette by dispatching `window.dispatchEvent(new CustomEvent('open-command-palette'))`.
+- **Result Groups**:
+  1. **Matching Prompts**: Displays title, model badge, thumbnail, and 1-click copy action.
+  2. **Categories**: Quick jumps to Photography, Digital Art, Architecture, Portraits, etc.
+  3. **AI Models**: Direct filters for Midjourney, Flux, Stable Diffusion, DALL-E.
+  4. **Quick Actions**: Toggle Dark/Light Theme, Explore Gallery, View Saved, Submissions, Guides.
+
+---
+
+## 8. Failure Diagnosis & Health Check
 
 ### Health Check Endpoints
 - **Application Live Check**: `GET /` returns HTTP 200 with server-rendered gallery.
@@ -205,7 +236,7 @@ node scripts/classify-style-facets.mjs --sync-db
 
 ---
 
-## 7. Rollback Protocol & Recovery Boundaries
+## 9. Rollback Protocol & Recovery Boundaries
 
 ### What a Vercel Rollback Restores
 - **Frontend Code & Serverless Functions**: Instantly reverts the deployed Next.js build artifacts, server actions, client bundles, and routing logic to the selected prior deployment.
@@ -216,7 +247,7 @@ node scripts/classify-style-facets.mjs --sync-db
 - **Storage Buckets**: Uploaded files in `prompt-images` and `prompt-staging` remain in Supabase Storage.
 
 ### Database Recovery Considerations
-- All migrations (`001` through `004`) are designed to be backward-compatible (non-destructive additions: new tables, new nullable columns, additive constraints).
+- All migrations (`001` through `008`) are designed to be backward-compatible (non-destructive additions: new tables, new nullable columns, additive constraints).
 - If an emergency code rollback is required, existing database schemas will not break previous code versions because no columns or tables are dropped.
 - **Point-in-Time Recovery (PITR)**: Available on Supabase Pro plans. On Free tier, manual SQL dumps can be generated using `pg_dump` or Supabase CLI:
   ```bash
@@ -225,12 +256,13 @@ node scripts/classify-style-facets.mjs --sync-db
 
 ---
 
-## 8. Release Verification Checklist
+## 10. Release Verification Checklist
 
 Before deploying any future release:
 - [ ] Run `npm run lint` (0 errors, 0 warnings).
-- [ ] Run `npm run verify` (all cumulative tests pass).
+- [ ] Run `npm run verify` (all cumulative tests pass, currently 110/110).
 - [ ] Run `npm run build` (Turbopack production build succeeds with clean page generation).
 - [ ] Ensure all database migrations have been executed in target Supabase project.
 - [ ] Push to `origin main` to trigger automatic Vercel deployment.
-- [ ] Smoke-test homepage (`/`), search/filtering, prompt detail (`/prompts/[slug]`), blog (`/blog`), and `/admin`.
+- [ ] Smoke-test homepage (`/`), search/filtering, prompt detail (`/prompts/[slug]`), blog (`/blog`), command palette (`⌘K`), theme toggle, and `/admin`.
+

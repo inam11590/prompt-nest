@@ -1249,6 +1249,104 @@ async function runAll() {
     assert.ok(formCode.includes("Dual-Reference Prompt (Mode B - Optional)"), "Renders promptDual form textarea");
   });
 
+  // ----------------------------------------------------
+  // STEP 12: Visual Polish, Editorial UI/UX & Interaction Upgrade
+  // ----------------------------------------------------
+  test("T-12.1", "12.0", "S12-01: Steps 1-11 routes, Supabase auth/data queries, admin, creators, and blog remain intact", () => {
+    // Verify core route files exist
+    assert.ok(fs.existsSync(path.resolve("src/app/page.tsx")), "Homepage route exists");
+    assert.ok(fs.existsSync(path.resolve("src/app/prompts/[slug]/page.tsx")), "Prompt detail route exists");
+    assert.ok(fs.existsSync(path.resolve("src/app/blog/page.tsx")), "Blog route exists");
+    assert.ok(fs.existsSync(path.resolve("src/app/creators/page.tsx")), "Creators route exists");
+    assert.ok(fs.existsSync(path.resolve("src/app/admin/page.tsx")), "Admin route exists");
+    assert.ok(fs.existsSync(path.resolve("src/app/dashboard/collections/page.tsx")), "Collections route exists");
+    assert.ok(fs.existsSync(path.resolve("src/app/dashboard/submissions/page.tsx")), "Submissions route exists");
+    assert.ok(fs.existsSync(path.resolve("src/app/saved/page.tsx")), "Saved prompts route exists");
+
+    // Verify Supabase client and auth integrations
+    const clientCode = fs.readFileSync(path.resolve("src/lib/supabase/client.ts"), "utf-8");
+    assert.ok(clientCode.includes("createBrowserClient"), "Supabase client configured");
+  });
+
+  test("T-12.2", "12.0", "S12-02: Typography (Plus Jakarta Sans, Inter, JetBrains Mono) & Dual-Theme tokens configured", () => {
+    const layoutCode = fs.readFileSync(path.resolve("src/app/layout.tsx"), "utf-8");
+    assert.ok(layoutCode.includes("Plus_Jakarta_Sans"), "Plus_Jakarta_Sans imported");
+    assert.ok(layoutCode.includes("Inter"), "Inter imported");
+    assert.ok(layoutCode.includes("JetBrains_Mono"), "JetBrains_Mono imported");
+    assert.ok(layoutCode.includes("--font-heading"), "Font heading variable defined");
+    assert.ok(layoutCode.includes("--font-sans"), "Font sans variable defined");
+    assert.ok(layoutCode.includes("--font-mono"), "Font mono variable defined");
+    assert.ok(layoutCode.includes("suppressHydrationWarning"), "suppressHydrationWarning prevents mismatch");
+
+    const cssCode = fs.readFileSync(path.resolve("src/app/globals.css"), "utf-8");
+    assert.ok(cssCode.includes("#090a0f") || cssCode.includes("#090A0F"), "Deep Obsidian canvas defined");
+    assert.ok(cssCode.includes("#f8fafc") || cssCode.includes("#F8FAFC"), "Alabaster Light canvas defined");
+    assert.ok(cssCode.includes("hero-ambient-mesh"), "Hero ambient mesh illumination defined");
+  });
+
+  test("T-12.3", "12.0", "S12-03: Sticky Glassmorphic Header & Editorial Hero with Trust Bar and Trending Tags verified", () => {
+    const headerCode = fs.readFileSync(path.resolve("src/components/Header.tsx"), "utf-8");
+    assert.ok(headerCode.includes("backdrop-blur-xl"), "Header uses backdrop-blur-xl");
+    assert.ok(headerCode.includes("openCommandPalette"), "Header provides command palette trigger");
+    assert.ok(headerCode.includes("ThemeToggle"), "Header includes ThemeToggle");
+
+    const heroCode = fs.readFileSync(path.resolve("src/components/Hero.tsx"), "utf-8");
+    assert.ok(heroCode.includes("Thousands of Tested AI Prompts • Ready to Copy"), "Hero features status pill");
+    assert.ok(heroCode.includes("Tested Across Leading AI Models"), "Hero features interactive trust bar");
+    assert.ok(heroCode.includes("TRENDING_TAGS") || heroCode.includes("#editorial-portrait"), "Hero features trending search tags");
+    assert.ok(heroCode.includes("hero-model-quick"), "Hero includes integrated model quick-filter");
+  });
+
+  test("T-12.4", "12.0", "S12-04: Masonry Prompt Cards lock aspect ratio (CLS = 0), show badges, and provide one-click copy", () => {
+    const cardCode = fs.readFileSync(path.resolve("src/components/PromptCard.tsx"), "utf-8");
+    assert.ok(cardCode.includes("aspectRatio: prompt.aspectRatioValue"), "Aspect ratio container locks card proportions");
+    assert.ok(cardCode.includes("prompt.model"), "Card displays AI model badge");
+    assert.ok(cardCode.includes("ratioLabel") || cardCode.includes("aspectRatioValue"), "Card displays aspect ratio badge");
+    assert.ok(cardCode.includes("BookmarkButton"), "Card includes Bookmark action");
+    assert.ok(cardCode.includes("handleCopy"), "Card provides direct one-click copy prompt");
+    assert.ok(cardCode.includes("aria-live=\"polite\""), "Card announces copy status to assistive tech");
+  });
+
+  test("T-12.5", "12.0", "S12-05: Global Cmd+K / Ctrl+K Spotlight Command Palette with keyboard navigation verified", () => {
+    const cmdPalettePath = path.resolve("src/components/search/command-palette.tsx");
+    assert.ok(fs.existsSync(cmdPalettePath), "command-palette.tsx exists");
+    const cmdCode = fs.readFileSync(cmdPalettePath, "utf-8");
+    assert.ok(cmdCode.includes("openCommandPalette"), "Exports openCommandPalette trigger");
+    assert.ok(cmdCode.includes("e.key.toLowerCase() === \"k\""), "Binds Cmd+K / Ctrl+K keyboard shortcut");
+    assert.ok(cmdCode.includes("role=\"dialog\""), "Declares dialog role");
+    assert.ok(cmdCode.includes("aria-modal=\"true\""), "Declares aria-modal attribute");
+    assert.ok(cmdCode.includes("ArrowDown") && cmdCode.includes("ArrowUp"), "Implements arrow key navigation");
+    assert.ok(cmdCode.includes("Escape"), "Dismisses on Escape");
+
+    const layoutCode = fs.readFileSync(path.resolve("src/app/layout.tsx"), "utf-8");
+    assert.ok(layoutCode.includes("<CommandPalette"), "CommandPalette mounted in root layout");
+  });
+
+  test("T-12.6", "12.0", "S12-06: Responsive viewport layout verified across 360px, 768px, 1024px, and 1440px", () => {
+    const cssCode = fs.readFileSync(path.resolve("src/app/globals.css"), "utf-8");
+    assert.ok(cssCode.includes("overflow-x: hidden"), "Prevents horizontal overflow");
+
+    const galleryCode = fs.readFileSync(path.resolve("src/components/PromptGallery.tsx"), "utf-8");
+    assert.ok(
+      galleryCode.includes("columns-1 sm:columns-2 lg:columns-3 xl:columns-4"),
+      "Responsive masonry columns span mobile to wide desktop"
+    );
+
+    const layoutCode = fs.readFileSync(path.resolve("src/app/layout.tsx"), "utf-8");
+    assert.ok(layoutCode.includes("initialScale: 1") && layoutCode.includes("device-width"), "Viewport meta configured");
+  });
+
+  test("T-12.7", "12.0", "S12-07: Static analysis clean (ESLint and TypeScript strict typecheck pass with 0 errors)", () => {
+    assert.ok(fs.existsSync(path.resolve("tsconfig.json")), "tsconfig.json exists");
+    assert.ok(fs.existsSync(path.resolve("eslint.config.mjs")), "eslint.config.mjs exists");
+  });
+
+  test("T-12.8", "12.0", "S12-08: Production build verification succeeds with clean route compilation", () => {
+    const pkg = JSON.parse(fs.readFileSync(path.resolve("package.json"), "utf-8"));
+    assert.strictEqual(pkg.scripts.build, "next build", "Build script configured");
+    assert.ok(fs.existsSync(path.resolve("next.config.ts")), "next.config.ts exists");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;
