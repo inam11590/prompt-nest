@@ -18,6 +18,7 @@ import {
   getPromptBySlug,
   getAllPromptSlugs,
   getRelatedPrompts,
+  extractNegativePromptData,
 } from "@/data/prompts";
 import {
   getPromptBySlugDb,
@@ -26,14 +27,15 @@ import { getGuidesForPrompt } from "@/lib/data/articles";
 import { siteConfig } from "@/config/site";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { CopyPromptButton } from "@/components/CopyPromptButton";
-import { ImageModal } from "@/components/ImageModal";
 import { ShareButton } from "@/components/ShareButton";
 import { PromptCard } from "@/components/PromptCard";
 import { ReturnButton } from "@/components/ReturnButton";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { AddToCollectionButton } from "@/components/collections/AddToCollectionButton";
 import { PromptTransformationTabs } from "@/components/PromptTransformationTabs";
+import { PromptMediaViewer } from "@/components/prompts/prompt-media-viewer";
+import { PromptVariableStudio } from "@/components/prompts/prompt-variable-studio";
+import { NegativePromptBlock } from "@/components/prompts/negative-prompt-block";
 
 interface PromptPageProps {
   params: Promise<{
@@ -115,6 +117,9 @@ async function PromptDetailContent({ params }: PromptPageProps) {
 
   // Fetch contextual guides associated with this prompt
   const relatedGuides = await getGuidesForPrompt(prompt.id).catch(() => []);
+
+  // Step 13: Extract negative prompt exclusions, pills, and Midjourney --no syntax
+  const negativeData = extractNegativePromptData(prompt);
 
   const categoryLabels: Record<string, string> = {
     photography: "Photography",
@@ -218,14 +223,17 @@ async function PromptDetailContent({ params }: PromptPageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Visual Showcase (Left Column on Desktop, First on Mobile) */}
             <div className="lg:col-span-7 flex flex-col gap-3">
-              {/* Image Area with Accessible Enlargement Modal */}
-              <ImageModal
-                src={prompt.imageUrl}
-                alt={prompt.imageAlt}
+              {/* Interactive Media Viewer with Comparison Slider & Accessible Lightbox */}
+              <PromptMediaViewer
+                imageUrl={prompt.imageUrl}
+                imageAlt={prompt.imageAlt}
+                referenceImageUrl={prompt.referenceImageUrl}
+                referenceImageAlt={`Reference input photo for ${prompt.title}`}
                 width={prompt.width}
                 height={prompt.height}
                 aspectRatioValue={prompt.aspectRatioValue}
                 dominantColor={prompt.dominantColor}
+                model={prompt.model}
               />
 
               {/* Image Attribution & Authorized Download Action */}
@@ -386,6 +394,24 @@ async function PromptDetailContent({ params }: PromptPageProps) {
                 </div>
               )}
 
+              {/* Step 13: Interactive Prompt Variable Studio (Live Customizer) */}
+              <PromptVariableStudio
+                initialPrompt={prompt.prompt}
+                promptDual={prompt.promptDual}
+                model={prompt.model}
+                aspectRatioValue={prompt.aspectRatioValue}
+                variables={prompt.variables}
+                slug={prompt.slug}
+                negativePromptText={negativeData.rawNegativeText}
+              />
+
+              {/* Step 13: Dedicated Negative Prompt & --no Flag Formatter Block */}
+              <NegativePromptBlock
+                rawNegativeText={negativeData.rawNegativeText}
+                exclusionPills={negativeData.exclusionPills}
+                midjourneyNoSyntax={negativeData.midjourneyNoSyntax}
+              />
+
               {/* Prompt Text & Transformation Variants Section */}
               <PromptTransformationTabs
                 promptText={prompt.prompt}
@@ -454,31 +480,6 @@ async function PromptDetailContent({ params }: PromptPageProps) {
                     )}
                   </div>
                 </div>
-              )}
-
-              {/* Optional: Negative Prompt Section (only rendered when explicitly stored) */}
-              {prompt.negativePrompt && (
-                <section
-                  aria-labelledby="negative-prompt-heading"
-                  className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 shadow-lg"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <h2
-                      id="negative-prompt-heading"
-                      className="text-xs font-bold uppercase tracking-wider text-text-faint"
-                    >
-                      Negative Prompt
-                    </h2>
-                    <CopyPromptButton
-                      promptText={prompt.negativePrompt}
-                      label="Copy Negative"
-                      className="bg-zinc-800 hover:bg-zinc-700"
-                    />
-                  </div>
-                  <div className="rounded-xl border border-surface-border-subtle bg-surface-raised p-4 font-mono text-xs leading-relaxed text-text-muted select-all break-words whitespace-pre-wrap">
-                    {prompt.negativePrompt}
-                  </div>
-                </section>
               )}
 
               {/* Optional: Generation Parameters (only rendered when explicitly stored) */}

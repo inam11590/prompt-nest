@@ -79,6 +79,8 @@ export function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
     lighting: (row.lighting || (row.generation_parameters as Record<string, unknown>)?.lighting || undefined) as StyleLighting | undefined,
     framing: (row.framing || (row.generation_parameters as Record<string, unknown>)?.framing || undefined) as StyleFraming | undefined,
     workflow: (row.workflow || (row.generation_parameters as Record<string, unknown>)?.workflow || undefined) as StyleWorkflow | undefined,
+    referenceImageUrl: ((row as Record<string, unknown>).reference_image_url as string) || ((row.generation_parameters as Record<string, unknown>)?.reference_image_url as string) || undefined,
+    variables: ((row as Record<string, unknown>).variables as PromptItem["variables"]) || ((row.generation_parameters as Record<string, unknown>)?.variables as PromptItem["variables"]) || undefined,
   };
 }
 

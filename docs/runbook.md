@@ -213,6 +213,27 @@ PromptNest features an Obsidian Dark palette (default) and a crisp Alabaster Lig
   3. **AI Models**: Direct filters for Midjourney, Flux, Stable Diffusion, DALL-E.
   4. **Quick Actions**: Toggle Dark/Light Theme, Explore Gallery, View Saved, Submissions, Guides.
 
+### Interactive Prompt Variable Studio & Live Customizer
+- **Component**: `src/components/prompts/prompt-variable-studio.tsx` mounted on `/prompts/[slug]`.
+- **Live Variable Customizer**: Real-time assembly of prompt modifications for Aspect Ratio (`9:16`, `2:3`, `4:5`, `1:1`, `16:9`), Lighting Style (`Golden Hour`, `Crisp Studio`, `Cinematic Neon`, `Overcast`), Camera Lens (`35mm`, `50mm`, `85mm`, `24mm`), and AI Model Format (`Midjourney v6.1`, `Flux.1 Pro`, `DALL-E 3`, `Raw Prompt`).
+- **Token Highlighting**: Customized tokens are dynamically marked in `JetBrains Mono` with subtle accent badges (`bg-indigo-500/15 text-indigo-300 border border-indigo-500/30`).
+- **One-Click Actions**:
+  - `Copy Customized Prompt`: Copies the assembled prompt with optimistic copy counter, 2-second checkmark confirmation, and polite screen reader announcements.
+  - `Reset to Tested Original`: Restores default author parameters in one click whenever modifications exist.
+  - `Quick-Launch AI Tool Bar`: Direct links to open customized prompts in Midjourney, ChatGPT, or Flux.
+
+### Negative Prompt & Midjourney `--no` Syntax Formatter
+- **Component**: `src/components/prompts/negative-prompt-block.tsx` mounted on `/prompts/[slug]`.
+- **Quality Guardrails**: Automatically extracts negative prompt clauses or provides curated quality exclusions (`text`, `watermark`, `distorted hands`, `bad anatomy`, etc.).
+- **Syntax Toggle**: Allows switching between Standard Negative Exclusions (for Stable Diffusion, SeaArt, Leonardo) and Midjourney `--no` parameter syntax (`--no text, logo, watermark...`).
+- **Dedicated Copy CTA**: Independent 1-click clipboard copy with checkmark feedback.
+
+### Before/After Reference Image Comparison Slider & Fullscreen Lightbox
+- **Component**: `src/components/prompts/prompt-media-viewer.tsx` mounted on `/prompts/[slug]`.
+- **Native Ratio Lock**: Container locked to exact native dimensions guaranteeing zero Cumulative Layout Shift (`CLS = 0`).
+- **Interactive Comparison Slider**: When `referenceImageUrl` exists, renders a draggable split-screen slider (0% to 100%) comparing the original input photo ("Before") against the AI generated output ("After"). Supports mouse drag, mobile touch drag, and accessible keyboard arrow adjustments (`role="slider"`, `aria-valuemin={0}`, `aria-valuemax={100}`).
+- **Accessible Fullscreen Lightbox**: Pressing `Z` or clicking "Inspect Fullscreen" opens an accessible dialog with 1x/2x zoom magnification toggle, focus trap, and `Escape` key close.
+
 ---
 
 ## 8. Failure Diagnosis & Health Check
@@ -260,7 +281,7 @@ PromptNest features an Obsidian Dark palette (default) and a crisp Alabaster Lig
 
 Before deploying any future release:
 - [ ] Run `npm run lint` (0 errors, 0 warnings).
-- [ ] Run `npm run verify` (all cumulative tests pass, currently 110/110).
+- [ ] Run `npm run verify` (all cumulative tests pass, currently 118/118).
 - [ ] Run `npm run build` (Turbopack production build succeeds with clean page generation).
 - [ ] Ensure all database migrations have been executed in target Supabase project.
 - [ ] Push to `origin main` to trigger automatic Vercel deployment.

@@ -104,6 +104,13 @@ export const STYLE_FACETS = {
   },
 } as const;
 
+export interface PromptVariable {
+  key: string;
+  label: string;
+  defaultValue: string;
+  options: string[];
+}
+
 export interface PromptItem {
   id: string;
   slug: string;
@@ -127,6 +134,8 @@ export interface PromptItem {
   status?: "draft" | "published" | "archived"; // publication lifecycle state
   updatedAt?: string; // ISO 8601 timestamp for concurrency checks
   negativePrompt?: string; // Optional: only present when explicitly stored
+  referenceImageUrl?: string; // Step 13: Optional reference input image for img2img / before-after comparison
+  variables?: PromptVariable[]; // Step 13: Optional customizable prompt variables
   generationParameters?: Record<string, string | number>; // Optional generation params
   sourceAttribution: {
     source: string;
@@ -178,6 +187,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=900&q=80",
     imageAlt: "Atmospheric street portrait lit by vivid evening city lights",
+    referenceImageUrl:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=80",
+    negativePrompt:
+      "text, watermark, logo, signage, blurry, distorted face, duplicate limbs, extra fingers, bad anatomy, overexposed",
     width: 900,
     height: 1200,
     aspectRatio: "portrait",
@@ -210,6 +223,8 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80",
     imageAlt: "Contemporary luxury architecture integrated seamlessly with lush greenery",
+    negativePrompt:
+      "people, crowd, cars, power lines, construction waste, text, logo, blurry, oversaturated, gloomy, cloudy",
     width: 900,
     height: 675,
     aspectRatio: "landscape",
@@ -237,6 +252,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=900&q=80",
     imageAlt: "Futuristic warrior concept portrait with dramatic lighting",
+    referenceImageUrl:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
+    negativePrompt:
+      "text, watermark, logo, cartoonish, low polygon, blurry face, bad anatomy, deformed hands, low resolution",
     width: 900,
     height: 1200,
     aspectRatio: "portrait",
@@ -604,4 +623,154 @@ export function getRelatedPrompts(currentPrompt: PromptItem, limit = 6): PromptI
   });
 
   return scored.slice(0, limit).map((item) => item.candidate);
+}
+
+/**
+ * Step 13: Deterministically extracts customizable variables from a prompt.
+ * If prompt.variables is set, returns it.
+ * Otherwise detects [bracketed_variables] in the prompt text,
+ * plus the universal Aspect Ratio, Lighting Style, Camera Lens, and AI Model Format controls.
+ */
+export function extractPromptVariables(prompt: PromptItem): PromptVariable[] {
+  if (prompt.variables && prompt.variables.length > 0) {
+    return prompt.variables;
+  }
+
+  const variables: PromptVariable[] = [];
+
+  // Check for any [bracketed variable] in the prompt text
+  const bracketMatches = prompt.prompt.match(/\[([a-zA-Z0-9_\-\s]+)\]/g);
+  if (bracketMatches) {
+    const seen = new Set<string>();
+    for (const match of bracketMatches) {
+      const inner = match.slice(1, -1).trim();
+      const key = inner.toLowerCase().replace(/\s+/g, "_");
+      if (!seen.has(key)) {
+        seen.add(key);
+        variables.push({
+          key,
+          label: inner.charAt(0).toUpperCase() + inner.slice(1),
+          defaultValue: inner,
+          options: [inner],
+        });
+      }
+    }
+  }
+
+  // Universal customizable variable controls
+  // 1. Aspect Ratio
+  const defaultAr =
+    prompt.aspectRatioValue === "3/4" ||
+    prompt.aspectRatioValue === "4/5" ||
+    prompt.aspectRatio === "portrait"
+      ? "9:16"
+      : prompt.aspectRatioValue === "4/3" ||
+        prompt.aspectRatioValue === "16/9" ||
+        prompt.aspectRatio === "landscape"
+      ? "16:9"
+      : "1:1";
+
+  variables.push({
+    key: "aspectRatio",
+    label: "Aspect Ratio",
+    defaultValue: defaultAr,
+    options: ["9:16", "2:3", "4:5", "1:1", "16:9"],
+  });
+
+  // 2. Lighting Style
+  variables.push({
+    key: "lightingStyle",
+    label: "Lighting Style",
+    defaultValue: "Default",
+    options: [
+      "Default",
+      "Golden Hour",
+      "Crisp Studio Daylight",
+      "Moody Cinematic Neon",
+      "Soft Diffused Overcast",
+    ],
+  });
+
+  // 3. Camera Lens
+  variables.push({
+    key: "cameraLens",
+    label: "Camera Lens",
+    defaultValue: "Default",
+    options: [
+      "Default",
+      "35mm Editorial",
+      "50mm Prime",
+      "85mm f/1.4 Portrait",
+      "24mm Wide Angle",
+    ],
+  });
+
+  // 4. Model Format
+  variables.push({
+    key: "modelFormat",
+    label: "AI Model Format",
+    defaultValue: prompt.model.includes("Midjourney")
+      ? "Midjourney v6.1"
+      : prompt.model.includes("FLUX")
+      ? "FLUX.1 Pro"
+      : "Raw Prompt",
+    options: [
+      "Midjourney v6.1",
+      "FLUX.1 Pro",
+      "DALL-E 3",
+      "Raw Prompt",
+    ],
+  });
+
+  return variables;
+}
+
+export interface NegativePromptData {
+  rawNegativeText: string;
+  exclusionPills: string[];
+  midjourneyNoSyntax: string;
+}
+
+/**
+ * Step 13: Deterministically extracts negative prompt exclusions, pills, and Midjourney --no syntax.
+ */
+export function extractNegativePromptData(prompt: PromptItem): NegativePromptData {
+  let raw = prompt.negativePrompt?.trim() || "";
+
+  // If not explicitly set, scan for trailing negative sentence in prompt text
+  if (!raw) {
+    const negativeMatch = prompt.prompt.match(/(?:(?:no|without|avoid|exclude)\s+[^.]+?)(?:\.|$)/i);
+    if (negativeMatch) {
+      raw = negativeMatch[0].replace(/\.$/, "").trim();
+    }
+  }
+
+  // Fallback high-fidelity exclusions if none found
+  if (!raw) {
+    raw = "text, watermark, logo, blurry, distorted hands, bad anatomy, extra limbs, low resolution";
+  }
+
+  // Clean raw tokens for pills and Midjourney flag
+  const tokens = raw
+    .split(/[,;]+/)
+    .map((t) => t.replace(/^(?:no|without|avoid|exclude)\s+/i, "").trim())
+    .filter((t) => t.length > 0 && t.length < 40);
+
+  // De-duplicate
+  const uniqueTokens = Array.from(new Set(tokens.map((t) => t.toLowerCase())));
+
+  const exclusionPills = uniqueTokens.map((t) => {
+    return "No " + t.charAt(0).toUpperCase() + t.slice(1);
+  });
+
+  const midjourneyNoSyntax = `--no ${uniqueTokens.join(", ")}`;
+
+  return {
+    rawNegativeText: raw,
+    exclusionPills:
+      exclusionPills.length > 0
+        ? exclusionPills
+        : ["No text", "No watermark", "No logo", "No distortion"],
+    midjourneyNoSyntax,
+  };
 }
