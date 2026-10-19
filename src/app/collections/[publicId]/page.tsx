@@ -93,6 +93,21 @@ async function PublicCollectionContent({ params }: PublicCollectionPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+      {/* Breadcrumb Navigation */}
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-text-faint mb-6">
+        <Link href="/" className="hover:text-foreground transition-colors">
+          Home
+        </Link>
+        <span>&rsaquo;</span>
+        <Link href="/collections" className="hover:text-foreground transition-colors">
+          Collections
+        </Link>
+        <span>&rsaquo;</span>
+        <span className="text-text-muted truncate max-w-xs" aria-current="page">
+          {collection.title}
+        </span>
+      </nav>
+
       {/* Collection Header */}
       <div className="max-w-3xl">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-400 mb-3">
@@ -153,7 +168,7 @@ async function PublicCollectionContent({ params }: PublicCollectionPageProps) {
           </div>
 
           {/* Share Action Button */}
-          <ShareButton title={collection.title} url={canonicalUrl} />
+          <ShareButton title={collection.title} url={canonicalUrl} label="Copy Shareable Board Link" />
         </div>
       </div>
 

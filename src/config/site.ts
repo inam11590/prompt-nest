@@ -43,6 +43,8 @@ export const siteConfig: SiteConfig = {
   navItems: [
     { label: "Home", href: "/", iconName: "Home", isPrimary: true },
     { label: "Explore", href: "/#gallery", iconName: "Compass" },
+    { label: "Trending", href: "/trending", iconName: "Sparkles" },
+    { label: "Collections", href: "/collections", iconName: "Compass" },
     { label: "Creators", href: "/creators", iconName: "Sparkles" },
     { label: "Models", href: "/#models", iconName: "Sparkles" },
     { label: "Guides", href: "/blog", iconName: "BookOpen" },

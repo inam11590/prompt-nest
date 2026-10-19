@@ -16,6 +16,7 @@ import {
   Bot,
 } from "lucide-react";
 import type { PromptVariable } from "@/data/prompts";
+import { incrementPromptCopyAction } from "@/app/actions/engagement";
 
 interface PromptVariableStudioProps {
   initialPrompt: string;
@@ -33,6 +34,7 @@ export function PromptVariableStudio({
   model,
   aspectRatioValue,
   variables: initialVariables = [],
+  slug,
 }: PromptVariableStudioProps) {
   // Mode selection: Single mode vs Dual-reference mode
   const [activeTab, setActiveTab] = useState<"single" | "dual">("single");
@@ -283,13 +285,16 @@ export function PromptVariableStudio({
         setCopied(true);
         setCopyCount((c) => c + 1);
         setToastMessage(successLabel);
+        if (slug) {
+          incrementPromptCopyAction(slug).catch(() => {});
+        }
         setTimeout(() => setCopied(false), 2200);
         setTimeout(() => setToastMessage(null), 3500);
       } catch {
         setToastMessage("Failed to copy. Please manually select the text.");
       }
     },
-    []
+    [slug]
   );
 
   // Primary Copy CTA

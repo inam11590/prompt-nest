@@ -1451,6 +1451,112 @@ async function runAll() {
     assert.ok(fs.existsSync(path.resolve("next.config.ts")), "next.config.ts exists");
   });
 
+  // ----------------------------------------------------
+  // STEP 14: Pinterest-style Collections & Atomic Engagement Leaderboard
+  // ----------------------------------------------------
+  test("T-14.1", "14.0", "S14-01: Step 14 database migration defines atomic counters, prompt_likes table, collection columns, triggers, and RPCs", () => {
+    const migrationPath = path.resolve("supabase/migrations/009_step14_collections_and_engagement.sql");
+    assert.ok(fs.existsSync(migrationPath), "009 migration must exist");
+    const sql = fs.readFileSync(migrationPath, "utf-8");
+    assert.ok(sql.includes("views_count"), "adds views_count column");
+    assert.ok(sql.includes("copies_count"), "adds copies_count column");
+    assert.ok(sql.includes("likes_count"), "adds likes_count column");
+    assert.ok(sql.includes("saves_count"), "adds saves_count column");
+    assert.ok(sql.includes("CREATE TABLE IF NOT EXISTS public.prompt_likes"), "creates prompt_likes table");
+    assert.ok(sql.includes("increment_prompt_view"), "creates increment_prompt_view RPC");
+    assert.ok(sql.includes("increment_prompt_copy"), "creates increment_prompt_copy RPC");
+    assert.ok(sql.includes("trg_sync_prompt_likes_count"), "creates prompt likes sync trigger");
+    assert.ok(sql.includes("trg_sync_prompt_saves_count"), "creates prompt saves sync trigger");
+  });
+
+  test("T-14.2", "14.0", "S14-02: Curated Collections discovery page (/collections) and detail page (/collections/[publicId]) exist with 4+ starter boards and mosaic previews", () => {
+    const collPagePath = path.resolve("src/app/collections/page.tsx");
+    assert.ok(fs.existsSync(collPagePath), "collections listing page exists");
+    const collPage = fs.readFileSync(collPagePath, "utf-8");
+    assert.ok(collPage.includes("getAllPublicCollections"), "queries public collections");
+    assert.ok(collPage.includes("Curated Collections") || collPage.includes("Prompt Collections"), "renders collections header");
+
+    const collDetailPath = path.resolve("src/app/collections/[publicId]/page.tsx");
+    assert.ok(fs.existsSync(collDetailPath), "collection detail page exists");
+    const detailCode = fs.readFileSync(collDetailPath, "utf-8");
+    assert.ok(detailCode.includes("getPublicCollectionByPublicId"), "resolves collection by publicId or slug");
+    assert.ok(detailCode.includes("ShareButton"), "includes share button");
+
+    const collDataPath = path.resolve("src/lib/data/collections.ts");
+    const collData = fs.readFileSync(collDataPath, "utf-8");
+    assert.ok(collData.includes("STARTER_PUBLIC_COLLECTIONS"), "defines starter public collections");
+  });
+
+  test("T-14.3", "14.0", "S14-03: Pinterest-style Save to Collection Modal component exists with board toggles, inline creator, and accessible dialog semantics", () => {
+    const modalPath = path.resolve("src/components/collections/save-to-collection-modal.tsx");
+    assert.ok(fs.existsSync(modalPath), "save-to-collection-modal.tsx exists");
+    const modalCode = fs.readFileSync(modalPath, "utf-8");
+    assert.ok(modalCode.includes("SaveToCollectionModal"), "exports SaveToCollectionModal");
+    assert.ok(modalCode.includes('role="dialog"'), "implements accessible dialog role");
+    assert.ok(modalCode.includes('aria-modal="true"'), "declares aria-modal=true");
+    assert.ok(modalCode.includes("promptnest_guest_boards"), "supports local guest boards fallback");
+    assert.ok(modalCode.includes("createCollectionAction"), "supports creating boards");
+    assert.ok(modalCode.includes("handleToggleBoard"), "supports toggling prompt in board");
+  });
+
+  test("T-14.4", "14.0", "S14-04: LikeButton component implements animated heart feedback, optimistic counters, and guest storage fallback", () => {
+    const likeBtnPath = path.resolve("src/components/LikeButton.tsx");
+    assert.ok(fs.existsSync(likeBtnPath), "LikeButton.tsx exists");
+    const likeCode = fs.readFileSync(likeBtnPath, "utf-8");
+    assert.ok(likeCode.includes("LikeButton"), "exports LikeButton component");
+    assert.ok(likeCode.includes("togglePromptLikeAction"), "calls server action");
+    assert.ok(likeCode.includes("promptnest_liked_prompts"), "supports guest localStorage persistence");
+    assert.ok(likeCode.includes("aria-label"), "provides accessible label");
+  });
+
+  test("T-14.5", "14.0", "S14-05: Atomic view tracker on /prompts/[slug] guards against duplicate increments via sessionStorage", () => {
+    const trackerPath = path.resolve("src/components/prompts/prompt-view-tracker.tsx");
+    assert.ok(fs.existsSync(trackerPath), "prompt-view-tracker.tsx exists");
+    const trackerCode = fs.readFileSync(trackerPath, "utf-8");
+    assert.ok(trackerCode.includes("PromptViewTracker"), "exports PromptViewTracker component");
+    assert.ok(trackerCode.includes("sessionStorage"), "uses sessionStorage to guard duplicate views");
+    assert.ok(trackerCode.includes("incrementPromptViewAction"), "dispatches atomic view increment");
+
+    const detailPageCode = fs.readFileSync(path.resolve("src/app/prompts/[slug]/page.tsx"), "utf-8");
+    assert.ok(detailPageCode.includes("<PromptViewTracker"), "Prompt detail page mounts PromptViewTracker");
+  });
+
+  test("T-14.6", "14.0", "S14-06: Dedicated Trending Leaderboard (/trending) renders algorithmic scoring formula and podium #1/#2/#3 specular gradient badges", () => {
+    const trendingPagePath = path.resolve("src/app/trending/page.tsx");
+    assert.ok(fs.existsSync(trendingPagePath), "trending page exists");
+    const pageCode = fs.readFileSync(trendingPagePath, "utf-8");
+    assert.ok(pageCode.includes("Trending AI Prompts") || pageCode.includes("Trending"), "renders trending title");
+    assert.ok(pageCode.includes("copies") && pageCode.includes("likes") && pageCode.includes("saves"), "displays algorithm score formula");
+
+    const trendingClientPath = path.resolve("src/components/trending/trending-client.tsx");
+    assert.ok(fs.existsSync(trendingClientPath), "trending client component exists");
+    const clientCode = fs.readFileSync(trendingClientPath, "utf-8");
+    assert.ok(clientCode.includes("calculateTrendingScore"), "implements trending score logic");
+    assert.ok(clientCode.includes("rank === 1") && clientCode.includes("rank === 2"), "renders podium badges");
+  });
+
+  test("T-14.7", "14.0", "S14-07: Saved page (/saved) features 3 interactive tabs: My Boards, Saved Prompts, and Liked Prompts", () => {
+    const savedPath = path.resolve("src/components/SavedPromptsClient.tsx");
+    assert.ok(fs.existsSync(savedPath), "SavedPromptsClient exists");
+    const savedCode = fs.readFileSync(savedPath, "utf-8");
+    assert.ok(savedCode.includes("My Boards") || savedCode.includes("boards"), "has boards tab");
+    assert.ok(savedCode.includes("Saved Prompts") || savedCode.includes("saved"), "has saved prompts tab");
+    assert.ok(savedCode.includes("Liked Prompts") || savedCode.includes("liked"), "has liked prompts tab");
+    assert.ok(savedCode.includes("promptnest_liked_prompts"), "reads local liked prompts");
+  });
+
+  test("T-14.8", "14.0", "S14-08: Navigation & Command Palette register /trending and /collections", () => {
+    const siteConfigPath = path.resolve("src/config/site.ts");
+    const siteConfig = fs.readFileSync(siteConfigPath, "utf-8");
+    assert.ok(siteConfig.includes('href: "/trending"'), "site config includes /trending");
+    assert.ok(siteConfig.includes('href: "/collections"'), "site config includes /collections");
+
+    const cmdPath = path.resolve("src/components/search/command-palette.tsx");
+    const cmdCode = fs.readFileSync(cmdPath, "utf-8");
+    assert.ok(cmdCode.includes("/trending"), "command palette includes /trending");
+    assert.ok(cmdCode.includes("/collections"), "command palette includes /collections");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;

@@ -18,6 +18,8 @@ import {
   Moon,
   Sun,
   X,
+  Trophy,
+  Layers,
 } from "lucide-react";
 import { STARTER_PROMPTS, type PromptItem } from "@/data/prompts";
 import { siteConfig } from "@/config/site";
@@ -311,6 +313,26 @@ export function CommandPalette() {
         subtitle: "View the full prompt catalog",
         icon: <Compass className="h-4 w-4 text-indigo-400" />,
         onSelect: () => closeAndNavigate("/#gallery"),
+      });
+    }
+    if ("trending leaderboard popular top viral".includes(q)) {
+      result.push({
+        id: "act-trending",
+        type: "action",
+        title: "Trending Leaderboard",
+        subtitle: "Real-time community rankings and viral prompts",
+        icon: <Trophy className="h-4 w-4 text-amber-400" />,
+        onSelect: () => closeAndNavigate("/trending"),
+      });
+    }
+    if ("collections boards moodboards curation".includes(q)) {
+      result.push({
+        id: "act-collections",
+        type: "action",
+        title: "Curated Collections",
+        subtitle: "Explore shareable thematic prompt boards",
+        icon: <Layers className="h-4 w-4 text-indigo-400" />,
+        onSelect: () => closeAndNavigate("/collections"),
       });
     }
     if ("saved bookmarks favorites".includes(q)) {

@@ -82,6 +82,12 @@ All database changes are non-destructive and tracked under `supabase/migrations/
    - Non-destructively adds nullable `occasion`, `setting`, `lighting`, `framing`, and `workflow` columns to `public.prompts` with check constraints for controlled vocabularies.
    - Creates partial indexes (`idx_prompts_occasion`, `idx_prompts_setting`, `idx_prompts_lighting`, `idx_prompts_framing`, `idx_prompts_workflow`) for sub-millisecond facet filtering.
    - Zero-downtime, fully idempotent (`IF NOT EXISTS`), and maintains dual-storage resilience in `generation_parameters` JSON fallback.
+9. [`supabase/migrations/009_step14_collections_and_engagement.sql`](file:///Users/mac/Documents/Prompt-Nest/supabase/migrations/009_step14_collections_and_engagement.sql):
+   - Adds atomic engagement metric columns to `public.prompts` (`views_count`, `copies_count`, `likes_count`, `saves_count`) with descending b-tree indexes.
+   - Creates `public.prompt_likes` table with Row Level Security (RLS) for public view and authenticated user toggle.
+   - Harmonizes `public.collections` table for Pinterest-style boards (`slug`, `name`, `is_public`, `items_count`).
+   - Defines automated counter synchronization triggers (`trg_sync_prompt_likes_count`, `trg_sync_prompt_saves_count`, `trg_sync_collection_items_count`).
+   - Introduces atomic stored procedures `increment_prompt_view` and `increment_prompt_copy` executable by `anon` and `authenticated` roles.
 
 ---
 

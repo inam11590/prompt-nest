@@ -136,6 +136,10 @@ export interface PromptItem {
   negativePrompt?: string; // Optional: only present when explicitly stored
   referenceImageUrl?: string; // Step 13: Optional reference input image for img2img / before-after comparison
   variables?: PromptVariable[]; // Step 13: Optional customizable prompt variables
+  viewsCount?: number; // Step 14: Atomic views counter
+  copiesCount?: number; // Step 14: Atomic copies counter
+  likesCount?: number; // Step 14: Atomic likes counter
+  savesCount?: number; // Step 14: Atomic saves/bookmarks counter
   generationParameters?: Record<string, string | number>; // Optional generation params
   sourceAttribution: {
     source: string;
@@ -208,6 +212,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
     lighting: "neon",
     framing: "close_up",
     workflow: "personal_photo_only",
+    viewsCount: 8420,
+    copiesCount: 680,
+    likesCount: 490,
+    savesCount: 310,
   },
   {
     id: "prompt-2",
@@ -237,6 +245,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@rarchitecture_melbourne",
       license: "Unsplash Free License",
     },
+    viewsCount: 4210,
+    copiesCount: 340,
+    likesCount: 280,
+    savesCount: 190,
   },
   {
     id: "prompt-3",
@@ -268,6 +280,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@chuklanov",
       license: "Unsplash Free License",
     },
+    viewsCount: 6320,
+    copiesCount: 510,
+    likesCount: 390,
+    savesCount: 260,
   },
   {
     id: "prompt-4",
@@ -295,6 +311,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@sebastian_unrau",
       license: "Unsplash Free License",
     },
+    viewsCount: 3180,
+    copiesCount: 220,
+    likesCount: 190,
+    savesCount: 110,
   },
   {
     id: "prompt-5",
@@ -322,6 +342,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@howardbouchevereau",
       license: "Unsplash Free License",
     },
+    viewsCount: 5490,
+    copiesCount: 430,
+    likesCount: 330,
+    savesCount: 210,
   },
   {
     id: "prompt-6",
@@ -349,6 +373,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@kalenemsley",
       license: "Unsplash Free License",
     },
+    viewsCount: 2890,
+    copiesCount: 190,
+    likesCount: 145,
+    savesCount: 95,
   },
   {
     id: "prompt-7",
@@ -381,6 +409,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
     lighting: "dramatic",
     framing: "upper_body",
     workflow: "personal_photo_only",
+    viewsCount: 7120,
+    copiesCount: 590,
+    likesCount: 420,
+    savesCount: 280,
   },
   {
     id: "prompt-8",
@@ -408,6 +440,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@danistsoh",
       license: "Unsplash Free License",
     },
+    viewsCount: 3840,
+    copiesCount: 270,
+    likesCount: 210,
+    savesCount: 130,
   },
   {
     id: "prompt-9",
@@ -440,6 +476,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
     lighting: "neon",
     framing: "close_up",
     workflow: "personal_photo_only",
+    viewsCount: 4950,
+    copiesCount: 380,
+    likesCount: 290,
+    savesCount: 185,
   },
   {
     id: "prompt-10",
@@ -467,6 +507,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@oulashin",
       license: "Unsplash Free License",
     },
+    viewsCount: 3420,
+    copiesCount: 240,
+    likesCount: 175,
+    savesCount: 115,
   },
   {
     id: "prompt-11",
@@ -494,6 +538,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@fakurian",
       license: "Unsplash Free License",
     },
+    viewsCount: 5810,
+    copiesCount: 460,
+    likesCount: 360,
+    savesCount: 230,
   },
   {
     id: "prompt-12",
@@ -521,6 +569,10 @@ const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
       authorUrl: "https://unsplash.com/@kalenemsley",
       license: "Unsplash Free License",
     },
+    viewsCount: 6940,
+    copiesCount: 540,
+    likesCount: 410,
+    savesCount: 275,
   },
 ];
 

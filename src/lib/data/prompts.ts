@@ -81,6 +81,10 @@ export function mapDatabaseRowToPromptItem(row: PromptRow): PromptItem {
     workflow: (row.workflow || (row.generation_parameters as Record<string, unknown>)?.workflow || undefined) as StyleWorkflow | undefined,
     referenceImageUrl: ((row as Record<string, unknown>).reference_image_url as string) || ((row.generation_parameters as Record<string, unknown>)?.reference_image_url as string) || undefined,
     variables: ((row as Record<string, unknown>).variables as PromptItem["variables"]) || ((row.generation_parameters as Record<string, unknown>)?.variables as PromptItem["variables"]) || undefined,
+    viewsCount: typeof (row as Record<string, unknown>).views_count === "number" ? ((row as Record<string, unknown>).views_count as number) : undefined,
+    copiesCount: typeof (row as Record<string, unknown>).copies_count === "number" ? ((row as Record<string, unknown>).copies_count as number) : undefined,
+    likesCount: typeof (row as Record<string, unknown>).likes_count === "number" ? ((row as Record<string, unknown>).likes_count as number) : undefined,
+    savesCount: typeof (row as Record<string, unknown>).saves_count === "number" ? ((row as Record<string, unknown>).saves_count as number) : undefined,
   };
 }
 

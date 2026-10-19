@@ -89,6 +89,10 @@ export interface Database {
           lighting: string | null;
           framing: string | null;
           workflow: string | null;
+          views_count: number;
+          copies_count: number;
+          likes_count: number;
+          saves_count: number;
           created_at: string;
           updated_at: string;
         };
@@ -128,6 +132,10 @@ export interface Database {
           lighting?: string | null;
           framing?: string | null;
           workflow?: string | null;
+          views_count?: number;
+          copies_count?: number;
+          likes_count?: number;
+          saves_count?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -167,6 +175,10 @@ export interface Database {
           lighting?: string | null;
           framing?: string | null;
           workflow?: string | null;
+          views_count?: number;
+          copies_count?: number;
+          likes_count?: number;
+          saves_count?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -536,6 +548,10 @@ export interface Database {
           description: string | null;
           visibility: "PRIVATE" | "PUBLIC";
           concurrency_version: number;
+          slug?: string | null;
+          name?: string | null;
+          is_public?: boolean;
+          items_count?: number;
           created_at: string;
           updated_at: string;
         };
@@ -547,6 +563,10 @@ export interface Database {
           description?: string | null;
           visibility?: "PRIVATE" | "PUBLIC";
           concurrency_version?: number;
+          slug?: string | null;
+          name?: string | null;
+          is_public?: boolean;
+          items_count?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -558,6 +578,10 @@ export interface Database {
           description?: string | null;
           visibility?: "PRIVATE" | "PUBLIC";
           concurrency_version?: number;
+          slug?: string | null;
+          name?: string | null;
+          is_public?: boolean;
+          items_count?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -607,6 +631,37 @@ export interface Database {
           }
         ];
       };
+      prompt_likes: {
+        Row: {
+          user_id: string;
+          prompt_id: string;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          prompt_id: string;
+          created_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          prompt_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "prompt_likes_prompt_id_fkey";
+            columns: ["prompt_id"];
+            referencedRelation: "prompts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "prompt_likes_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -623,6 +678,18 @@ export interface Database {
           p_collection_id: string;
           p_expected_version: number;
           p_item_ids: string[];
+        };
+        Returns: number;
+      };
+      increment_prompt_view: {
+        Args: {
+          p_prompt_id: string;
+        };
+        Returns: number;
+      };
+      increment_prompt_copy: {
+        Args: {
+          p_prompt_id: string;
         };
         Returns: number;
       };

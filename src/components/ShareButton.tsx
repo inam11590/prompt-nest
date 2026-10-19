@@ -6,9 +6,11 @@ import { Share2, Check } from "lucide-react";
 interface ShareButtonProps {
   title: string;
   url: string;
+  label?: string;
+  className?: string;
 }
 
-export function ShareButton({ title, url }: ShareButtonProps) {
+export function ShareButton({ title, url, label, className = "" }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -72,8 +74,8 @@ export function ShareButton({ title, url }: ShareButtonProps) {
       <button
         type="button"
         onClick={handleShare}
-        aria-label={copied ? "Prompt link copied to clipboard" : "Share this prompt"}
-        className="inline-flex items-center gap-1.5 rounded-xl border border-surface-border bg-surface px-3 py-2 text-xs font-semibold text-text-muted hover:bg-surface-raised hover:text-foreground transition-all focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer shadow-sm active:scale-95"
+        aria-label={copied ? "Link copied to clipboard" : label || "Share"}
+        className={`inline-flex items-center gap-1.5 rounded-xl border border-surface-border bg-surface px-3.5 py-2 text-xs font-semibold text-text-muted hover:bg-surface-raised hover:text-foreground transition-all focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer shadow-sm active:scale-95 ${className}`}
       >
         {copied ? (
           <>
@@ -83,7 +85,7 @@ export function ShareButton({ title, url }: ShareButtonProps) {
         ) : (
           <>
             <Share2 className="h-4 w-4" aria-hidden="true" />
-            <span>Share</span>
+            <span>{label || "Share"}</span>
           </>
         )}
       </button>

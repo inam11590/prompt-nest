@@ -26,6 +26,8 @@ function generatePublicId(): string {
 export async function createCollectionAction(input: {
   title: string;
   description?: string;
+  visibility?: CollectionVisibility;
+  initialPromptId?: string;
 }): Promise<ActionResult<Collection>> {
   const supabase = await createClient();
   if (!supabase) {
@@ -52,17 +54,21 @@ export async function createCollectionAction(input: {
   }
 
   const publicId = generatePublicId();
+  const insertPayload = {
+    public_id: publicId,
+    user_id: user.id,
+    title,
+    description,
+    visibility: "PRIVATE" as CollectionVisibility,
+    concurrency_version: 1,
+  };
+  if (input.visibility) {
+    insertPayload.visibility = input.visibility;
+  }
 
   const { data, error } = await supabase
     .from("collections")
-    .insert({
-      public_id: publicId,
-      user_id: user.id,
-      title,
-      description,
-      visibility: "PRIVATE",
-      concurrency_version: 1,
-    })
+    .insert(insertPayload)
     .select("*")
     .single();
 
@@ -71,7 +77,21 @@ export async function createCollectionAction(input: {
     return { success: false, error: error?.message || "Failed to create collection." };
   }
 
+  if (input.initialPromptId) {
+    try {
+      await supabase.from("collection_items").insert({
+        collection_id: data.id,
+        prompt_id: input.initialPromptId,
+        position: 0,
+      });
+    } catch (itemErr) {
+      console.error("Error adding initial prompt to collection:", itemErr);
+    }
+  }
+
   revalidatePath("/dashboard/collections");
+  revalidatePath("/saved");
+  revalidatePath("/collections");
 
   return {
     success: true,

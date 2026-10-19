@@ -12,10 +12,13 @@ import {
   Eye,
   Heart,
   Ratio,
+  FolderPlus,
 } from "lucide-react";
 import type { PromptItem } from "@/data/prompts";
 import { BookmarkButton } from "@/components/BookmarkButton";
-import { AddToCollectionButton } from "@/components/collections/AddToCollectionButton";
+import { LikeButton } from "@/components/LikeButton";
+import { SaveToCollectionModal } from "@/components/collections/save-to-collection-modal";
+import { incrementPromptCopyAction } from "@/app/actions/engagement";
 
 interface PromptCardProps {
   prompt: PromptItem;
@@ -23,6 +26,10 @@ interface PromptCardProps {
   returnQuery?: string;
   isBookmarked?: boolean;
   isAuthenticated?: boolean;
+  rankBadge?: {
+    rank: number;
+    badgeStyle?: string;
+  };
 }
 
 export function PromptCard({
@@ -31,11 +38,13 @@ export function PromptCard({
   returnQuery = "",
   isBookmarked = false,
   isAuthenticated = false,
+  rankBadge,
 }: PromptCardProps) {
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
   const detailHref = returnQuery
     ? `/prompts/${prompt.slug}?from=${encodeURIComponent(returnQuery)}`
@@ -59,6 +68,7 @@ export function PromptCard({
       }
       setCopied(true);
       setCopyFailed(false);
+      incrementPromptCopyAction(prompt.id).catch(() => {});
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy prompt:", err);
@@ -86,6 +96,21 @@ export function PromptCard({
 
   // Deterministic metrics for zero layout shift and consistent UI
   const metrics = useMemo(() => {
+    if (
+      typeof prompt.viewsCount === "number" &&
+      typeof prompt.likesCount === "number" &&
+      typeof prompt.copiesCount === "number"
+    ) {
+      const views =
+        prompt.viewsCount >= 1000
+          ? `${(prompt.viewsCount / 1000).toFixed(1)}k`
+          : `${prompt.viewsCount}`;
+      return {
+        views,
+        likes: prompt.likesCount,
+        copies: prompt.copiesCount,
+      };
+    }
     const hash = prompt.id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
     const views = (((hash * 13) % 40) + 12) / 10;
     const likes = ((hash * 7) % 160) + 24;
@@ -95,7 +120,7 @@ export function PromptCard({
       likes,
       copies,
     };
-  }, [prompt.id]);
+  }, [prompt]);
 
   // Clean aspect ratio representation e.g. "9:16", "2:3", "1:1", "16:9"
   const ratioLabel = useMemo(() => {
@@ -164,6 +189,24 @@ export function PromptCard({
           {/* Top Floating Glass Badges: Model & Ratio on Left, Actions on Right */}
           <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 z-10 pointer-events-none">
             <div className="flex items-center gap-1.5 flex-wrap">
+              {/* Rank Badge for Trending Leaderboard */}
+              {rankBadge && (
+                <span
+                  className={`inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[11px] font-black tracking-tight shadow-md backdrop-blur-md pointer-events-none ${
+                    rankBadge.badgeStyle ||
+                    (rankBadge.rank === 1
+                      ? "bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-black border border-amber-300 shadow-amber-500/20"
+                      : rankBadge.rank === 2
+                      ? "bg-gradient-to-r from-slate-200 via-zinc-100 to-slate-300 text-zinc-900 border border-slate-300 shadow-zinc-500/20"
+                      : rankBadge.rank === 3
+                      ? "bg-gradient-to-r from-amber-700 via-amber-600 to-yellow-800 text-white border border-amber-600/50 shadow-amber-900/30"
+                      : "bg-surface-raised/90 text-text-muted border border-surface-border")
+                  }`}
+                >
+                  #{rankBadge.rank}
+                </span>
+              )}
+
               {/* AI Model Badge */}
               <span className="inline-flex items-center gap-1 rounded-full bg-indigo-600/90 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md border border-indigo-400/30 shadow-sm pointer-events-none">
                 <Sparkles className="h-3 w-3" />
@@ -177,19 +220,34 @@ export function PromptCard({
               </span>
             </div>
 
-            {/* Right Interactive Buttons (Bookmark & Add to Collection) */}
+            {/* Right Interactive Buttons (Like, Board Save & Bookmark) */}
             <div className="flex items-center gap-1.5 pointer-events-auto">
               <div className="transition-transform active:scale-90">
-                <BookmarkButton
+                <LikeButton
                   promptId={prompt.id}
-                  initialBookmarked={isBookmarked}
-                  isAuthenticated={isAuthenticated}
+                  initialLikesCount={typeof prompt.likesCount === "number" ? prompt.likesCount : metrics.likes}
                   variant="card"
                 />
               </div>
               <div className="transition-transform active:scale-90">
-                <AddToCollectionButton
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsSaveModalOpen(true);
+                  }}
+                  aria-label="Save to board"
+                  title="Save to board"
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white/90 hover:bg-black/75 hover:text-white border border-white/10 backdrop-blur-md transition-colors"
+                >
+                  <FolderPlus className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <div className="transition-transform active:scale-90">
+                <BookmarkButton
                   promptId={prompt.id}
+                  initialBookmarked={isBookmarked}
                   isAuthenticated={isAuthenticated}
                   variant="card"
                 />
@@ -313,6 +371,14 @@ export function PromptCard({
           </a>
         </div>
       </div>
+
+      {/* Save to Collection / Board Modal */}
+      <SaveToCollectionModal
+        prompt={prompt}
+        isOpen={isSaveModalOpen}
+        onClose={() => setIsSaveModalOpen(false)}
+        isAuthenticated={isAuthenticated}
+      />
     </article>
   );
 }
