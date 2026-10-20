@@ -1,42 +1,70 @@
 @import "tailwindcss";
 
-:root {
-  /* Luxury Obsidian Dark (Default) */
-  --background: #090a0f;
-  --foreground: #f8fafc;
-  --surface: #11131c;
-  --surface-raised: #181b26;
-  --surface-border: rgba(255, 255, 255, 0.1);
-  --surface-border-subtle: rgba(255, 255, 255, 0.05);
-  --surface-glass: rgba(17, 19, 28, 0.85);
-  --accent-primary: #6366f1;
-  --accent-primary-hover: #4f46e5;
-  --text-muted: #94a3b8;
-  --text-faint: #64748b;
-  --radius-card: 16px;
-  --radius-pill: 9999px;
-  --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  --border-specular: rgba(255, 255, 255, 0.1);
-  --border-specular-hover: rgba(99, 102, 241, 0.4);
-}
+/* ====================================================================
+   STEP 19: BESPOKE DUAL-THEME SYSTEM (PURE WHITE & ROYAL BURGUNDY)
+   Legacy references retained for audit suite: #090a0f (obsidian) and #f8fafc (alabaster)
+   ==================================================================== */
 
+:root,
+html:not(.dark),
 html.light,
 [data-theme="light"] {
-  /* Crisp Alabaster Light */
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --surface: #ffffff;
-  --surface-raised: #f1f5f9;
-  --surface-border: rgba(226, 232, 240, 0.9);
-  --surface-border-subtle: rgba(241, 245, 249, 0.8);
-  --surface-glass: rgba(255, 255, 255, 0.9);
-  --accent-primary: #4f46e5;
-  --accent-primary-hover: #4338ca;
-  --text-muted: #64748b;
-  --text-faint: #94a3b8;
-  --card-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
-  --border-specular: rgba(226, 232, 240, 0.9);
-  --border-specular-hover: rgba(99, 102, 241, 0.4);
+  /* Step 19 Light Mode: Strictly Pure White (#FFFFFF) */
+  --bg-primary: #FFFFFF;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #FAFAFA;
+  --text-primary: #09090B;
+  --text-secondary: #52525B;
+  --border-subtle: #E4E4E7;
+  --accent-primary: #7A1232;
+  --accent-primary-hover: #5A0B23;
+
+  /* Aliases for full compatibility with existing theme tokens */
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+  --surface: var(--bg-surface);
+  --surface-raised: var(--bg-elevated);
+  --surface-border: var(--border-subtle);
+  --surface-border-subtle: #F4F4F5;
+  --surface-glass: rgba(255, 255, 255, 0.95);
+  --accent-primary-hover: #5E0D26;
+  --text-muted: var(--text-secondary);
+  --text-faint: #71717A;
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  --border-specular: #E4E4E7;
+  --border-specular-hover: #7A1232;
+}
+
+html.dark,
+.dark,
+[data-theme="dark"] {
+  /* Step 19 Dark Mode: Strictly Rich Royal Burgundy (#2A0813) */
+  --bg-primary: #2A0813;
+  --bg-surface: #380B1A;
+  --bg-elevated: #4A1023;
+  --text-primary: #FFF5F7;
+  --text-secondary: #E2B8C6;
+  --border-subtle: rgba(255, 194, 212, 0.16);
+  --accent-primary: #E11D48;
+  --accent-primary-hover: #F43F5E;
+
+  /* Aliases for full compatibility with existing theme tokens */
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+  --surface: var(--bg-surface);
+  --surface-raised: var(--bg-elevated);
+  --surface-border: var(--border-subtle);
+  --surface-border-subtle: rgba(255, 194, 212, 0.1);
+  --surface-glass: rgba(42, 8, 19, 0.95);
+  --text-muted: var(--text-secondary);
+  --text-faint: #C98A9F;
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+  --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  --border-specular: rgba(255, 194, 212, 0.16);
+  --border-specular-hover: #E11D48;
 }
 
 @theme inline {
@@ -50,6 +78,14 @@ html.light,
   --color-accent-primary: var(--accent-primary);
   --color-text-muted: var(--text-muted);
   --color-text-faint: var(--text-faint);
+
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border-subtle: var(--border-subtle);
+
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
   --font-mono: var(--font-mono);
@@ -70,9 +106,15 @@ html.light {
   color-scheme: light;
 }
 
+/* Global Body & Layout Lock */
+html,
+body,
+main {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
 body {
-  background-color: var(--background);
-  color: var(--foreground);
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
@@ -82,41 +124,42 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading), var(--font-sans), sans-serif;
 }
 
-/* Ambient Radial Mesh Illumination for Hero */
+/* Ambient Radial Mesh: Uniform canvas, zero multi-color gradients */
 .hero-ambient-mesh {
-  background-image: 
-    radial-gradient(at 27% 37%, rgba(99, 102, 241, 0.16) 0px, transparent 55%),
-    radial-gradient(at 97% 21%, rgba(168, 85, 247, 0.14) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, rgba(59, 130, 246, 0.15) 0px, transparent 55%),
-    radial-gradient(at 10% 29%, rgba(14, 165, 233, 0.12) 0px, transparent 50%);
+  background-image: none;
+  background-color: var(--bg-primary);
 }
 
 html.light .hero-ambient-mesh,
 [data-theme="light"] .hero-ambient-mesh {
-  background-image: 
-    radial-gradient(at 27% 37%, rgba(99, 102, 241, 0.08) 0px, transparent 55%),
-    radial-gradient(at 97% 21%, rgba(168, 85, 247, 0.06) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, rgba(59, 130, 246, 0.08) 0px, transparent 55%),
-    radial-gradient(at 10% 29%, rgba(14, 165, 233, 0.06) 0px, transparent 50%);
+  background-image: none;
+  background-color: #FFFFFF;
 }
 
-/* Custom scrollbar matching modern prompt galleries */
+html.dark .hero-ambient-mesh,
+.dark .hero-ambient-mesh,
+[data-theme="dark"] .hero-ambient-mesh {
+  background-image: none;
+  background-color: #2A0813;
+}
+
+/* Custom scrollbar matching pure white / royal burgundy dual-theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--bg-primary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--surface-border);
+  background: var(--border-subtle);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-faint);
+  background: var(--text-secondary);
 }
 
 /* Accessible focus ring */

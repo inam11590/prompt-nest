@@ -187,7 +187,7 @@ export function LikeButton({
       className={`group relative flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium backdrop-blur-md transition-all duration-200 active:scale-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 ${
         isLiked
           ? "border border-rose-500/40 bg-rose-500/20 text-rose-200 shadow-sm"
-          : "border border-white/10 bg-black/50 text-white/90 hover:bg-black/70 hover:border-white/20"
+          : "border border-white/10 dark:border-rose-300/20 bg-black/50 dark:bg-[#1A030A]/75 text-white/90 dark:text-rose-100 hover:bg-black/70 hover:border-white/20"
       } ${className}`}
     >
       <Heart

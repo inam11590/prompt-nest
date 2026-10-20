@@ -52,16 +52,16 @@ async function CollectionsContent() {
               return (
                 <article
                   key={board.id}
-                  className="group relative flex flex-col overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/40 hover:shadow-xl hover:shadow-black/20"
+                  className="group relative flex flex-col overflow-hidden rounded-3xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#380B1A] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-rose-500/40 hover:shadow-xl hover:shadow-rose-950/10"
                 >
                   {/* Pinterest-Style Multi-Thumbnail Mosaic Header */}
                   <Link
                     href={detailHref}
-                    className="block relative w-full h-56 sm:h-64 overflow-hidden bg-surface-raised border-b border-surface-border"
+                    className="block relative w-full h-56 sm:h-64 overflow-hidden bg-zinc-100 dark:bg-[#2A0813] border-b border-zinc-200 dark:border-[#5E162D]"
                     aria-label={`View collection: ${board.title}`}
                   >
                     {promptImages.length >= 3 ? (
-                      <div className="grid grid-cols-12 h-full w-full gap-1 p-1.5 bg-surface-raised">
+                      <div className="grid grid-cols-12 h-full w-full gap-1 p-1.5 bg-zinc-100 dark:bg-[#2A0813]">
                         {/* Primary large image (7 cols) */}
                         <div className="col-span-7 relative h-full overflow-hidden rounded-2xl">
                           <Image
@@ -115,8 +115,8 @@ async function CollectionsContent() {
 
                     {/* Floating Item Count Badge */}
                     <div className="absolute bottom-3 left-3 z-10">
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-black/75 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md border border-white/10 shadow-sm">
-                        <Sparkles className="h-3 w-3 text-indigo-400" />
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-black/60 dark:bg-[#1A030A]/80 px-3 py-1 text-xs font-semibold text-white dark:text-rose-100 backdrop-blur-md border border-white/10 dark:border-rose-300/20 shadow-sm">
+                        <Sparkles className="h-3 w-3 text-rose-400" />
                         <span>{displayCount} prompts</span>
                       </span>
                     </div>
@@ -126,7 +126,7 @@ async function CollectionsContent() {
                   <div className="flex flex-1 flex-col p-6">
                     {/* Title */}
                     <Link href={detailHref} className="group/title focus:outline-none mb-2">
-                      <h2 className="font-heading text-lg sm:text-xl font-bold text-foreground transition-colors group-hover/title:text-indigo-400">
+                      <h2 className="font-heading text-lg sm:text-xl font-bold text-foreground transition-colors group-hover/title:text-rose-500">
                         {board.title}
                       </h2>
                     </Link>

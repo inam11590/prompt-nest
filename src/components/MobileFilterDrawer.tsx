@@ -179,24 +179,24 @@ export function MobileFilterDrawer({
           id="mobile-filter-drawer"
           aria-modal="true"
           aria-labelledby="mobile-filters-heading"
-          className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex justify-end bg-black/50 dark:bg-[#150208]/80 backdrop-blur-sm animate-in fade-in duration-200"
           onClick={(e) => {
             if (e.target === e.currentTarget) handleClose();
           }}
         >
           <div
             ref={drawerRef}
-            className="relative flex h-full w-full max-w-sm flex-col bg-surface shadow-2xl border-l border-surface-border animate-in slide-in-from-right duration-300"
+            className="relative flex h-full w-full max-w-sm flex-col bg-white dark:bg-[#380B1A] shadow-2xl border-l border-zinc-200 dark:border-[#5E162D] animate-in slide-in-from-right duration-300"
           >
             {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-surface-border p-4">
+            <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#5E162D] p-4">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="h-4 w-4 text-blue-400" aria-hidden="true" />
-                <h2 id="mobile-filters-heading" className="text-sm font-bold text-white">
+                <SlidersHorizontal className="h-4 w-4 text-rose-500" aria-hidden="true" />
+                <h2 id="mobile-filters-heading" className="text-sm font-bold text-foreground">
                   Filter Prompts
                 </h2>
                 {activeFilterCount > 0 && (
-                  <span className="rounded-full bg-blue-600/20 border border-blue-500/30 px-2 py-0.5 text-[10px] font-bold text-blue-300">
+                  <span className="rounded-full bg-rose-500/20 border border-rose-500/30 px-2 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-300">
                     {activeFilterCount}
                   </span>
                 )}
@@ -204,7 +204,7 @@ export function MobileFilterDrawer({
               <button
                 type="button"
                 onClick={handleClose}
-                className="rounded-full p-1.5 text-text-muted hover:bg-surface-raised hover:text-white transition-colors"
+                className="rounded-full p-1.5 text-text-muted hover:bg-zinc-100 dark:hover:bg-[#4A1023] hover:text-foreground transition-colors"
                 aria-label="Close filter drawer"
               >
                 <X className="h-5 w-5" />
@@ -228,8 +228,8 @@ export function MobileFilterDrawer({
                         onClick={() => setStagedModel(m)}
                         className={`rounded-full px-2.5 py-1 text-xs font-medium transition-all ${
                           isSelected
-                            ? "bg-blue-600 text-white font-semibold shadow-sm"
-                            : "border border-surface-border bg-surface-raised text-text-muted hover:text-white"
+                            ? "bg-rose-600 text-white font-semibold shadow-sm"
+                            : "border border-zinc-200 dark:border-[#5E162D] bg-zinc-50 dark:bg-[#2A0813] text-zinc-600 dark:text-[#E2B8C6] hover:text-foreground"
                         }`}
                       >
                         {m}
@@ -254,8 +254,8 @@ export function MobileFilterDrawer({
                         onClick={() => setStagedCategory(c.id)}
                         className={`rounded-full px-2.5 py-1 text-xs font-medium transition-all ${
                           isSelected
-                            ? "border border-blue-500/50 bg-blue-500/10 text-blue-300 font-semibold ring-1 ring-blue-500/30"
-                            : "border border-surface-border bg-surface-raised text-text-muted hover:text-white"
+                            ? "border border-rose-500/50 bg-rose-500/10 text-rose-600 dark:text-rose-300 font-semibold ring-1 ring-rose-500/30"
+                            : "border border-zinc-200 dark:border-[#5E162D] bg-zinc-50 dark:bg-[#2A0813] text-zinc-600 dark:text-[#E2B8C6] hover:text-foreground"
                         }`}
                       >
                         {c.name}
@@ -367,11 +367,11 @@ export function MobileFilterDrawer({
             </div>
 
             {/* Sticky Drawer Footer */}
-            <div className="border-t border-surface-border p-4 flex items-center justify-between gap-3 bg-surface">
+            <div className="border-t border-zinc-200 dark:border-[#5E162D] p-4 flex items-center justify-between gap-3 bg-white dark:bg-[#380B1A]">
               <button
                 type="button"
                 onClick={handleReset}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-text-muted hover:text-white hover:bg-surface-raised transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-text-muted hover:text-foreground hover:bg-zinc-100 dark:hover:bg-[#4A1023] transition-colors"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 <span>Reset</span>
@@ -380,7 +380,7 @@ export function MobileFilterDrawer({
               <button
                 type="button"
                 onClick={handleApply}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md transition-all"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white shadow-md transition-all"
               >
                 <Check className="h-3.5 w-3.5" />
                 <span>Apply Filters ({totalResults})</span>

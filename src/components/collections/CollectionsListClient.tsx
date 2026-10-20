@@ -225,12 +225,12 @@ export function CollectionsListClient({
           onClick={(e) => {
             if (e.target === e.currentTarget) setIsModalOpen(false);
           }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-[#150208]/85 backdrop-blur-sm p-4 animate-in fade-in duration-200"
         >
-          <div className="w-full max-w-lg rounded-2xl border border-surface-border bg-surface p-6 shadow-2xl relative text-foreground">
-            <div className="flex items-center justify-between pb-4 border-b border-surface-border">
+          <div className="w-full max-w-lg rounded-2xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#380B1A] p-6 shadow-2xl relative text-foreground">
+            <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-[#5E162D]">
               <h2 className="text-base font-bold flex items-center gap-2">
-                <FolderPlus className="h-5 w-5 text-blue-500" />
+                <FolderPlus className="h-5 w-5 text-rose-500" />
                 <span>Create New Collection</span>
               </h2>
               <button

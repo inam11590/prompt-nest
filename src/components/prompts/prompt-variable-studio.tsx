@@ -329,11 +329,11 @@ export function PromptVariableStudio({
   return (
     <section
       aria-labelledby="prompt-studio-heading"
-      className="flex flex-col gap-5 rounded-2xl border border-surface-border bg-surface/90 backdrop-blur-md p-5 sm:p-6 shadow-xl relative overflow-hidden"
+      className="flex flex-col gap-5 rounded-2xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#380B1A] backdrop-blur-md p-5 sm:p-6 shadow-xl relative overflow-hidden"
     >
       {/* Ambient background glow */}
       <div
-        className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl"
+        className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-rose-500/10 blur-3xl"
         aria-hidden="true"
       />
 
@@ -517,7 +517,7 @@ export function PromptVariableStudio({
           tabIndex={0}
           role="region"
           aria-label="Customized Prompt Code Block"
-          className="relative rounded-xl border border-surface-border bg-surface-raised/80 p-4 font-mono text-xs sm:text-[13px] leading-relaxed text-foreground select-all break-words whitespace-pre-wrap max-h-72 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-inner"
+          className="relative rounded-xl border border-zinc-200 dark:border-[#5E162D] bg-zinc-50 dark:bg-[#21050E] p-4 font-mono text-xs sm:text-[13px] leading-relaxed text-zinc-900 dark:text-[#FFF5F7] select-all break-words whitespace-pre-wrap max-h-72 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-rose-500/50 shadow-inner"
         >
           {segments.map((seg, idx) =>
             seg.isHighlight ? (

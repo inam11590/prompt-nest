@@ -199,7 +199,7 @@ export function PromptMediaViewer({
               onClick={() => setViewMode("slider")}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold transition-all ${
                 viewMode === "slider"
-                  ? "bg-indigo-600 text-white shadow-sm"
+                  ? "bg-rose-600 text-white shadow-sm"
                   : "text-text-muted hover:text-foreground"
               }`}
             >
@@ -212,7 +212,7 @@ export function PromptMediaViewer({
               onClick={() => setViewMode("output")}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold transition-all ${
                 viewMode === "output"
-                  ? "bg-indigo-600 text-white shadow-sm"
+                  ? "bg-rose-600 text-white shadow-sm"
                   : "text-text-muted hover:text-foreground"
               }`}
             >
@@ -229,7 +229,7 @@ export function PromptMediaViewer({
         onPointerDown={hasReference && viewMode === "slider" ? handlePointerDown : undefined}
         onPointerMove={hasReference && viewMode === "slider" ? handlePointerMove : undefined}
         onPointerUp={hasReference && viewMode === "slider" ? handlePointerUp : undefined}
-        className="relative group w-full overflow-hidden rounded-2xl border border-surface-border shadow-2xl bg-surface select-none touch-none"
+        className="relative group w-full overflow-hidden rounded-2xl border border-zinc-200 dark:border-[#5E162D] shadow-2xl bg-white dark:bg-[#380B1A] select-none touch-none"
         style={{
           aspectRatio: aspectRatioValue,
           backgroundColor: dominantColor,
@@ -293,7 +293,7 @@ export function PromptMediaViewer({
               aria-valuenow={Math.round(sliderPosition)}
               aria-label="Comparison slider position (ArrowLeft / ArrowRight to adjust)"
               onKeyDown={handleSliderKeyDown}
-              className="pointer-events-auto absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-zinc-900 shadow-xl border border-zinc-200 cursor-ew-resize hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-transform"
+              className="pointer-events-auto absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-zinc-900 shadow-xl border border-zinc-200 cursor-ew-resize hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-rose-500 transition-transform"
             >
               <MoveHorizontal className="h-4 w-4" />
             </button>
@@ -324,7 +324,7 @@ export function PromptMediaViewer({
           <span className="rounded-md bg-black/70 backdrop-blur-md px-2 py-0.5 text-[10px] font-mono text-white/90 border border-white/10 shadow-sm">
             {aspectRatioValue}
           </span>
-          <span className="rounded-md bg-indigo-950/80 backdrop-blur-md px-2 py-0.5 text-[10px] font-semibold text-indigo-300 border border-indigo-500/30 shadow-sm">
+          <span className="rounded-md bg-rose-950/80 backdrop-blur-md px-2 py-0.5 text-[10px] font-semibold text-rose-300 border border-rose-500/30 shadow-sm">
             {model}
           </span>
         </div>
@@ -334,7 +334,7 @@ export function PromptMediaViewer({
           ref={triggerButtonRef}
           onClick={handleOpenFullscreen}
           aria-label="Inspect Fullscreen (Press Z)"
-          className="absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-xl bg-black/75 backdrop-blur-md px-3 py-1.5 text-xs font-semibold text-white border border-white/20 shadow-lg hover:bg-black/90 hover:scale-105 active:scale-95 transition-all"
+          className="absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-xl bg-black/70 dark:bg-[#1A030A]/85 backdrop-blur-md px-3 py-1.5 text-xs font-semibold text-white dark:text-rose-100 border border-white/20 dark:border-rose-300/20 shadow-lg hover:bg-black/90 hover:scale-105 active:scale-95 transition-all"
         >
           <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
           <span>Inspect Fullscreen (Z)</span>
@@ -348,7 +348,7 @@ export function PromptMediaViewer({
           role="dialog"
           aria-modal="true"
           aria-label="High-Resolution Artwork Inspection"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 sm:p-8 animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 dark:bg-[#100106]/95 backdrop-blur-xl p-4 sm:p-8 animate-in fade-in duration-200"
         >
           {/* Top Bar Controls */}
           <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between">

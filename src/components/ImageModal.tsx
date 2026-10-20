@@ -86,7 +86,7 @@ export function ImageModal({
   return (
     <>
       {/* Primary Image Trigger */}
-      <div className="relative group w-full overflow-hidden rounded-2xl border border-surface-border shadow-2xl bg-surface">
+      <div className="relative group w-full overflow-hidden rounded-2xl border border-zinc-200 dark:border-[#5E162D] shadow-2xl bg-white dark:bg-[#380B1A]">
         <div
           className="relative w-full overflow-hidden"
           style={{
@@ -105,7 +105,7 @@ export function ImageModal({
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-raised text-foreground-muted p-6 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-100 dark:bg-[#2A0813] text-foreground-muted p-6 text-center">
               <p className="text-xs font-semibold text-foreground">Asset Pending</p>
               <p className="text-[11px] text-foreground-muted mt-1 max-w-xs">
                 Visual image asset is pending upload or generation.
@@ -122,7 +122,7 @@ export function ImageModal({
             aria-label={`Enlarge image: ${alt}`}
             aria-haspopup="dialog"
             aria-expanded={isOpen}
-            className="absolute right-3.5 bottom-3.5 z-10 flex items-center gap-1.5 rounded-full bg-black/75 hover:bg-black/90 text-white px-3 py-1.5 text-xs font-semibold backdrop-blur-md border border-white/20 transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer shadow-lg"
+            className="absolute right-3.5 bottom-3.5 z-10 flex items-center gap-1.5 rounded-full bg-black/60 dark:bg-[#1A030A]/80 hover:bg-black/80 text-white dark:text-rose-100 px-3 py-1.5 text-xs font-semibold backdrop-blur-md border border-white/20 dark:border-rose-300/20 transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer shadow-lg"
           >
             <ZoomIn className="h-4 w-4" aria-hidden="true" />
             <span>Enlarge</span>
@@ -137,7 +137,7 @@ export function ImageModal({
           aria-modal="true"
           aria-label={`Enlarged view of ${alt}`}
           ref={dialogRef}
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 dark:bg-[#100106]/95 backdrop-blur-md animate-fade-in"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               handleClose();
@@ -150,14 +150,14 @@ export function ImageModal({
             type="button"
             onClick={handleClose}
             aria-label="Close enlarged image view (Press Escape)"
-            className="absolute top-4 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-surface-raised border border-surface-border text-foreground hover:bg-surface hover:text-white transition-all shadow-xl focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
+            className="absolute top-4 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-white/80 dark:bg-[#380B1A]/90 border border-zinc-200 dark:border-[#5E162D] text-foreground hover:bg-white dark:hover:bg-[#4A1023] hover:text-foreground transition-all shadow-xl focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer"
           >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
 
           {/* Dialog Container */}
           <div
-            className="relative max-h-[90vh] max-w-[92vw] overflow-hidden rounded-2xl border border-surface-border shadow-2xl flex items-center justify-center"
+            className="relative max-h-[90vh] max-w-[92vw] overflow-hidden rounded-2xl border border-zinc-200/50 dark:border-[#5E162D] shadow-2xl flex items-center justify-center"
             style={{
               aspectRatio: aspectRatioValue,
               backgroundColor: dominantColor,

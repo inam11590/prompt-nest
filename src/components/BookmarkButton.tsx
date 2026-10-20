@@ -149,10 +149,10 @@ export function BookmarkButton({
             ? "Remove prompt from saved collection"
             : "Save prompt to your collection"
         }
-        className={`flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-60 cursor-pointer shadow-md ${
+        className={`flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-rose-500 disabled:opacity-60 cursor-pointer shadow-md ${
           isBookmarked
             ? "bg-amber-500/90 text-zinc-950 hover:bg-amber-400"
-            : "bg-black/60 text-white/90 hover:bg-black/80 hover:text-white border border-white/10"
+            : "bg-black/60 dark:bg-[#1A030A]/80 text-white/90 dark:text-rose-100/90 hover:bg-black/80 hover:text-white border border-white/10 dark:border-rose-300/20"
         } ${className}`}
       >
         <Bookmark

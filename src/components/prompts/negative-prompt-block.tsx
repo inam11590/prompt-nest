@@ -53,7 +53,7 @@ export function NegativePromptBlock({
   return (
     <section
       aria-labelledby="negative-prompt-heading"
-      className="flex flex-col gap-4 rounded-2xl border border-rose-500/20 bg-surface/90 backdrop-blur-md p-5 sm:p-6 shadow-xl relative overflow-hidden"
+      className="flex flex-col gap-4 rounded-2xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#380B1A] backdrop-blur-md p-5 sm:p-6 shadow-xl relative overflow-hidden"
     >
       {/* Subtle ambient rose glow */}
       <div
@@ -131,9 +131,9 @@ export function NegativePromptBlock({
             {exclusionPills.map((pill, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 text-xs font-medium text-rose-300"
+                className="inline-flex items-center gap-1 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 px-2.5 py-1 text-xs font-medium text-rose-800 dark:text-rose-300"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
                 <span>{pill}</span>
               </span>
             ))}
@@ -154,7 +154,7 @@ export function NegativePromptBlock({
           tabIndex={0}
           role="region"
           aria-label="Negative prompt text"
-          className="rounded-xl border border-rose-500/20 bg-surface-raised/70 p-3.5 font-mono text-xs leading-relaxed text-rose-200 select-all break-words whitespace-pre-wrap shadow-inner"
+          className="rounded-xl border border-zinc-200 dark:border-[#5E162D] bg-zinc-50 dark:bg-[#21050E] p-3.5 font-mono text-xs leading-relaxed text-zinc-900 dark:text-[#FFF5F7] select-all break-words whitespace-pre-wrap shadow-inner"
         >
           {activeTextToCopy}
         </div>

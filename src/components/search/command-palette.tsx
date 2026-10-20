@@ -408,7 +408,7 @@ export function CommandPalette() {
     >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-md transition-opacity"
+        className="fixed inset-0 bg-black/50 dark:bg-[#150208]/85 backdrop-blur-md transition-opacity"
         onClick={handleClose}
         aria-hidden="true"
       />
@@ -423,10 +423,10 @@ export function CommandPalette() {
       </div>
 
       {/* Modal Dialog */}
-      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-surface-border bg-surface shadow-2xl ring-1 ring-white/10 transition-all z-10 flex flex-col max-h-[80vh]">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#380B1A] shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-all z-10 flex flex-col max-h-[80vh]">
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 border-b border-surface-border px-4 py-3 bg-surface-raised/40">
-          <Search className="h-5 w-5 text-indigo-400 shrink-0" aria-hidden="true" />
+        <div className="flex items-center gap-3 border-b border-zinc-200 dark:border-[#5E162D] px-4 py-3 bg-zinc-50/70 dark:bg-[#2A0813]/60">
+          <Search className="h-5 w-5 text-rose-500 shrink-0" aria-hidden="true" />
           <input
             ref={inputRef}
             type="text"
@@ -453,7 +453,7 @@ export function CommandPalette() {
               <X className="h-4 w-4" />
             </button>
           )}
-          <kbd className="hidden sm:inline-flex items-center gap-1 rounded bg-surface border border-surface-border px-2 py-0.5 text-[10px] font-mono font-medium text-text-faint">
+          <kbd className="hidden sm:inline-flex items-center gap-1 rounded bg-zinc-100 dark:bg-[#21050E] border border-zinc-200 dark:border-[#5E162D] px-2 py-0.5 text-[10px] font-mono font-medium text-zinc-500 dark:text-[#E2B8C6]">
             ESC
           </kbd>
         </div>
@@ -486,8 +486,8 @@ export function CommandPalette() {
                     onMouseEnter={() => setSelectedIndex(index)}
                     className={`group flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 cursor-pointer transition-all ${
                       isSelected
-                        ? "bg-indigo-500/10 text-foreground border border-indigo-500/30"
-                        : "hover:bg-surface-raised/70 text-text-muted border border-transparent"
+                        ? "bg-rose-500/10 text-foreground border border-rose-500/30"
+                        : "hover:bg-zinc-100/70 dark:hover:bg-[#4A1023]/60 text-text-muted border border-transparent"
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -504,7 +504,7 @@ export function CommandPalette() {
                         </div>
                       ) : (
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-surface-border bg-surface-raised">
-                          {item.icon || <Sparkles className="h-4 w-4 text-indigo-400" />}
+                          {item.icon || <Sparkles className="h-4 w-4 text-rose-500" />}
                         </div>
                       )}
 
@@ -550,7 +550,7 @@ export function CommandPalette() {
                           )}
                         </button>
                       )}
-                      <ArrowRight className={`h-4 w-4 transition-transform ${isSelected ? "text-indigo-400 translate-x-0.5" : "text-text-faint opacity-50"}`} />
+                      <ArrowRight className={`h-4 w-4 transition-transform ${isSelected ? "text-rose-500 translate-x-0.5" : "text-text-faint opacity-50"}`} />
                     </div>
                   </div>
                 );
@@ -560,15 +560,15 @@ export function CommandPalette() {
         </div>
 
         {/* Footer shortcuts helper */}
-        <div className="flex items-center justify-between border-t border-surface-border px-4 py-2 text-[11px] text-text-faint bg-surface-raised/30">
+        <div className="flex items-center justify-between border-t border-zinc-200 dark:border-[#5E162D] px-4 py-2 text-[11px] text-zinc-500 dark:text-[#E2B8C6] bg-zinc-50/70 dark:bg-[#2A0813]/60">
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center gap-1">
-              <kbd className="rounded bg-surface border border-surface-border px-1.5 py-0.5 font-mono text-[9px]">↑</kbd>
-              <kbd className="rounded bg-surface border border-surface-border px-1.5 py-0.5 font-mono text-[9px]">↓</kbd>
+              <kbd className="rounded bg-white dark:bg-[#21050E] border border-zinc-200 dark:border-[#5E162D] px-1.5 py-0.5 font-mono text-[9px]">↑</kbd>
+              <kbd className="rounded bg-white dark:bg-[#21050E] border border-zinc-200 dark:border-[#5E162D] px-1.5 py-0.5 font-mono text-[9px]">↓</kbd>
               <span>to navigate</span>
             </span>
             <span className="inline-flex items-center gap-1">
-              <kbd className="rounded bg-surface border border-surface-border px-1.5 py-0.5 font-mono text-[9px]">↵</kbd>
+              <kbd className="rounded bg-white dark:bg-[#21050E] border border-zinc-200 dark:border-[#5E162D] px-1.5 py-0.5 font-mono text-[9px]">↵</kbd>
               <span>to select</span>
             </span>
           </div>

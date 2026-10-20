@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { getAdminSession } from "@/lib/auth/admin";
 import { signOutAction } from "@/app/actions/auth";
 import { connection } from "next/server";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import {
   ShieldAlert,
   ShieldCheck,
@@ -51,7 +52,7 @@ async function AdminGuard({ children }: { children: React.ReactNode }) {
             <ShieldAlert className="h-7 w-7" />
           </div>
 
-          <h1 className="text-xl font-bold tracking-tight text-white mb-2">
+          <h1 className="text-xl font-bold tracking-tight text-foreground mb-2">
             Administrator Access Required
           </h1>
 
@@ -83,7 +84,7 @@ async function AdminGuard({ children }: { children: React.ReactNode }) {
 
             <Link
               href="/"
-              className="inline-flex items-center justify-center text-xs text-foreground-muted hover:text-white transition-colors py-1"
+              className="inline-flex items-center justify-center text-xs text-foreground-muted hover:text-foreground transition-colors py-1"
             >
               Return to Public Gallery
             </Link>
@@ -104,7 +105,7 @@ async function AdminGuard({ children }: { children: React.ReactNode }) {
                 <Sparkles className="h-5 w-5" />
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-base tracking-tight text-white">PromptNest</span>
+                <span className="font-bold text-base tracking-tight text-foreground">PromptNest</span>
                 <span className="inline-flex items-center gap-1 rounded-md bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 text-xs font-semibold text-indigo-400">
                   <ShieldCheck className="h-3 w-3" />
                   Admin
@@ -115,28 +116,28 @@ async function AdminGuard({ children }: { children: React.ReactNode }) {
             <nav className="hidden md:flex items-center gap-1">
               <Link
                 href="/admin"
-                className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:text-white hover:bg-surface-raised transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:text-foreground hover:bg-surface-raised transition-colors"
               >
                 <LayoutDashboard className="h-4 w-4 text-indigo-400" />
                 Prompts
               </Link>
               <Link
                 href="/admin/submissions"
-                className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:text-white hover:bg-surface-raised transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:text-foreground hover:bg-surface-raised transition-colors"
               >
                 <Inbox className="h-4 w-4 text-amber-400" />
                 Submissions
               </Link>
               <Link
                 href="/admin/articles"
-                className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:text-white hover:bg-surface-raised transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:text-foreground hover:bg-surface-raised transition-colors"
               >
                 <BookOpen className="h-4 w-4 text-purple-400" />
                 Articles
               </Link>
               <Link
                 href="/admin/prompts/new"
-                className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:text-white hover:bg-surface-raised transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:text-foreground hover:bg-surface-raised transition-colors"
               >
                 <PlusCircle className="h-4 w-4 text-emerald-400" />
                 New Prompt
@@ -149,7 +150,7 @@ async function AdminGuard({ children }: { children: React.ReactNode }) {
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-surface-border bg-surface-raised px-3 py-1.5 text-xs font-medium text-foreground-muted hover:text-white hover:bg-surface-border transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-surface-border bg-surface-raised px-3 py-1.5 text-xs font-medium text-foreground-muted hover:text-foreground hover:bg-surface-border transition-colors"
               title="Open public gallery in a new tab"
             >
               <span>View Site</span>
@@ -158,12 +159,14 @@ async function AdminGuard({ children }: { children: React.ReactNode }) {
 
             <div className="hidden lg:flex items-center gap-2 pl-2 border-l border-surface-border">
               <div className="text-right">
-                <p className="text-xs font-medium text-white truncate max-w-[140px]">
+                <p className="text-xs font-medium text-foreground truncate max-w-[140px]">
                   {session.user.email}
                 </p>
                 <p className="text-[10px] text-emerald-400">Verified Admin</p>
               </div>
             </div>
+
+            <ThemeToggle />
 
             <form action={signOutAction}>
               <button

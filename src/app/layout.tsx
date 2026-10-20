@@ -34,7 +34,10 @@ const fontMono = JetBrains_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#090A0F",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#2A0813" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
@@ -57,7 +60,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `(function() {
               try {
-                var stored = localStorage.getItem('promptnest-theme');
+                var stored = localStorage.getItem('promptnest-theme') || localStorage.getItem('theme');
                 var theme = stored === 'light' ? 'light' : 'dark';
                 document.documentElement.classList.remove('light', 'dark');
                 document.documentElement.classList.add(theme);
@@ -70,7 +73,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-rose-500/30 selection:text-rose-200">
         <ThemeProvider>
           {children}
           <CommandPalette />

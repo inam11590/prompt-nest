@@ -130,10 +130,7 @@ export function PromptCard({
 
   return (
     <article
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-surface-border bg-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/40 hover:shadow-xl hover:shadow-black/30 break-inside-avoid mb-5 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent"
-      style={{
-        backgroundColor: prompt.dominantColor || "var(--surface)",
-      }}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-zinc-200/80 dark:border-[#5E162D] bg-white dark:bg-[#380B1A] shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-rose-400/50 dark:hover:border-rose-500/40 break-inside-avoid mb-5 focus-within:ring-2 focus-within:ring-rose-500 focus-within:border-transparent"
     >
       {/* Accessible live region for copy confirmation */}
       <div className="sr-only" aria-live="polite">
@@ -214,8 +211,8 @@ export function PromptCard({
               </span>
 
               {/* Aspect Ratio Badge */}
-              <span className="inline-flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-[10px] font-mono font-semibold text-white/90 backdrop-blur-md border border-white/10 shadow-sm pointer-events-none">
-                <Ratio className="h-2.5 w-2.5 text-text-muted" />
+              <span className="inline-flex items-center gap-1 rounded-full bg-black/60 dark:bg-[#1A030A]/80 px-2 py-1 text-[10px] font-mono font-semibold text-white/90 backdrop-blur-md border border-white/10 dark:border-rose-300/20 shadow-sm pointer-events-none">
+                <Ratio className="h-2.5 w-2.5 text-zinc-300 dark:text-rose-200/70" />
                 <span>{ratioLabel}</span>
               </span>
             </div>
@@ -239,7 +236,7 @@ export function PromptCard({
                   }}
                   aria-label="Save to board"
                   title="Save to board"
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white/90 hover:bg-black/75 hover:text-white border border-white/10 backdrop-blur-md transition-colors"
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-black/50 dark:bg-[#1A030A]/75 text-white/90 hover:bg-black/75 hover:text-white border border-white/10 dark:border-rose-300/20 backdrop-blur-md transition-colors"
                 >
                   <FolderPlus className="h-3.5 w-3.5" />
                 </button>
@@ -294,8 +291,9 @@ export function PromptCard({
       {/* Content Area */}
       <div className="relative z-10 flex flex-col p-4 bg-surface transition-colors">
         {/* Category & Engagement Bar */}
+        {/* Category & Engagement Bar */}
         <div className="mb-2 flex items-center justify-between gap-2 text-[11px] text-text-faint">
-          <span className="rounded-md bg-surface-raised px-2 py-0.5 font-medium text-text-muted border border-surface-border">
+          <span className="rounded-md bg-zinc-100 dark:bg-[#4A1023] px-2 py-0.5 font-medium text-zinc-700 dark:text-[#FFF5F7] border border-zinc-200 dark:border-[#5E162D]">
             {categoryLabels[prompt.category] || prompt.category}
           </span>
           <div className="flex items-center gap-3">
@@ -319,7 +317,7 @@ export function PromptCard({
           href={detailHref}
           className="group/title focus:outline-none mb-1.5"
         >
-          <h2 className="font-heading text-sm sm:text-base font-bold leading-snug text-foreground transition-colors group-hover/title:text-indigo-400">
+          <h2 className="font-heading text-sm sm:text-base font-bold leading-snug text-foreground transition-colors group-hover/title:text-rose-700 dark:group-hover/title:text-rose-300">
             {prompt.title}
           </h2>
         </Link>
@@ -330,7 +328,7 @@ export function PromptCard({
         </p>
 
         {/* Monospace Prompt Excerpt */}
-        <p className="mb-3 font-mono text-[11px] leading-relaxed text-text-faint bg-surface-raised/80 p-2.5 rounded-lg line-clamp-2 border border-surface-border">
+        <p className="mb-3 font-mono text-[11px] leading-relaxed text-zinc-600 dark:text-[#E2B8C6] bg-zinc-50 dark:bg-[#21050E] p-2.5 rounded-lg line-clamp-2 border border-zinc-200 dark:border-[#5E162D]">
           {prompt.prompt}
         </p>
 
@@ -339,7 +337,7 @@ export function PromptCard({
           {prompt.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="rounded-md bg-surface-raised px-2 py-0.5 text-[10px] font-medium text-text-muted border border-surface-border"
+              className="rounded-md bg-zinc-100 dark:bg-[#4A1023] px-2 py-0.5 text-[10px] font-medium text-zinc-600 dark:text-[#E2B8C6] border border-zinc-200 dark:border-[#5E162D]"
             >
               #{tag}
             </span>
@@ -352,10 +350,10 @@ export function PromptCard({
         </div>
 
         {/* Card Footer: Detail Link & Source Attribution */}
-        <div className="flex items-center justify-between border-t border-surface-border pt-2.5 text-[11px] text-text-faint">
+        <div className="flex items-center justify-between border-t border-zinc-200 dark:border-[#5E162D] pt-2.5 text-[11px] text-text-faint">
           <Link
             href={detailHref}
-            className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline"
+            className="font-semibold text-rose-700 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 hover:underline"
           >
             View prompt &rarr;
           </Link>

@@ -397,9 +397,9 @@ async function PromptDetailContent({ params }: PromptPageProps) {
 
               {/* Personal Portrait Identity Notice */}
               {prompt.category === "portraits" && (
-                <div className="rounded-xl border border-zinc-700/60 bg-zinc-900/40 p-3.5 text-xs text-zinc-300 leading-relaxed">
-                  <span className="font-semibold text-zinc-200 block mb-0.5">👤 Personal Portrait Identity Notice</span>
-                  <span className="text-[11px] text-zinc-400 block">
+                <div className="rounded-xl border border-zinc-200 dark:border-[#5E162D] bg-zinc-50 dark:bg-[#380B1A] p-3.5 text-xs text-zinc-700 dark:text-[#E2B8C6] leading-relaxed">
+                  <span className="font-semibold text-zinc-900 dark:text-[#FFF5F7] block mb-0.5">👤 Personal Portrait Identity Notice</span>
+                  <span className="text-[11px] text-zinc-600 dark:text-[#C98A9F] block">
                     When adapting this prompt with personal reference photos, instruct your image model to treat the uploaded photo as the sole facial identity authority while preserving natural skin textures and facial proportions. Results depend on image tool and reference quality.
                   </span>
                 </div>

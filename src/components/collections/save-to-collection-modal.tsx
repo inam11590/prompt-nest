@@ -324,7 +324,7 @@ export function SaveToCollectionModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-[#150208]/85 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
       role="presentation"
     >
@@ -334,12 +334,12 @@ export function SaveToCollectionModal({
         aria-modal="true"
         aria-labelledby="save-to-board-title"
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-2xl shadow-black/60 transition-all duration-200"
+        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#380B1A] shadow-2xl transition-all duration-200"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-surface-border p-5">
+        <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#5E162D] p-5">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 dark:text-rose-400">
               <FolderPlus className="h-4 w-4" />
             </div>
             <div>
@@ -359,15 +359,15 @@ export function SaveToCollectionModal({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="rounded-full p-1.5 text-text-muted hover:bg-surface-raised hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            className="rounded-full p-1.5 text-text-muted hover:bg-zinc-100 dark:hover:bg-[#4A1023] hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Prompt Preview Snippet */}
-        <div className="flex items-center gap-3.5 bg-surface-raised/60 p-4 border-b border-surface-border">
-          <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border border-surface-border bg-surface">
+        <div className="flex items-center gap-3.5 bg-zinc-50 dark:bg-[#2A0813]/60 p-4 border-b border-zinc-200 dark:border-[#5E162D]">
+          <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#380B1A]">
             <Image
               src={prompt.imageUrl}
               alt={prompt.imageAlt || prompt.title}
@@ -419,16 +419,16 @@ export function SaveToCollectionModal({
                 }}
                 className={`group flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer ${
                   board.hasPrompt
-                    ? "border-indigo-500/30 bg-indigo-500/10"
-                    : "border-surface-border bg-surface-raised hover:border-surface-border hover:bg-surface-raised/80"
+                    ? "border-rose-500/30 bg-rose-500/10"
+                    : "border-zinc-200 dark:border-[#5E162D] bg-zinc-50 dark:bg-[#2A0813]/40 hover:bg-zinc-100 dark:hover:bg-[#2A0813]/70"
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div
                     className={`flex h-8 w-8 items-center justify-center rounded-xl border ${
                       board.hasPrompt
-                        ? "bg-indigo-600 text-white border-indigo-500"
-                        : "bg-surface text-text-muted border-surface-border"
+                        ? "bg-rose-600 text-white border-rose-500"
+                        : "bg-white dark:bg-[#380B1A] text-zinc-500 dark:text-[#E2B8C6] border-zinc-200 dark:border-[#5E162D]"
                     }`}
                   >
                     {board.hasPrompt ? (
@@ -457,8 +457,8 @@ export function SaveToCollectionModal({
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
                     board.hasPrompt
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "bg-surface text-text-muted border border-surface-border group-hover:text-foreground"
+                      ? "bg-rose-600 text-white shadow-sm"
+                      : "bg-white dark:bg-[#380B1A] text-zinc-600 dark:text-[#E2B8C6] border border-zinc-200 dark:border-[#5E162D] group-hover:text-foreground"
                   }`}
                 >
                   {board.hasPrompt ? "Saved" : "Save"}
@@ -469,12 +469,12 @@ export function SaveToCollectionModal({
         </div>
 
         {/* Inline Create Board Form */}
-        <div className="border-t border-surface-border p-4 bg-surface-raised/40">
+        <div className="border-t border-zinc-200 dark:border-[#5E162D] p-4 bg-zinc-50/50 dark:bg-[#2A0813]/40">
           {!showCreateForm ? (
             <button
               type="button"
               onClick={() => setShowCreateForm(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-surface-border py-2.5 text-xs font-semibold text-text-muted hover:border-indigo-500/50 hover:text-indigo-400 hover:bg-indigo-500/5 transition-all"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-300 dark:border-[#5E162D] py-2.5 text-xs font-semibold text-zinc-600 dark:text-[#E2B8C6] hover:border-rose-500/50 hover:text-rose-500 hover:bg-rose-500/5 transition-all"
             >
               <Plus className="h-4 w-4" />
               <span>Create New Board</span>
@@ -496,7 +496,7 @@ export function SaveToCollectionModal({
                   value={newBoardName}
                   onChange={(e) => setNewBoardName(e.target.value)}
                   placeholder="e.g. Neon Cyberpunk Ideas"
-                  className="w-full rounded-xl border border-surface-border bg-surface px-3 py-2 text-xs text-foreground placeholder:text-text-faint focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#2A0813] px-3 py-2 text-xs text-foreground placeholder:text-text-faint focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
                   autoFocus
                 />
               </div>
@@ -515,7 +515,7 @@ export function SaveToCollectionModal({
                   value={newBoardDesc}
                   onChange={(e) => setNewBoardDesc(e.target.value)}
                   placeholder="What is this collection about?"
-                  className="w-full rounded-xl border border-surface-border bg-surface px-3 py-2 text-xs text-foreground placeholder:text-text-faint focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#2A0813] px-3 py-2 text-xs text-foreground placeholder:text-text-faint focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
                 />
               </div>
 
@@ -533,7 +533,7 @@ export function SaveToCollectionModal({
                   type="checkbox"
                   checked={isSecret}
                   onChange={(e) => setIsSecret(e.target.checked)}
-                  className="h-4 w-4 rounded border-surface-border text-indigo-600 focus:ring-indigo-500"
+                  className="h-4 w-4 rounded border-zinc-300 dark:border-[#5E162D] text-rose-600 focus:ring-rose-500"
                 />
               </div>
 
@@ -541,7 +541,7 @@ export function SaveToCollectionModal({
                 <button
                   type="submit"
                   disabled={isCreating || !newBoardName.trim()}
-                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-2 text-xs font-semibold text-white shadow-md hover:bg-indigo-500 transition-all disabled:opacity-50"
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 py-2 text-xs font-semibold text-white shadow-md hover:bg-rose-500 transition-all disabled:opacity-50"
                 >
                   {isCreating ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -553,7 +553,7 @@ export function SaveToCollectionModal({
                 <button
                   type="button"
                   onClick={() => setShowCreateForm(false)}
-                  className="rounded-xl border border-surface-border bg-surface px-3 py-2 text-xs font-semibold text-text-muted hover:text-foreground transition-all"
+                  className="rounded-xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#2A0813] px-3 py-2 text-xs font-semibold text-text-muted hover:text-foreground transition-all"
                 >
                   Cancel
                 </button>

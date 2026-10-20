@@ -513,10 +513,10 @@ export function CollectionDetailClient({
           role="dialog"
           aria-modal="true"
           aria-label="Confirm Collection Deletion"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-[#150208]/85 backdrop-blur-sm p-4 animate-in fade-in duration-200"
         >
-          <div className="w-full max-w-md rounded-2xl border border-surface-border bg-surface p-6 shadow-2xl relative text-foreground">
-            <div className="flex items-center gap-3 text-rose-400 mb-3">
+          <div className="w-full max-w-md rounded-2xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#380B1A] p-6 shadow-2xl relative text-foreground">
+            <div className="flex items-center gap-3 text-rose-500 mb-3">
               <AlertTriangle className="h-6 w-6" />
               <h2 className="text-base font-bold text-foreground">Delete this collection?</h2>
             </div>

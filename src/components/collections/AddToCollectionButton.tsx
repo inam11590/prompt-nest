@@ -229,7 +229,7 @@ export function AddToCollectionButton({
           onClick={handleOpen}
           aria-label="Add prompt to collection"
           title="Add to collection"
-          className={`flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white/90 backdrop-blur-md border border-white/10 shadow-sm transition-all hover:bg-black/80 hover:text-white hover:scale-110 active:scale-95 focus-visible:ring-2 focus-visible:ring-blue-600 ${className}`}
+          className={`flex h-7 w-7 items-center justify-center rounded-full bg-black/60 dark:bg-[#1A030A]/80 text-white/90 dark:text-rose-100/90 backdrop-blur-md border border-white/10 dark:border-rose-300/20 shadow-sm transition-all hover:bg-black/80 hover:text-white hover:scale-110 active:scale-95 focus-visible:ring-2 focus-visible:ring-rose-600 ${className}`}
         >
           <FolderPlus className="h-3.5 w-3.5" />
         </button>
@@ -238,9 +238,9 @@ export function AddToCollectionButton({
           ref={triggerRef}
           type="button"
           onClick={handleOpen}
-          className={`inline-flex items-center gap-2 rounded-xl border border-surface-border bg-surface px-4 py-2.5 text-xs font-semibold text-text-muted transition-all hover:bg-surface-raised hover:text-foreground focus-visible:ring-2 focus-visible:ring-blue-600 ${className}`}
+          className={`inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#380B1A] px-4 py-2.5 text-xs font-semibold text-zinc-700 dark:text-[#E2B8C6] transition-all hover:bg-zinc-100 dark:hover:bg-[#4A1023] hover:text-foreground focus-visible:ring-2 focus-visible:ring-rose-600 ${className}`}
         >
-          <FolderPlus className="h-4 w-4 text-blue-400" />
+          <FolderPlus className="h-4 w-4 text-rose-500" />
           <span>Add to Collection</span>
         </button>
       )}
@@ -255,13 +255,13 @@ export function AddToCollectionButton({
           onClick={(e) => {
             if (e.target === e.currentTarget) handleClose();
           }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-[#150208]/85 backdrop-blur-sm p-4 animate-in fade-in duration-200"
         >
-          <div className="w-full max-w-md rounded-2xl border border-surface-border bg-surface p-6 shadow-2xl relative text-foreground">
+          <div className="w-full max-w-md rounded-2xl border border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#380B1A] p-6 shadow-2xl relative text-foreground">
             {/* Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-surface-border">
+            <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-[#5E162D]">
               <div className="flex items-center gap-2">
-                <FolderPlus className="h-5 w-5 text-blue-500" />
+                <FolderPlus className="h-5 w-5 text-rose-500" />
                 <h3 className="text-base font-bold">Add to Collection</h3>
               </div>
               <button
@@ -269,7 +269,7 @@ export function AddToCollectionButton({
                 type="button"
                 onClick={handleClose}
                 aria-label="Close dialog"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-surface-raised hover:text-foreground transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-zinc-100 dark:hover:bg-[#4A1023] hover:text-foreground transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -312,16 +312,16 @@ export function AddToCollectionButton({
                     disabled={col.isPending}
                     className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
                       col.hasPrompt
-                        ? "border-blue-500/40 bg-blue-500/10 text-white"
-                        : "border-surface-border bg-surface-raised/40 hover:bg-surface-raised text-text-muted hover:text-foreground"
+                        ? "border-rose-500/40 bg-rose-500/10 text-foreground"
+                        : "border-zinc-200 dark:border-[#5E162D] bg-zinc-50 dark:bg-[#2A0813]/40 hover:bg-zinc-100 dark:hover:bg-[#2A0813]/70 text-zinc-600 dark:text-[#E2B8C6] hover:text-foreground"
                     }`}
                   >
                     <div className="flex items-center gap-2.5 truncate">
                       <div
                         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
                           col.hasPrompt
-                            ? "bg-blue-600 border-blue-500 text-white"
-                            : "border-surface-border bg-surface"
+                            ? "bg-rose-600 border-rose-500 text-white"
+                            : "border-zinc-200 dark:border-[#5E162D] bg-white dark:bg-[#2A0813]"
                         }`}
                       >
                         {col.hasPrompt && <Check className="h-3 w-3 stroke-[3]" />}
@@ -342,7 +342,7 @@ export function AddToCollectionButton({
                         </span>
                       )}
                       {col.isPending && (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin text-blue-400" />
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-500" />
                       )}
                     </div>
                   </button>
@@ -351,7 +351,7 @@ export function AddToCollectionButton({
             </div>
 
             {/* Quick Create New Collection */}
-            <form onSubmit={handleCreateAndAdd} className="mt-4 pt-4 border-t border-surface-border flex gap-2">
+            <form onSubmit={handleCreateAndAdd} className="mt-4 pt-4 border-t border-zinc-200 dark:border-[#5E162D] flex gap-2">
               <input
                 type="text"
                 placeholder="New collection title..."
@@ -359,12 +359,12 @@ export function AddToCollectionButton({
                 onChange={(e) => setNewTitle(e.target.value)}
                 maxLength={120}
                 disabled={isCreating}
-                className="flex-1 rounded-xl border border-surface-border bg-surface-raised px-3 py-2 text-xs text-foreground placeholder:text-text-faint focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="flex-1 rounded-xl border border-zinc-200 dark:border-[#5E162D] bg-zinc-50 dark:bg-[#2A0813] px-3 py-2 text-xs text-foreground placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-rose-500"
               />
               <button
                 type="submit"
                 disabled={!newTitle.trim() || isCreating}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white transition-all hover:bg-blue-500 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white transition-all hover:bg-rose-500 disabled:opacity-50"
               >
                 {isCreating ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />

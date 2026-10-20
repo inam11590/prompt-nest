@@ -28,7 +28,7 @@ function subscribeTheme(callback: () => void) {
 
 function getThemeSnapshot(): Theme {
   try {
-    const saved = localStorage.getItem("promptnest-theme");
+    const saved = localStorage.getItem("promptnest-theme") || localStorage.getItem("theme");
     if (saved === "light" || saved === "dark") return saved;
   } catch {
     // Ignore storage errors
@@ -50,6 +50,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setTheme = (t: Theme) => {
     try {
       localStorage.setItem("promptnest-theme", t);
+      localStorage.setItem("theme", t);
     } catch {
       // Ignore storage errors
     }
