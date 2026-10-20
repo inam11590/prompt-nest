@@ -9,7 +9,8 @@ import {
   type StyleFraming,
   type StyleWorkflow,
 } from "@/data/prompts";
-import { createClient, createPublicClient } from "@/lib/supabase/server";
+import { PERSONAL_TRANSFORMATION_PROMPTS } from "@/data/personalTransformationPrompts";
+import { createClient, createPublicClient, createAdminClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database.types";
 
 export type PromptRow = Database["public"]["Tables"]["prompts"]["Row"];
@@ -255,12 +256,11 @@ export async function getPromptBySlugDb(slug: string): Promise<PromptItem | null
       .from("prompts")
       .select("*")
       .eq("slug", slug)
-      .eq("published", true)
+      .or("published.eq.true,status.eq.published")
       .maybeSingle();
 
     if (error) {
-      console.error(`Supabase getPromptBySlugDb error for slug '${slug}':`, error);
-      throw new Error(`Database error: ${error.message}`);
+      console.warn(`Supabase getPromptBySlugDb note for slug '${slug}':`, error);
     }
 
     if (data) {
@@ -289,7 +289,9 @@ export async function getPromptBySlugDb(slug: string): Promise<PromptItem | null
     return null;
   }
 
-  const local = STARTER_PROMPTS.find((p) => p.slug === slug);
+  const local =
+    STARTER_PROMPTS.find((p) => p.slug === slug) ||
+    PERSONAL_TRANSFORMATION_PROMPTS.find((p) => p.slug === slug);
   return local || null;
 }
 
@@ -566,24 +568,42 @@ export async function getAdminPrompts(
  * Retrieves a single prompt by its unique ID for the admin editor or preview.
  */
 export async function getPromptByIdAdmin(id: string): Promise<PromptItem | null> {
-  const supabase = await createClient();
+  const supabase = createAdminClient() || (await createClient());
 
   if (supabase) {
-    const { data, error } = await supabase
-      .from("prompts")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
+    try {
+      // 1. Query by ID
+      let { data } = await supabase
+        .from("prompts")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
 
-    if (error) {
-      console.error(`getPromptByIdAdmin error for id '${id}':`, error);
-      throw new Error(`Database error: ${error.message}`);
+      // 2. Query by slug if not found by ID (handles seed prompts)
+      if (!data) {
+        const bySlug = await supabase
+          .from("prompts")
+          .select("*")
+          .eq("slug", id)
+          .maybeSingle();
+        if (bySlug.data) {
+          data = bySlug.data;
+        }
+      }
+
+      if (data) {
+        return mapDatabaseRowToPromptItem(data);
+      }
+    } catch (err) {
+      console.warn(`getPromptByIdAdmin Supabase note for '${id}':`, err);
     }
-
-    return data ? mapDatabaseRowToPromptItem(data) : null;
   }
 
-  const found = STARTER_PROMPTS.find((p) => p.id === id);
+  // 3. Fallback to local starter prompts and personal transformation seed prompts
+  const found =
+    STARTER_PROMPTS.find((p) => p.id === id || p.slug === id) ||
+    PERSONAL_TRANSFORMATION_PROMPTS.find((p) => p.id === id || p.slug === id);
+
   return found ? { ...found, status: found.status || "published" } : null;
 }
 

@@ -175,6 +175,7 @@ export interface PromptItem {
 }
 
 import { PUBLISHED_STEP10_PROMPTS } from "./revisedStep10Prompts";
+import rawPersonalTransformationPrompts from "./personalTransformationPrompts.json";
 
 const ORIGINAL_STARTER_PROMPTS: PromptItem[] = [
   {
@@ -582,7 +583,10 @@ export const STARTER_PROMPTS: PromptItem[] = [
 ];
 
 export function getPromptBySlug(slug: string): PromptItem | undefined {
-  return STARTER_PROMPTS.find((p) => p.slug === slug);
+  return (
+    STARTER_PROMPTS.find((p) => p.slug === slug) ||
+    (rawPersonalTransformationPrompts as unknown as PromptItem[]).find((p) => p.slug === slug)
+  );
 }
 
 /**

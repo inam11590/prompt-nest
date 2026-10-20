@@ -65,10 +65,7 @@ export async function generateMetadata({
   params,
 }: PromptPageProps): Promise<Metadata> {
   const { slug } = await params;
-  let prompt = getPromptBySlug(slug) || null;
-  if (!prompt) {
-    prompt = await getPromptBySlugDb(slug).catch(() => null);
-  }
+  const prompt = (await getPromptBySlugDb(slug).catch(() => null)) || getPromptBySlug(slug) || null;
 
   if (!prompt) {
     return constructMetadata({
@@ -110,10 +107,7 @@ export async function generateMetadata({
 
 async function PromptDetailContent({ params }: PromptPageProps) {
   const { slug } = await params;
-  let prompt = getPromptBySlug(slug) || null;
-  if (!prompt) {
-    prompt = await getPromptBySlugDb(slug).catch(() => null);
-  }
+  const prompt = (await getPromptBySlugDb(slug).catch(() => null)) || getPromptBySlug(slug) || null;
 
   if (!prompt) {
     notFound();

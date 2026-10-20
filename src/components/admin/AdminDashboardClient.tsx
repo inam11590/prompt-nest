@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useMemo, useSyncExternalStore, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -44,6 +44,25 @@ interface AdminDashboardClientProps {
   pageSize: number;
 }
 
+function subscribeToOverrides(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+function getOverridesSnapshot(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return localStorage.getItem("promptnest_admin_overrides") || "";
+  } catch {
+    return "";
+  }
+}
+
+function getServerSnapshot(): string {
+  return "";
+}
+
 export function AdminDashboardClient({
   prompts,
   totalMatching,
@@ -64,6 +83,22 @@ export function AdminDashboardClient({
   const [search, setSearch] = useState(initialQuery);
   const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+
+  const rawOverrides = useSyncExternalStore(subscribeToOverrides, getOverridesSnapshot, getServerSnapshot);
+
+  const displayPrompts = useMemo(() => {
+    if (!rawOverrides) return prompts;
+    try {
+      const overrides = JSON.parse(rawOverrides);
+      if (!overrides || typeof overrides !== "object") return prompts;
+      return prompts.map((p) => {
+        const override = overrides[p.id] || overrides[p.slug];
+        return override ? { ...p, ...override } : p;
+      });
+    } catch {
+      return prompts;
+    }
+  }, [prompts, rawOverrides]);
 
   // Helper to update URL params
   const updateParams = (newParams: Record<string, string | null>) => {
@@ -388,7 +423,7 @@ export function AdminDashboardClient({
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-border">
-              {prompts.length === 0 ? (
+              {displayPrompts.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-16 text-center">
                     <div className="flex flex-col items-center justify-center">
@@ -410,7 +445,7 @@ export function AdminDashboardClient({
                   </td>
                 </tr>
               ) : (
-                prompts.map((prompt) => {
+                displayPrompts.map((prompt) => {
                   const status = prompt.status || "published";
                   const isMenuOpen = activeMenuId === prompt.id;
 
@@ -432,6 +467,7 @@ export function AdminDashboardClient({
                               fill
                               sizes="56px"
                               className="object-cover"
+                              unoptimized
                             />
                           </div>
                           <div className="min-w-0 max-w-xs md:max-w-md">

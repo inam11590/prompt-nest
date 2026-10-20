@@ -4,11 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { PromptItem, PromptCategory, AIModel } from "@/data/prompts";
-import {
-  createPromptAction,
-  updatePromptAction,
-  // Note: /api/admin/upload endpoint supersedes legacy uploadImageAction for bulletproof client-side WebP uploads
-} from "@/app/actions/admin-prompts";
+// Note: /api/admin/upload client pipeline supersedes legacy uploadImageAction
 import { compressImageToWebp } from "@/lib/image-upload";
 import {
   UploadCloud,
@@ -242,67 +238,93 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
     );
   };
 
-  // Handle Form Submission
+  // Handle Form Submission with dedicated JSON API endpoint and guaranteed loading state cleanup
   const handleSubmit = async (targetStatus?: "draft" | "published" | "archived") => {
     const finalStatus = targetStatus || status;
     setErrorMessage(null);
     setSuccessMessage(null);
     setIsSubmitting(true);
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("slug", slug);
-    formData.append("shortDescription", shortDescription);
-    formData.append("prompt", promptText);
-    formData.append("category", category);
-    formData.append("model", primaryModel);
-    for (const m of compatibleModels) {
-      formData.append("compatibleModels", m);
-    }
-    formData.append("tags", tags);
-    formData.append("imageUrl", imageUrl);
-    formData.append("imageAlt", imageAlt || title);
-    formData.append("width", String(width));
-    formData.append("height", String(height));
-    formData.append("aspectRatio", aspectRatio);
-    formData.append("aspectRatioValue", aspectRatioValue);
-    formData.append("status", finalStatus);
-    if (negativePrompt) formData.append("negativePrompt", negativePrompt);
-    if (generationParameters) formData.append("generationParameters", generationParameters);
-    if (promptDual) formData.append("promptDual", promptDual);
-    if (occasion) formData.append("occasion", occasion);
-    if (setting) formData.append("setting", setting);
-    if (lighting) formData.append("lighting", lighting);
-    if (framing) formData.append("framing", framing);
-    if (workflow) formData.append("workflow", workflow);
+    try {
+      const payload = {
+        id: initialPrompt?.id,
+        title,
+        slug,
+        shortDescription,
+        prompt: promptText,
+        promptDual: promptDual || null,
+        negativePrompt: negativePrompt || null,
+        generationParameters: generationParameters || null,
+        category,
+        model: primaryModel,
+        compatibleModels,
+        tags,
+        imageUrl,
+        imageAlt: imageAlt || title,
+        width,
+        height,
+        aspectRatio,
+        aspectRatioValue,
+        dominantColor,
+        status: finalStatus,
+        expectedUpdatedAt,
+        occasion: occasion || null,
+        setting: setting || null,
+        lighting: lighting || null,
+        framing: framing || null,
+        workflow: workflow || null,
+      };
 
-    let res;
-    if (mode === "create") {
-      res = await createPromptAction(formData);
-    } else if (initialPrompt) {
-      res = await updatePromptAction(initialPrompt.id, formData, expectedUpdatedAt);
-    }
+      const response = await fetch("/api/admin/prompts/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(12000),
+      });
 
-    setIsSubmitting(false);
+      const res = await response.json();
 
-    if (res?.success && res.data) {
-      setIsDirty(false);
-      setSuccessMessage(
-        mode === "create"
-          ? `Prompt "${title}" successfully created.`
-          : `Prompt "${title}" updated successfully.`
-      );
+      if (res.success && res.prompt) {
+        setIsDirty(false);
+        setStatus(finalStatus);
 
-      // Navigate appropriately
-      setTimeout(() => {
-        if (finalStatus === "published") {
-          router.push(`/prompts/${res.data?.slug || slug}`);
-        } else {
-          router.push("/admin");
+        // Sync with local admin overrides in localStorage for instant multi-page reflection
+        try {
+          const raw = localStorage.getItem("promptnest_admin_overrides");
+          const overrides = raw ? JSON.parse(raw) : {};
+          if (initialPrompt?.id) overrides[initialPrompt.id] = res.prompt;
+          if (res.prompt.slug) overrides[res.prompt.slug] = res.prompt;
+          if (slug) overrides[slug] = res.prompt;
+          localStorage.setItem("promptnest_admin_overrides", JSON.stringify(overrides));
+        } catch (storageErr) {
+          console.warn("localStorage override save error:", storageErr);
         }
-      }, 1000);
-    } else {
-      setErrorMessage(res?.error || "An error occurred while saving prompt.");
+
+        const successNotice =
+          finalStatus === "published"
+            ? `Prompt "${title}" published live successfully!`
+            : `Prompt "${title}" saved as draft.`;
+        setSuccessMessage(successNotice);
+
+        setTimeout(() => {
+          if (finalStatus === "published") {
+            router.push(`/prompts/${res.prompt?.slug || slug}`);
+          } else {
+            router.push("/admin");
+          }
+        }, 1200);
+      } else {
+        const errorMsg = res.error || "An error occurred while saving prompt.";
+        setErrorMessage(errorMsg);
+      }
+    } catch (err) {
+      console.error("handleSubmit error:", err);
+      const message = err instanceof Error ? err.message : "Failed to save prompt.";
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false); // Unconditional reset ensures spinner NEVER hangs
     }
   };
 
