@@ -1,15 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import dynamic from "next/dynamic";
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
-import { CommandPalette } from "@/components/search/command-palette";
 import { constructMetadata } from "@/lib/seo/config";
 import "./globals.css";
+
+const CommandPalette = dynamic(
+  () => import("@/components/search/command-palette").then((m) => m.CommandPalette)
+);
 
 const fontHeading = Plus_Jakarta_Sans({
   variable: "--font-heading",
   subsets: ["latin"],
   weight: ["600", "700", "800"],
   display: "swap",
+  preload: true,
 });
 
 const fontSans = Inter({
@@ -17,6 +22,7 @@ const fontSans = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",
+  preload: true,
 });
 
 const fontMono = JetBrains_Mono({
@@ -24,6 +30,7 @@ const fontMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
+  preload: true,
 });
 
 export const viewport: Viewport = {

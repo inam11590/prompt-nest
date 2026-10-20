@@ -1,16 +1,32 @@
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
+import { checkRateLimit, RATE_LIMIT_PUBLIC } from "@/lib/security/rate-limit";
+import { sanitizeText } from "@/lib/security/sanitize";
 
 export async function GET(req: NextRequest) {
   try {
+    const rateLimit = checkRateLimit(req, RATE_LIMIT_PUBLIC);
+    if (!rateLimit.success) {
+      return new Response("Too many requests", {
+        status: 429,
+        headers: {
+          "Retry-After": rateLimit.retryAfter.toString(),
+        },
+      });
+    }
+
     const searchParams = req.nextUrl.searchParams;
 
-    const title = searchParams.get("title") || "Elite AI Prompt Showcase";
-    const model = searchParams.get("model") || "Midjourney v6.1";
-    const category = searchParams.get("category") || "Curated Prompt";
-    const author = searchParams.get("author") || "PromptNest";
+    const rawTitle = searchParams.get("title") || "Elite AI Prompt Showcase";
+    const title = sanitizeText(rawTitle, 100);
+    const rawModel = searchParams.get("model") || "Midjourney v6.1";
+    const model = sanitizeText(rawModel, 50);
+    const rawCategory = searchParams.get("category") || "Curated Prompt";
+    const category = sanitizeText(rawCategory, 40);
+    const rawAuthor = searchParams.get("author") || "PromptNest";
+    const author = sanitizeText(rawAuthor, 40);
     const rawLikes = searchParams.get("likes");
-    const likes = rawLikes ? parseInt(rawLikes, 10) : 142;
+    const likes = rawLikes ? Math.min(999999, Math.max(0, parseInt(rawLikes, 10) || 142)) : 142;
 
     return new ImageResponse(
       (

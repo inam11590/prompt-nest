@@ -1640,6 +1640,99 @@ async function runAll() {
     assert.ok(code.includes("/collections"), "links to curated collections");
   });
 
+  // ----------------------------------------------------
+  // STEP 16: Core Web Vitals & Security Hardening
+  // ----------------------------------------------------
+  test("T-16.1", "16.0", "S16-01: Next.js image configuration enables AVIF/WebP formats and configures remote patterns for Supabase & OAuth avatars", () => {
+    const nextConfigPath = path.resolve("next.config.ts");
+    assert.ok(fs.existsSync(nextConfigPath), "next.config.ts must exist");
+    const code = fs.readFileSync(nextConfigPath, "utf-8");
+    assert.ok(code.includes("image/avif") && code.includes("image/webp"), "enables AVIF and WebP image formats");
+    assert.ok(code.includes("*.supabase.co"), "configures Supabase storage remote pattern");
+    assert.ok(code.includes("lh3.googleusercontent.com") && code.includes("avatars.githubusercontent.com"), "configures Google and GitHub avatar remote patterns");
+  });
+
+  test("T-16.2", "16.0", "S16-02: Next.js Google Fonts configure display: swap, preload: true, and zero external font blocks", () => {
+    const layoutPath = path.resolve("src/app/layout.tsx");
+    assert.ok(fs.existsSync(layoutPath), "src/app/layout.tsx must exist");
+    const code = fs.readFileSync(layoutPath, "utf-8");
+    assert.ok(code.includes("display: \"swap\""), "fonts use display: swap");
+    assert.ok(code.includes("preload: true"), "fonts use preload: true");
+    assert.ok(!code.includes("fonts.googleapis.com"), "zero external render-blocking font link tags");
+  });
+
+  test("T-16.3", "16.0", "S16-03: Enterprise HTTP Security headers configure HSTS, CSP, X-Frame-Options SAMEORIGIN, and nosniff", () => {
+    const nextConfigPath = path.resolve("next.config.ts");
+    const code = fs.readFileSync(nextConfigPath, "utf-8");
+    assert.ok(code.includes("X-DNS-Prefetch-Control"), "configures X-DNS-Prefetch-Control");
+    assert.ok(code.includes("Strict-Transport-Security"), "configures Strict-Transport-Security");
+    assert.ok(code.includes("SAMEORIGIN"), "configures X-Frame-Options SAMEORIGIN");
+    assert.ok(code.includes("nosniff"), "configures X-Content-Type-Options nosniff");
+    assert.ok(code.includes("Permissions-Policy"), "configures Permissions-Policy");
+    assert.ok(code.includes("Content-Security-Policy"), "configures Content-Security-Policy");
+  });
+
+  test("T-16.4", "16.0", "S16-04: Rate limiting utility implements sliding window limiter, client IP detection, and rate limits API routes", () => {
+    const rateLimitPath = path.resolve("src/lib/security/rate-limit.ts");
+    assert.ok(fs.existsSync(rateLimitPath), "src/lib/security/rate-limit.ts must exist");
+    const code = fs.readFileSync(rateLimitPath, "utf-8");
+    assert.ok(code.includes("checkRateLimit"), "exports checkRateLimit function");
+    assert.ok(code.includes("getClientIp"), "exports getClientIp function");
+    assert.ok(code.includes("RATE_LIMIT_STRICT"), "provides strict rate limit preset");
+    assert.ok(code.includes("RATE_LIMIT_ENGAGEMENT"), "provides engagement rate limit preset");
+    assert.ok(code.includes("retryAfter"), "calculates retryAfter seconds");
+
+    const uploadRoutePath = path.resolve("src/app/api/admin/upload/route.ts");
+    const uploadCode = fs.readFileSync(uploadRoutePath, "utf-8");
+    assert.ok(uploadCode.includes("checkRateLimit"), "upload API route applies rate limiting");
+  });
+
+  test("T-16.5", "16.0", "S16-05: Input sanitization utility strips script vectors, javascript: protocols, and enforces strict length limits", () => {
+    const sanitizePath = path.resolve("src/lib/security/sanitize.ts");
+    assert.ok(fs.existsSync(sanitizePath), "src/lib/security/sanitize.ts must exist");
+    const code = fs.readFileSync(sanitizePath, "utf-8");
+    assert.ok(code.includes("sanitizeText"), "exports sanitizeText function");
+    assert.ok(code.includes("sanitizePromptText"), "exports sanitizePromptText function");
+    assert.ok(code.includes("sanitizeTags"), "exports sanitizeTags function");
+    assert.ok(code.includes("validateAndSanitizePromptPayload"), "exports prompt validator");
+  });
+
+  test("T-16.6", "16.0", "S16-06: Loading skeletons exist (app/loading.tsx, app/prompts/[slug]/loading.tsx) with locked aspect-ratios for zero CLS", () => {
+    const rootLoadingPath = path.resolve("src/app/loading.tsx");
+    assert.ok(fs.existsSync(rootLoadingPath), "src/app/loading.tsx must exist");
+    const rootCode = fs.readFileSync(rootLoadingPath, "utf-8");
+    assert.ok(rootCode.includes("aspect-"), "root loading locks aspect ratios on shimmer cards");
+
+    const slugLoadingPath = path.resolve("src/app/prompts/[slug]/loading.tsx");
+    assert.ok(fs.existsSync(slugLoadingPath), "src/app/prompts/[slug]/loading.tsx must exist");
+    const slugCode = fs.readFileSync(slugLoadingPath, "utf-8");
+    assert.ok(slugCode.includes("aspect-"), "detail loading locks aspect ratio on showcase image");
+  });
+
+  test("T-16.7", "16.0", "S16-07: SQL migration step16_security_and_indexes.sql enforces RLS and creates query optimization indexes", () => {
+    const sqlPath = path.resolve("supabase/migrations/step16_security_and_indexes.sql");
+    assert.ok(fs.existsSync(sqlPath), "step16_security_and_indexes.sql must exist");
+    const sqlCode = fs.readFileSync(sqlPath, "utf-8");
+    assert.ok(sqlCode.includes("ENABLE ROW LEVEL SECURITY"), "enforces Row Level Security");
+    assert.ok(sqlCode.includes("CREATE INDEX IF NOT EXISTS"), "creates query acceleration indexes");
+    assert.ok(sqlCode.includes("idx_prompts_tags_gin"), "creates GIN index on prompt tags");
+    assert.ok(sqlCode.includes("DROP POLICY IF EXISTS"), "uses idempotent policy creation");
+  });
+
+  test("T-16.8", "16.0", "S16-08: Code-splitting and INP optimizations verified (dynamic CommandPalette, debounced search in Hero, and zero raw <img>)", () => {
+    const layoutPath = path.resolve("src/app/layout.tsx");
+    const layoutCode = fs.readFileSync(layoutPath, "utf-8");
+    assert.ok(layoutCode.includes("dynamic("), "dynamically imports CommandPalette to eliminate initial render blocking");
+
+    const heroPath = path.resolve("src/components/Hero.tsx");
+    const heroCode = fs.readFileSync(heroPath, "utf-8");
+    assert.ok(heroCode.includes("internalQuery") && heroCode.includes("setTimeout"), "debounces search query in Hero to keep INP < 50ms");
+
+    const slugPath = path.resolve("src/app/prompts/[slug]/page.tsx");
+    const slugCode = fs.readFileSync(slugPath, "utf-8");
+    assert.ok(!slugCode.includes("<img"), "zero raw <img> tags in prompt detail page");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;

@@ -2,6 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { checkRateLimit, RATE_LIMIT_ENGAGEMENT } from "@/lib/security/rate-limit";
 import { recordPromptView, recordPromptCopy } from "@/lib/data/engagement";
 import { mapDatabaseRowToPromptItem, type PromptRow } from "@/lib/data/prompts";
 import { STARTER_PROMPTS, type PromptItem } from "@/data/prompts";
@@ -10,6 +12,11 @@ export async function incrementPromptViewAction(
   promptId: string
 ): Promise<{ success: boolean; viewsCount?: number }> {
   try {
+    const reqHeaders = await headers();
+    const rateLimit = checkRateLimit(reqHeaders, RATE_LIMIT_ENGAGEMENT);
+    if (!rateLimit.success) {
+      return { success: false };
+    }
     return await recordPromptView(promptId);
   } catch (err) {
     console.error("incrementPromptViewAction error:", err);
@@ -21,6 +28,11 @@ export async function incrementPromptCopyAction(
   promptId: string
 ): Promise<{ success: boolean; copiesCount?: number }> {
   try {
+    const reqHeaders = await headers();
+    const rateLimit = checkRateLimit(reqHeaders, RATE_LIMIT_ENGAGEMENT);
+    if (!rateLimit.success) {
+      return { success: false };
+    }
     return await recordPromptCopy(promptId);
   } catch (err) {
     console.error("incrementPromptCopyAction error:", err);
@@ -32,6 +44,20 @@ export async function togglePromptLikeAction(
   promptId: string,
   currentState: boolean
 ): Promise<{ success: boolean; isLiked: boolean; error?: string }> {
+  try {
+    const reqHeaders = await headers();
+    const rateLimit = checkRateLimit(reqHeaders, RATE_LIMIT_ENGAGEMENT);
+    if (!rateLimit.success) {
+      return {
+        success: false,
+        isLiked: currentState,
+        error: "Too many actions. Please wait a moment and try again.",
+      };
+    }
+  } catch {
+    // Continue if headers cannot be resolved
+  }
+
   const supabase = await createClient();
   if (!supabase) {
     // Guest or offline mode - return success so client optimistic state holds

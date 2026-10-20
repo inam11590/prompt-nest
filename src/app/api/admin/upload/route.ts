@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
+import { checkRateLimit } from "@/lib/security/rate-limit";
 import {
   validateAndProcessImage,
   uploadToStorage,
@@ -8,6 +9,30 @@ import {
 
 export async function POST(req: NextRequest) {
   try {
+    // 0. Enforce rate limiting
+    const rateLimit = checkRateLimit(req, {
+      limit: 15,
+      windowMs: 60 * 1000,
+      key: "admin_upload",
+    });
+
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Too many upload requests. Please wait a moment and try again.",
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": rateLimit.retryAfter.toString(),
+            "X-RateLimit-Limit": rateLimit.limit.toString(),
+            "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+          },
+        }
+      );
+    }
+
     // 1. Authenticate & Authorize as verified admin
     await requireAdmin();
 

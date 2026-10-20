@@ -104,6 +104,27 @@ export function Hero({
   onApplyMobileFilters,
   totalResults,
 }: HeroProps) {
+  const [internalQuery, setInternalQuery] = React.useState(searchQuery);
+  const [prevSearchQuery, setPrevSearchQuery] = React.useState(searchQuery);
+
+  if (prevSearchQuery !== searchQuery) {
+    setPrevSearchQuery(searchQuery);
+    setInternalQuery(searchQuery);
+  }
+
+  React.useEffect(() => {
+    if (internalQuery === searchQuery) return;
+    const timer = setTimeout(() => {
+      onSearchChange(internalQuery);
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [internalQuery, searchQuery, onSearchChange]);
+
+  const handleClearSearch = () => {
+    setInternalQuery("");
+    onRemoveSearch();
+  };
+
   const isFiltered =
     searchQuery.trim() !== "" ||
     selectedCategory !== "all" ||
@@ -160,16 +181,21 @@ export function Hero({
             </div>
             <input
               type="text"
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
+              value={internalQuery}
+              onChange={(e) => setInternalQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  onSearchChange(internalQuery);
+                }
+              }}
               placeholder="Search title, description, tags, prompt text..."
               className="h-12 w-full rounded-full bg-transparent pr-12 text-sm text-foreground placeholder-text-faint focus:outline-none sm:text-base"
               aria-label="Search prompt library"
             />
-            {searchQuery && (
+            {internalQuery && (
               <button
                 type="button"
-                onClick={onRemoveSearch}
+                onClick={handleClearSearch}
                 className="absolute right-4 rounded-full p-1 text-text-faint hover:text-foreground focus-visible:ring-1"
                 aria-label="Clear search query"
               >

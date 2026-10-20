@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Sparkles,
   Calendar,
@@ -46,6 +47,7 @@ import {
   generateBreadcrumbJsonLd,
 } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
+import PromptDetailLoading from "./loading";
 
 interface PromptPageProps {
   params: Promise<{
@@ -346,10 +348,11 @@ async function PromptDetailContent({ params }: PromptPageProps) {
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-bold text-xs shadow-sm overflow-hidden">
                       {prompt.author.avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={prompt.author.avatarUrl}
                           alt={prompt.author.username}
+                          width={32}
+                          height={32}
                           className="h-full w-full object-cover"
                         />
                       ) : (
@@ -556,102 +559,128 @@ async function PromptDetailContent({ params }: PromptPageProps) {
           </div>
 
           {/* Related Guides Section */}
-          {relatedGuides.length > 0 && (
-            <section
-              aria-labelledby="related-guides-heading"
-              className="mt-16 sm:mt-20 border-t border-surface-border pt-10"
-            >
-              <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-brand-light" />
-                    <h2
-                      id="related-guides-heading"
-                      className="text-lg sm:text-xl font-bold tracking-tight text-foreground"
-                    >
-                      Guides & Tutorials Featuring this Prompt
-                    </h2>
-                  </div>
-                  <p className="text-xs text-text-muted mt-1">
-                    In-depth articles and breakdowns demonstrating how to apply and customize this prompt.
-                  </p>
+          <Suspense
+            fallback={
+              <div className="mt-16 sm:mt-20 border-t border-surface-border pt-10 animate-pulse">
+                <div className="mb-6 h-6 w-56 rounded bg-surface-raised" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-40 rounded-xl bg-surface border border-surface-border" />
+                  ))}
                 </div>
-                <Link
-                  href="/blog"
-                  className="text-xs font-semibold text-brand-light hover:underline"
-                >
-                  Browse all guides &rarr;
-                </Link>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {relatedGuides.map((guide) => (
+            }
+          >
+            {relatedGuides.length > 0 && (
+              <section
+                aria-labelledby="related-guides-heading"
+                className="mt-16 sm:mt-20 border-t border-surface-border pt-10"
+              >
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="h-5 w-5 text-brand-light" />
+                      <h2
+                        id="related-guides-heading"
+                        className="text-lg sm:text-xl font-bold tracking-tight text-foreground"
+                      >
+                        Guides & Tutorials Featuring this Prompt
+                      </h2>
+                    </div>
+                    <p className="text-xs text-text-muted mt-1">
+                      In-depth articles and breakdowns demonstrating how to apply and customize this prompt.
+                    </p>
+                  </div>
                   <Link
-                    key={guide.id}
-                    href={`/blog/${guide.slug}`}
-                    className="group flex flex-col justify-between rounded-xl border border-surface-border bg-surface p-5 hover:border-brand/40 transition"
+                    href="/blog"
+                    className="text-xs font-semibold text-brand-light hover:underline"
                   >
-                    <div>
-                      <div className="flex items-center justify-between text-[11px] text-text-muted mb-2">
-                        <span className="rounded bg-surface-raised px-2 py-0.5 font-semibold text-brand-light uppercase text-[10px]">
-                          {guide.category}
-                        </span>
-                        <span>{guide.readingTimeMinutes} min read</span>
-                      </div>
-                      <h3 className="font-semibold text-sm text-foreground line-clamp-2 group-hover:text-brand-light transition">
-                        {guide.title}
-                      </h3>
-                      <p className="text-xs text-text-muted line-clamp-2 mt-2 leading-relaxed">
-                        {guide.excerpt}
-                      </p>
-                    </div>
-                    <div className="mt-4 pt-3 border-t border-surface-border/50 text-[11px] font-semibold text-brand-light group-hover:underline">
-                      Read full tutorial &rarr;
-                    </div>
+                    Browse all guides &rarr;
                   </Link>
-                ))}
-              </div>
-            </section>
-          )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {relatedGuides.map((guide) => (
+                    <Link
+                      key={guide.id}
+                      href={`/blog/${guide.slug}`}
+                      className="group flex flex-col justify-between rounded-xl border border-surface-border bg-surface p-5 hover:border-brand/40 transition"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between text-[11px] text-text-muted mb-2">
+                          <span className="rounded bg-surface-raised px-2 py-0.5 font-semibold text-brand-light uppercase text-[10px]">
+                            {guide.category}
+                          </span>
+                          <span>{guide.readingTimeMinutes} min read</span>
+                        </div>
+                        <h3 className="font-semibold text-sm text-foreground line-clamp-2 group-hover:text-brand-light transition">
+                          {guide.title}
+                        </h3>
+                        <p className="text-xs text-text-muted line-clamp-2 mt-2 leading-relaxed">
+                          {guide.excerpt}
+                        </p>
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-surface-border/50 text-[11px] font-semibold text-brand-light group-hover:underline">
+                        Read full tutorial &rarr;
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+          </Suspense>
 
           {/* Related Prompts Section (below primary content) */}
-          {relatedPrompts.length > 0 && (
-            <section
-              aria-labelledby="related-heading"
-              className="mt-16 sm:mt-20 border-t border-surface-border pt-10"
-            >
-              <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div>
-                  <h2
-                    id="related-heading"
-                    className="text-lg sm:text-xl font-bold tracking-tight text-foreground"
-                  >
-                    Similar & Related Prompts
-                  </h2>
-                  <p className="text-xs text-text-muted mt-1">
-                    Prompts sharing category, aesthetic tags, and AI model compatibility.
-                  </p>
+          <Suspense
+            fallback={
+              <div className="mt-16 sm:mt-20 border-t border-surface-border pt-10 animate-pulse">
+                <div className="mb-6 h-6 w-48 rounded bg-surface-raised" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="aspect-[4/5] rounded-2xl bg-surface border border-surface-border overflow-hidden" />
+                  ))}
                 </div>
-                <Link
-                  href={`/?category=${encodeURIComponent(prompt.category)}#gallery`}
-                  className="text-xs font-semibold text-blue-400 hover:text-blue-300 hover:underline"
-                >
-                  View all in {categoryLabels[prompt.category] || prompt.category} &rarr;
-                </Link>
               </div>
+            }
+          >
+            {relatedPrompts.length > 0 && (
+              <section
+                aria-labelledby="related-heading"
+                className="mt-16 sm:mt-20 border-t border-surface-border pt-10"
+              >
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <h2
+                      id="related-heading"
+                      className="text-lg sm:text-xl font-bold tracking-tight text-foreground"
+                    >
+                      Similar & Related Prompts
+                    </h2>
+                    <p className="text-xs text-text-muted mt-1">
+                      Prompts sharing category, aesthetic tags, and AI model compatibility.
+                    </p>
+                  </div>
+                  <Link
+                    href={`/?category=${encodeURIComponent(prompt.category)}#gallery`}
+                    className="text-xs font-semibold text-blue-400 hover:text-blue-300 hover:underline"
+                  >
+                    View all in {categoryLabels[prompt.category] || prompt.category} &rarr;
+                  </Link>
+                </div>
 
-              {/* Related cards gallery grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {relatedPrompts.map((relatedPrompt) => (
-                  <PromptCard
-                    key={relatedPrompt.id}
-                    prompt={relatedPrompt}
-                    priority={false}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
+                {/* Related cards gallery grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                  {relatedPrompts.map((relatedPrompt) => (
+                    <PromptCard
+                      key={relatedPrompt.id}
+                      prompt={relatedPrompt}
+                      priority={false}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+          </Suspense>
 
           {/* Step 15: Crawlable Internal Linking & Taxonomy Hubs */}
           <section
@@ -797,13 +826,7 @@ async function PromptDetailContent({ params }: PromptPageProps) {
 
 export default function PromptDetailPage(props: PromptPageProps) {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-background text-text-muted text-sm">
-          Loading prompt details...
-        </div>
-      }
-    >
+    <Suspense fallback={<PromptDetailLoading />}>
       <PromptDetailContent {...props} />
     </Suspense>
   );

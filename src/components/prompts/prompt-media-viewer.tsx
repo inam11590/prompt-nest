@@ -385,10 +385,13 @@ export function PromptMediaViewer({
               height: "auto",
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={imageUrl}
               alt={imageAlt}
+              width={width || 1200}
+              height={height || 800}
+              sizes="(max-width: 1200px) 90vw, 1200px"
+              quality={90}
               className="h-full w-full object-contain max-h-[85vh]"
             />
           </div>

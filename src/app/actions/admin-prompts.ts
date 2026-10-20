@@ -9,6 +9,7 @@ import {
   uploadToStorage,
 } from "@/lib/storage/image";
 import type { AIModel, PromptCategory } from "@/data/prompts";
+import { sanitizeText, sanitizePromptText, sanitizeTags } from "@/lib/security/sanitize";
 import type { Database, Json } from "@/types/database.types";
 
 type PromptInsert = Database["public"]["Tables"]["prompts"]["Insert"];
@@ -109,17 +110,19 @@ export async function createPromptAction(formData: FormData): Promise<ActionResu
       return { success: false, error: "Database client is not available." };
     }
 
-    const title = (formData.get("title") as string)?.trim();
-    let slug = (formData.get("slug") as string)?.trim().toLowerCase();
-    const shortDescription = (formData.get("shortDescription") as string)?.trim();
-    const promptText = (formData.get("prompt") as string)?.trim();
+    const title = sanitizeText(formData.get("title"), 120);
+    let slug = sanitizeText(formData.get("slug"), 80).toLowerCase();
+    const shortDescription = sanitizeText(formData.get("shortDescription"), 500);
+    const promptText = sanitizePromptText(formData.get("prompt"), 15000);
     const category = (formData.get("category") as string)?.trim() as PromptCategory;
     const model = (formData.get("model") as string)?.trim() as AIModel;
     const compatibleModelsRaw = formData.getAll("compatibleModels") as string[];
     const tagsRaw = (formData.get("tags") as string)?.trim();
-    const imageAlt = (formData.get("imageAlt") as string)?.trim() || title;
+    const imageAlt = sanitizeText(formData.get("imageAlt") || title, 150);
     const status = ((formData.get("status") as string)?.trim() || "draft") as "draft" | "published" | "archived";
-    const negativePrompt = (formData.get("negativePrompt") as string)?.trim() || null;
+    const negativePrompt = formData.get("negativePrompt")
+      ? sanitizePromptText(formData.get("negativePrompt"), 2000)
+      : null;
     const generationParamsRaw = (formData.get("generationParameters") as string)?.trim();
     const sourceAttributionRaw = (formData.get("sourceAttribution") as string)?.trim();
 
@@ -176,7 +179,7 @@ export async function createPromptAction(formData: FormData): Promise<ActionResu
 
     // Parse taxonomy & metadata
     const tags = tagsRaw
-      ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean)
+      ? sanitizeTags(tagsRaw.split(","))
       : [];
 
     const compatibleModels = (compatibleModelsRaw.length > 0 ? compatibleModelsRaw : [model]) as AIModel[];
@@ -363,20 +366,22 @@ export async function updatePromptAction(
       };
     }
 
-    const title = (formData.get("title") as string)?.trim();
-    const requestedSlug = (formData.get("slug") as string)?.trim().toLowerCase();
-    const shortDescription = (formData.get("shortDescription") as string)?.trim();
-    const promptText = (formData.get("prompt") as string)?.trim();
+    const title = sanitizeText(formData.get("title"), 120);
+    const requestedSlug = sanitizeText(formData.get("slug"), 80).toLowerCase();
+    const shortDescription = sanitizeText(formData.get("shortDescription"), 500);
+    const promptText = sanitizePromptText(formData.get("prompt"), 15000);
     const category = (formData.get("category") as string)?.trim() as PromptCategory;
     const model = (formData.get("model") as string)?.trim() as AIModel;
     const compatibleModelsRaw = formData.getAll("compatibleModels") as string[];
     const tagsRaw = (formData.get("tags") as string)?.trim();
-    const imageAlt = (formData.get("imageAlt") as string)?.trim() || title;
+    const imageAlt = sanitizeText(formData.get("imageAlt") || title, 150);
     const status = ((formData.get("status") as string)?.trim() || current.status || "draft") as
       | "draft"
       | "published"
       | "archived";
-    const negativePrompt = (formData.get("negativePrompt") as string)?.trim() || null;
+    const negativePrompt = formData.get("negativePrompt")
+      ? sanitizePromptText(formData.get("negativePrompt"), 2000)
+      : null;
     const generationParamsRaw = (formData.get("generationParameters") as string)?.trim();
 
     // 3. Slug immutability rule: Once published, the slug cannot be changed
@@ -431,7 +436,7 @@ export async function updatePromptAction(
     if (!promptText) return { success: false, error: "Prompt text is required." };
 
     const tags = tagsRaw
-      ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean)
+      ? sanitizeTags(tagsRaw.split(","))
       : current.tags;
 
     const compatibleModels = (compatibleModelsRaw.length > 0
