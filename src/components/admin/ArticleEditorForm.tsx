@@ -114,23 +114,32 @@ export function ArticleEditorForm({
     setIsUploading(true);
     setErrorMessage(null);
 
-    const formData = new FormData();
-    formData.append("file", file);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    const res = await uploadArticleCoverImageAction(formData);
-    setIsUploading(false);
+      const res = await uploadArticleCoverImageAction(formData);
 
-    if (res.success && res.data) {
-      setCoverImageUrl(res.data.imageUrl);
-      setCoverImageWidth(res.data.width);
-      setCoverImageHeight(res.data.height);
-      setCoverImageDominantColor(res.data.dominantColor);
-      if (!coverImageAlt) {
-        setCoverImageAlt(title || file.name.replace(/\.[^/.]+$/, ""));
+      if (res.success && res.data) {
+        setCoverImageUrl(res.data.imageUrl);
+        setCoverImageWidth(res.data.width);
+        setCoverImageHeight(res.data.height);
+        setCoverImageDominantColor(res.data.dominantColor);
+        if (!coverImageAlt) {
+          setCoverImageAlt(title || file.name.replace(/\.[^/.]+$/, ""));
+        }
+        setIsDirty(true);
+      } else {
+        setErrorMessage(res.error || "Failed to upload cover image.");
       }
-      setIsDirty(true);
-    } else {
-      setErrorMessage(res.error || "Failed to upload cover image.");
+    } catch (err) {
+      console.error("handleCoverUpload error:", err);
+      setErrorMessage(err instanceof Error ? err.message : "Network error during upload.");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 

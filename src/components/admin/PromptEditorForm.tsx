@@ -63,6 +63,77 @@ function slugify(text: string): string {
     .slice(0, 60);
 }
 
+/**
+ * Compresses/downscales oversized images client-side before sending to server actions.
+ * Prevents HTTP 413 Payload Too Large on Vercel (which enforces a 4.5 MB request body limit).
+ */
+async function compressImageForUpload(file: File): Promise<File> {
+  // If comfortably below 3.5 MB, upload the original directly
+  if (file.size <= 3.5 * 1024 * 1024) {
+    return file;
+  }
+
+  return new Promise((resolve) => {
+    try {
+      const img = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const maxEdge = 2560;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxEdge || height > maxEdge) {
+          if (width > height) {
+            height = Math.round((height * maxEdge) / width);
+            width = maxEdge;
+          } else {
+            width = Math.round((width * maxEdge) / height);
+            height = maxEdge;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(file);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob && blob.size < file.size) {
+              const compressedFile = new File(
+                [blob],
+                file.name.replace(/\.[^/.]+$/, "") + ".webp",
+                { type: "image/webp" }
+              );
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/webp",
+          0.88
+        );
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(file);
+      };
+
+      img.src = objectUrl;
+    } catch {
+      resolve(file);
+    }
+  });
+}
+
 export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -118,6 +189,7 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
 
   // Uploading and submission states
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -158,27 +230,42 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
     if (!file) return;
 
     setIsUploading(true);
+    setUploadError(null);
     setErrorMessage(null);
 
-    const formData = new FormData();
-    formData.append("file", file);
+    try {
+      const fileToUpload = await compressImageForUpload(file);
+      const formData = new FormData();
+      formData.append("file", fileToUpload);
 
-    const res = await uploadImageAction(formData);
-    setIsUploading(false);
+      const res = await uploadImageAction(formData);
 
-    if (res.success && res.data) {
-      setImageUrl(res.data.imageUrl);
-      setWidth(res.data.width);
-      setHeight(res.data.height);
-      setAspectRatio(res.data.aspectRatio);
-      setAspectRatioValue(res.data.aspectRatioValue);
-      setDominantColor(res.data.dominantColor);
-      if (!imageAlt) {
-        setImageAlt(title || file.name.replace(/\.[^/.]+$/, ""));
+      if (res.success && res.data) {
+        setImageUrl(res.data.imageUrl);
+        setWidth(res.data.width);
+        setHeight(res.data.height);
+        setAspectRatio(res.data.aspectRatio);
+        setAspectRatioValue(res.data.aspectRatioValue);
+        setDominantColor(res.data.dominantColor);
+        if (!imageAlt) {
+          setImageAlt(title || file.name.replace(/\.[^/.]+$/, ""));
+        }
+        setIsDirty(true);
+      } else {
+        const err = res.error || "Failed to process and upload image.";
+        setUploadError(err);
+        setErrorMessage(err);
       }
-      setIsDirty(true);
-    } else {
-      setErrorMessage(res.error || "Failed to process and upload image.");
+    } catch (err) {
+      console.error("handleFileSelect error:", err);
+      const message = err instanceof Error ? err.message : "Network error during upload.";
+      setUploadError(message);
+      setErrorMessage(message);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -848,12 +935,24 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
               )}
 
               {isUploading && (
-                <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2">
+                <div className="absolute inset-0 bg-background/85 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-20">
                   <RefreshCw className="h-6 w-6 text-indigo-400 animate-spin" />
-                  <p className="text-xs text-foreground font-medium">Processing & uploading...</p>
+                  <p className="text-xs text-foreground font-semibold">Processing &amp; uploading...</p>
+                  <p className="text-[11px] text-foreground-muted">Optimizing resolution &amp; WebP compression</p>
                 </div>
               )}
             </div>
+
+            {/* Inline Upload Error Notice */}
+            {uploadError && (
+              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs text-rose-300 flex items-start gap-2.5">
+                <AlertCircle className="h-4 w-4 shrink-0 text-rose-400 mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-semibold text-rose-200">Upload failed</p>
+                  <p className="mt-0.5 text-[11px] leading-relaxed">{uploadError}</p>
+                </div>
+              </div>
+            )}
 
             {/* File Upload Trigger */}
             <input
@@ -868,7 +967,7 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
               type="button"
               disabled={isUploading}
               onClick={() => fileInputRef.current?.click()}
-              className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-surface-border bg-surface-raised px-4 py-3 text-xs font-medium text-foreground hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-colors"
+              className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-surface-border bg-surface-raised px-4 py-3 text-xs font-medium text-foreground hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-colors disabled:opacity-50"
             >
               <UploadCloud className="h-4 w-4 text-indigo-400" />
               <span>{imageUrl ? "Replace Image File" : "Upload Image File"}</span>
@@ -882,13 +981,13 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
                 </label>
                 <input
                   id="prompt-image-url"
-                  type="url"
+                  type="text"
                   value={imageUrl}
                   onChange={(e) => {
                     setImageUrl(e.target.value);
                     setIsDirty(true);
                   }}
-                  placeholder="https://images.unsplash.com/..."
+                  placeholder="https://... or /images/..."
                   className="w-full rounded-xl border border-surface-border bg-surface-raised px-3 py-2 text-xs font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                 />
               </div>

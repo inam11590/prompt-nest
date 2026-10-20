@@ -1,6 +1,6 @@
 import sharp, { type Metadata } from "sharp";
 import crypto from "node:crypto";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 
 export interface ProcessedImageResult {
   buffer: Buffer;
@@ -168,7 +168,7 @@ export async function uploadToStorage(
   bucket: "prompt-images" | "prompt-staging" = "prompt-images",
   contentType = "image/webp"
 ): Promise<{ publicUrl: string; objectKey: string }> {
-  const supabase = await createClient();
+  const supabase = createAdminClient() || (await createClient());
   if (!supabase) {
     throw new Error("Supabase client not available.");
   }
