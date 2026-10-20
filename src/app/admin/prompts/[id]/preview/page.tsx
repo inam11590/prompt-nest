@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { getPromptByIdAdmin } from "@/lib/data/prompts";
@@ -48,6 +49,7 @@ const categoryLabels: Record<string, string> = {
 };
 
 async function PreviewContent({ params }: AdminPreviewPageProps) {
+  await connection();
   const { id } = await params;
   const prompt = await getPromptByIdAdmin(id);
 

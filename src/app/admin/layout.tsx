@@ -4,6 +4,7 @@ import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { getAdminSession } from "@/lib/auth/admin";
 import { signOutAction } from "@/app/actions/auth";
+import { connection } from "next/server";
 import {
   ShieldAlert,
   ShieldCheck,
@@ -38,6 +39,7 @@ function AdminLoadingSkeleton() {
 }
 
 async function AdminGuard({ children }: { children: React.ReactNode }) {
+  await connection();
   const session = await getAdminSession();
 
   // If not authenticated or not in the admin_users role table

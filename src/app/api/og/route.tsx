@@ -1,11 +1,9 @@
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
 
-export const dynamic = "force-dynamic";
-
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
+    const searchParams = req.nextUrl.searchParams;
 
     const title = searchParams.get("title") || "Elite AI Prompt Showcase";
     const model = searchParams.get("model") || "Midjourney v6.1";
@@ -251,6 +249,9 @@ export async function GET(req: NextRequest) {
       }
     );
   } catch (error) {
+    if ((error as { digest?: string })?.digest === "NEXT_PRERENDER_INTERRUPTED") {
+      throw error;
+    }
     console.error("Error generating OpenGraph image:", error);
     return new Response("Failed to generate OpenGraph image", { status: 500 });
   }

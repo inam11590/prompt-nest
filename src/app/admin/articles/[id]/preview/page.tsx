@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { getArticleByIdAdmin } from "@/lib/data/articles";
 import { renderArticleMarkdown } from "@/lib/blog/markdown";
 import { getPromptsByIds } from "@/lib/data/prompts";
@@ -30,6 +31,7 @@ interface PreviewArticlePageProps {
 }
 
 async function PreviewContent({ params }: PreviewArticlePageProps) {
+  await connection();
   const { id } = await params;
   const articleResult = await getArticleByIdAdmin(id);
 
