@@ -68,8 +68,8 @@ function slugify(text: string): string {
  * Prevents HTTP 413 Payload Too Large on Vercel (which enforces a 4.5 MB request body limit).
  */
 async function compressImageForUpload(file: File): Promise<File> {
-  // If comfortably below 3.5 MB, upload the original directly
-  if (file.size <= 3.5 * 1024 * 1024) {
+  // If comfortably below 2 MB, upload the original directly
+  if (file.size <= 2 * 1024 * 1024) {
     return file;
   }
 
@@ -238,7 +238,29 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
       const formData = new FormData();
       formData.append("file", fileToUpload);
 
-      const res = await uploadImageAction(formData);
+      let res: {
+        success: boolean;
+        data?: {
+          imageUrl: string;
+          width: number;
+          height: number;
+          aspectRatio: "portrait" | "landscape" | "square";
+          aspectRatioValue: string;
+          dominantColor: string;
+        };
+        error?: string;
+      };
+
+      try {
+        const response = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        });
+        res = await response.json();
+      } catch (fetchErr) {
+        console.warn("Direct upload endpoint failed, falling back to server action:", fetchErr);
+        res = await uploadImageAction(formData);
+      }
 
       if (res.success && res.data) {
         setImageUrl(res.data.imageUrl);

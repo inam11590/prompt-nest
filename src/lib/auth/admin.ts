@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import type { User } from "@supabase/supabase-js";
 
 /**
@@ -45,6 +45,20 @@ export async function isAdmin(userId?: string): Promise<boolean> {
 
     if (!tableError && data?.user_id) {
       return true;
+    }
+
+    // 3. Fallback: query via adminClient using service role if available
+    const adminClient = createAdminClient();
+    if (adminClient) {
+      const { data: adminData } = await adminClient
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", targetId)
+        .maybeSingle();
+
+      if (adminData?.user_id) {
+        return true;
+      }
     }
 
     return false;

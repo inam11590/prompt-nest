@@ -117,8 +117,30 @@ export function ArticleEditorForm({
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("folder", "articles");
 
-      const res = await uploadArticleCoverImageAction(formData);
+      let res: {
+        success: boolean;
+        data?: {
+          imageUrl: string;
+          width: number;
+          height: number;
+          aspectRatio?: string;
+          dominantColor: string;
+        };
+        error?: string;
+      };
+
+      try {
+        const response = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        });
+        res = await response.json();
+      } catch (fetchErr) {
+        console.warn("Direct upload endpoint failed, falling back to server action:", fetchErr);
+        res = await uploadArticleCoverImageAction(formData);
+      }
 
       if (res.success && res.data) {
         setCoverImageUrl(res.data.imageUrl);
