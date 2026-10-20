@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { siteConfig } from "@/config/site";
+import { constructMetadata } from "@/lib/seo/config";
 import { getAllPublicCollections } from "@/lib/data/collections";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -14,22 +14,12 @@ import {
   User as UserIcon,
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: `Curated Collections & Boards — ${siteConfig.name}`,
+export const metadata: Metadata = constructMetadata({
+  title: "Curated Collections & Moodboards",
   description:
     "Explore handpicked AI prompt collections, themed moodboards, and community-curated boards for Midjourney, Flux, and DALL-E.",
-  alternates: {
-    canonical: `${siteConfig.url}/collections`,
-  },
-  openGraph: {
-    title: `Curated Collections & Boards — ${siteConfig.name}`,
-    description:
-      "Explore handpicked AI prompt collections, themed moodboards, and community-curated boards.",
-    url: `${siteConfig.url}/collections`,
-    siteName: siteConfig.name,
-    type: "website",
-  },
-};
+  canonicalPath: "/collections",
+});
 
 async function CollectionsContent() {
   const collections = await getAllPublicCollections();

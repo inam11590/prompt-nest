@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
 import type { Metadata } from "next";
-import { siteConfig } from "@/config/site";
 import { HomePageClient } from "@/components/HomePageClient";
 import { getPrompts, type GetPromptsOptions } from "@/lib/data/prompts";
 import type {
@@ -11,40 +10,12 @@ import type {
   StyleWorkflow,
 } from "@/data/prompts";
 
-export const metadata: Metadata = {
-  title: `${siteConfig.name} — ${siteConfig.tagline}`,
-  description: siteConfig.description,
-  keywords: [
-    "AI Prompts",
-    "Midjourney Prompts",
-    "FLUX Prompts",
-    "DALL-E 3 Prompts",
-    "Prompt Engineering",
-    "Stable Diffusion XL",
-    "Prompt Gallery",
-  ],
-  authors: [{ name: siteConfig.name }],
-  alternates: {
-    canonical: siteConfig.url,
-  },
-  openGraph: {
-    title: `${siteConfig.name} — ${siteConfig.tagline}`,
-    description: siteConfig.description,
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${siteConfig.name} — ${siteConfig.tagline}`,
-    description: siteConfig.description,
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+import { constructMetadata } from "@/lib/seo/config";
+import { JsonLd, generateWebsiteJsonLd } from "@/components/seo/JsonLd";
+
+export const metadata: Metadata = constructMetadata({
+  canonicalPath: "/",
+});
 
 interface HomePageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -118,10 +89,13 @@ async function HomePageContent({ searchParams }: HomePageProps) {
   const { prompts, totalMatching, source } = await getPrompts(options);
 
   return (
-    <HomePageClient
-      initialPrompts={prompts}
-      initialTotalMatching={totalMatching}
-      initialSource={source}
-    />
+    <>
+      <JsonLd data={generateWebsiteJsonLd()} />
+      <HomePageClient
+        initialPrompts={prompts}
+        initialTotalMatching={totalMatching}
+        initialSource={source}
+      />
+    </>
   );
 }

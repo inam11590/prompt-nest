@@ -7,7 +7,6 @@ import {
   Calendar,
   Tag,
   ExternalLink,
-  ChevronRight,
   SlidersHorizontal,
   ArrowLeft,
   BookOpen,
@@ -40,6 +39,13 @@ import { PromptVariableStudio } from "@/components/prompts/prompt-variable-studi
 import { NegativePromptBlock } from "@/components/prompts/negative-prompt-block";
 import { LikeButton } from "@/components/LikeButton";
 import { PromptViewTracker } from "@/components/prompts/prompt-view-tracker";
+import { constructMetadata } from "@/lib/seo/config";
+import {
+  JsonLd,
+  generatePromptJsonLd,
+  generateBreadcrumbJsonLd,
+} from "@/components/seo/JsonLd";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 interface PromptPageProps {
   params: Promise<{
@@ -63,43 +69,41 @@ export async function generateMetadata({
   }
 
   if (!prompt) {
-    return {
+    return constructMetadata({
       title: "Prompt Not Found",
-    };
+      description: "The requested AI prompt could not be found on PromptNest.",
+      noIndex: true,
+    });
   }
 
-  // Canonical public URL without return-state parameters
-  const canonicalUrl = `${siteConfig.url}/prompts/${prompt.slug}`;
+  const dynamicTitle = `${prompt.title} — ${prompt.model || "AI"} Prompt`;
+  const rawDesc = (prompt.shortDescription || prompt.prompt || "").trim();
+  const truncatedDesc = rawDesc.length > 155 ? `${rawDesc.slice(0, 152).trim()}...` : rawDesc;
+  const dynamicDescription = `${truncatedDesc} Copy prompt, customize variables & test live on PromptNest.`;
 
-  return {
-    title: `${prompt.title} — ${siteConfig.name}`,
-    description: prompt.shortDescription || prompt.prompt.slice(0, 160),
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    openGraph: {
-      title: `${prompt.title} — ${siteConfig.name}`,
-      description: prompt.shortDescription,
-      url: canonicalUrl,
-      siteName: siteConfig.name,
-      locale: "en_US",
-      type: "article",
-      images: [
-        {
-          url: prompt.imageUrl,
-          width: prompt.width,
-          height: prompt.height,
-          alt: prompt.imageAlt,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${prompt.title} — ${siteConfig.name}`,
-      description: prompt.shortDescription,
-      images: [prompt.imageUrl],
-    },
-  };
+  const ogImageUrl = prompt.imageUrl || `${siteConfig.url}/api/og?title=${encodeURIComponent(
+    prompt.title
+  )}&model=${encodeURIComponent(prompt.model)}&category=${encodeURIComponent(
+    prompt.category
+  )}&author=${encodeURIComponent(prompt.sourceAttribution?.author || "PromptNest")}&likes=${
+    prompt.likesCount || 0
+  }`;
+
+  return constructMetadata({
+    title: dynamicTitle,
+    description: dynamicDescription,
+    image: ogImageUrl,
+    canonicalPath: `/prompts/${prompt.slug}`,
+    keywords: [
+      prompt.category,
+      prompt.model,
+      ...(prompt.compatibleModels || []),
+      ...(prompt.tags || []),
+      "AI Prompt",
+      "Prompt Engineering",
+    ],
+    type: "article",
+  });
 }
 
 async function PromptDetailContent({ params }: PromptPageProps) {
@@ -148,46 +152,31 @@ async function PromptDetailContent({ params }: PromptPageProps) {
     day: "numeric",
   });
 
-  // Breadcrumb schema (JSON-LD) accurately matching visible navigation
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: siteConfig.url,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: categoryLabels[prompt.category] || prompt.category,
-        item: `${siteConfig.url}/?category=${encodeURIComponent(prompt.category)}#gallery`,
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: prompt.title,
-        item: canonicalUrl,
-      },
-    ],
-  };
+  // Breadcrumb items for semantic JSON-LD and UI navigation
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    {
+      name: categoryLabels[prompt.category] || prompt.category,
+      url: `/?category=${encodeURIComponent(prompt.category)}#gallery`,
+    },
+    {
+      name: prompt.title,
+      url: `/prompts/${prompt.slug}`,
+    },
+  ];
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground antialiased selection:bg-blue-600 selection:text-white">
-      {/* Schema.org Breadcrumb JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+      {/* Schema.org CreativeWork / Prompt & Breadcrumb JSON-LD */}
+      <JsonLd data={generatePromptJsonLd(prompt)} />
+      <JsonLd data={generateBreadcrumbJsonLd(breadcrumbItems)} />
 
       {/* Header */}
       <Header />
 
       <main className="flex-1 py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-          {/* Top Bar: Return Link & Breadcrumb */}
+          {/* Top Bar: Return Link & Semantic Breadcrumbs */}
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             {/* Safe Back Navigation Link wrapped in Suspense for searchParams isolation */}
             <Suspense
@@ -204,23 +193,8 @@ async function PromptDetailContent({ params }: PromptPageProps) {
               <ReturnButton />
             </Suspense>
 
-            {/* Breadcrumb Navigation */}
-            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-text-faint">
-              <Link href="/" className="hover:text-foreground transition-colors">
-                Home
-              </Link>
-              <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
-              <Link
-                href={`/?category=${encodeURIComponent(prompt.category)}#gallery`}
-                className="hover:text-foreground transition-colors"
-              >
-                {categoryLabels[prompt.category] || prompt.category}
-              </Link>
-              <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
-              <span className="text-text-muted truncate max-w-[200px] sm:max-w-[320px]" aria-current="page">
-                {prompt.title}
-              </span>
-            </nav>
+            {/* Semantic Accessible Breadcrumb Navigation */}
+            <Breadcrumbs items={breadcrumbItems} />
           </div>
 
           {/* Main 2-Column Responsive Detail Layout */}
@@ -230,7 +204,7 @@ async function PromptDetailContent({ params }: PromptPageProps) {
               {/* Interactive Media Viewer with Comparison Slider & Accessible Lightbox */}
               <PromptMediaViewer
                 imageUrl={prompt.imageUrl}
-                imageAlt={prompt.imageAlt}
+                imageAlt={`${prompt.title} - ${prompt.model} AI Prompt Output`}
                 referenceImageUrl={prompt.referenceImageUrl}
                 referenceImageAlt={`Reference input photo for ${prompt.title}`}
                 width={prompt.width}
@@ -678,6 +652,141 @@ async function PromptDetailContent({ params }: PromptPageProps) {
               </div>
             </section>
           )}
+
+          {/* Step 15: Crawlable Internal Linking & Taxonomy Hubs */}
+          <section
+            aria-labelledby="internal-links-heading"
+            className="mt-16 border-t border-surface-border pt-10 text-xs"
+          >
+            <div className="mb-6">
+              <h2
+                id="internal-links-heading"
+                className="text-lg font-bold tracking-tight text-foreground"
+              >
+                Explore More AI Prompts &amp; Models
+              </h2>
+              <p className="text-xs text-text-muted mt-1">
+                Browse our curated taxonomy of verified prompt templates, trending leaderboards, and AI generator hubs.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 rounded-2xl border border-surface-border bg-surface/50 p-6">
+              {/* Popular AI Models */}
+              <div>
+                <h3 className="font-semibold text-foreground mb-3 uppercase tracking-wider text-[11px] text-brand-light">
+                  AI Model Hubs
+                </h3>
+                <ul className="space-y-2">
+                  {[
+                    { name: "Midjourney Prompts", query: "Midjourney" },
+                    { name: "ChatGPT & GPT-4o Prompts", query: "ChatGPT" },
+                    { name: "Claude 3.5 Sonnet Prompts", query: "Claude" },
+                    { name: "Stable Diffusion XL Prompts", query: "Stable Diffusion" },
+                    { name: "FLUX.1 Schnell & Dev Prompts", query: "Flux" },
+                    { name: "DALL-E 3 Prompts", query: "DALL-E 3" },
+                  ].map((m) => (
+                    <li key={m.name}>
+                      <Link
+                        href={`/?model=${encodeURIComponent(m.query)}#gallery`}
+                        className="text-text-muted hover:text-white transition-colors flex items-center justify-between"
+                      >
+                        <span>{m.name}</span>
+                        <span className="text-[10px] text-text-faint">&rarr;</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Browse Categories */}
+              <div>
+                <h3 className="font-semibold text-foreground mb-3 uppercase tracking-wider text-[11px] text-brand-light">
+                  Prompt Categories
+                </h3>
+                <ul className="space-y-2">
+                  {[
+                    { name: "Personal Portraits & Identity", id: "portraits" },
+                    { name: "Cinematic Photography", id: "cinematic" },
+                    { name: "Professional Photography", id: "photography" },
+                    { name: "3D Art & Unreal Engine", id: "3d-art" },
+                    { name: "Digital Art & Fantasy", id: "digital-art" },
+                    { name: "Anime & Stylized Art", id: "anime" },
+                  ].map((c) => (
+                    <li key={c.id}>
+                      <Link
+                        href={`/?category=${encodeURIComponent(c.id)}#gallery`}
+                        className="text-text-muted hover:text-white transition-colors flex items-center justify-between"
+                      >
+                        <span>{c.name}</span>
+                        <span className="text-[10px] text-text-faint">&rarr;</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Curated Hubs & Discovery */}
+              <div>
+                <h3 className="font-semibold text-foreground mb-3 uppercase tracking-wider text-[11px] text-brand-light">
+                  Discovery &amp; Collections
+                </h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link
+                      href="/trending"
+                      className="text-text-muted hover:text-white transition-colors flex items-center justify-between"
+                    >
+                      <span>🔥 Trending Prompts Leaderboard</span>
+                      <span className="text-[10px] text-text-faint">&rarr;</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/collections"
+                      className="text-text-muted hover:text-white transition-colors flex items-center justify-between"
+                    >
+                      <span>📚 Curated Community Collections</span>
+                      <span className="text-[10px] text-text-faint">&rarr;</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/blog"
+                      className="text-text-muted hover:text-white transition-colors flex items-center justify-between"
+                    >
+                      <span>📖 AI Prompting Guides &amp; Tutorials</span>
+                      <span className="text-[10px] text-text-faint">&rarr;</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/creators"
+                      className="text-text-muted hover:text-white transition-colors flex items-center justify-between"
+                    >
+                      <span>✨ Featured Prompt Engineers</span>
+                      <span className="text-[10px] text-text-faint">&rarr;</span>
+                    </Link>
+                  </li>
+                  {prompt.tags && prompt.tags.length > 0 && (
+                    <li className="pt-2 border-t border-surface-border">
+                      <span className="text-text-faint block mb-1">Related Tags:</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {prompt.tags.slice(0, 4).map((t) => (
+                          <Link
+                            key={t}
+                            href={`/?search=${encodeURIComponent(t)}#gallery`}
+                            className="text-[11px] text-blue-400 hover:text-blue-300 underline"
+                          >
+                            #{t}
+                          </Link>
+                        ))}
+                      </div>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          </section>
         </div>
       </main>
 

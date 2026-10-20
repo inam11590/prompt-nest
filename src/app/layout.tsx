@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
-import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { CommandPalette } from "@/components/search/command-palette";
+import { constructMetadata } from "@/lib/seo/config";
 import "./globals.css";
 
 const fontHeading = Plus_Jakarta_Sans({
@@ -32,14 +32,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: `${siteConfig.name} — ${siteConfig.tagline}`,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-};
+export const metadata: Metadata = constructMetadata();
 
 export default function RootLayout({
   children,

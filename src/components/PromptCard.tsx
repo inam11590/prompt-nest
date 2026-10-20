@@ -166,7 +166,7 @@ export function PromptCard({
           {!imgError ? (
             <Image
               src={prompt.imageUrl}
-              alt={prompt.imageAlt}
+              alt={prompt.imageAlt || `${prompt.title} - ${prompt.model} AI prompt output visual`}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               priority={priority}

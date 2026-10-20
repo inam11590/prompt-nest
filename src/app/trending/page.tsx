@@ -1,28 +1,18 @@
 import React, { Suspense } from "react";
 import type { Metadata } from "next";
-import { siteConfig } from "@/config/site";
+import { constructMetadata } from "@/lib/seo/config";
 import { getPrompts } from "@/lib/data/prompts";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { TrendingClient } from "@/components/trending/trending-client";
 import { Trophy } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: `Trending Prompts Leaderboard — ${siteConfig.name}`,
+export const metadata: Metadata = constructMetadata({
+  title: "Trending Prompts Leaderboard",
   description:
-    "Explore the most copied, saved, and viral AI prompts ranked live across Midjourney, Flux, DALL-E, and Stable Diffusion.",
-  alternates: {
-    canonical: `${siteConfig.url}/trending`,
-  },
-  openGraph: {
-    title: `Trending Prompts Leaderboard — ${siteConfig.name}`,
-    description:
-      "Explore the most copied, saved, and viral AI prompts ranked live.",
-    url: `${siteConfig.url}/trending`,
-    siteName: siteConfig.name,
-    type: "website",
-  },
-};
+    "Explore the most copied, saved, and viral AI prompts ranked live across Midjourney, Flux, ChatGPT, Claude, and Stable Diffusion.",
+  canonicalPath: "/trending",
+});
 
 async function TrendingContent() {
   const { prompts } = await getPrompts({ pageSize: 50 });

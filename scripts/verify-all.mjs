@@ -1557,6 +1557,89 @@ async function runAll() {
     assert.ok(cmdCode.includes("/collections"), "command palette includes /collections");
   });
 
+  // ----------------------------------------------------
+  // STEP 15: Full Programmatic & Technical SEO Engine
+  // ----------------------------------------------------
+  test("T-15.1", "15.0", "S15-01: Centralized SEO configuration defines constants and exports constructMetadata helper", () => {
+    const configPath = path.resolve("src/lib/seo/config.ts");
+    assert.ok(fs.existsSync(configPath), "src/lib/seo/config.ts must exist");
+    const code = fs.readFileSync(configPath, "utf-8");
+    assert.ok(code.includes("SITE_NAME"), "defines SITE_NAME");
+    assert.ok(code.includes("SITE_URL"), "defines SITE_URL");
+    assert.ok(code.includes("DEFAULT_TITLE"), "defines DEFAULT_TITLE");
+    assert.ok(code.includes("DEFAULT_DESCRIPTION"), "defines DEFAULT_DESCRIPTION");
+    assert.ok(code.includes("constructMetadata"), "exports constructMetadata helper");
+  });
+
+  test("T-15.2", "15.0", "S15-02: Root layout leverages centralized constructMetadata with full OpenGraph and Twitter cards", () => {
+    const layoutPath = path.resolve("src/app/layout.tsx");
+    assert.ok(fs.existsSync(layoutPath), "src/app/layout.tsx must exist");
+    const code = fs.readFileSync(layoutPath, "utf-8");
+    assert.ok(code.includes("constructMetadata"), "root layout uses constructMetadata");
+  });
+
+  test("T-15.3", "15.0", "S15-03: Dynamic generateMetadata on /prompts/[slug] generates model title, clean description, and OpenGraph image", () => {
+    const detailPath = path.resolve("src/app/prompts/[slug]/page.tsx");
+    assert.ok(fs.existsSync(detailPath), "prompt detail page must exist");
+    const code = fs.readFileSync(detailPath, "utf-8");
+    assert.ok(code.includes("generateMetadata"), "exports generateMetadata function");
+    assert.ok(code.includes("constructMetadata"), "uses constructMetadata in prompt detail metadata");
+    assert.ok(code.includes("openGraph") || code.includes("ogImageUrl") || code.includes("api/og"), "generates OpenGraph metadata and images");
+  });
+
+  test("T-15.4", "15.0", "S15-04: Dynamic OpenGraph image generator (/api/og) returns 1200x630 ImageResponse with dark editorial styling", () => {
+    const ogPath = path.resolve("src/app/api/og/route.tsx");
+    assert.ok(fs.existsSync(ogPath), "src/app/api/og/route.tsx must exist");
+    const code = fs.readFileSync(ogPath, "utf-8");
+    assert.ok(code.includes("ImageResponse"), "uses ImageResponse from next/og");
+    assert.ok(code.includes("1200") && code.includes("630"), "generates 1200x630 dimensions");
+    assert.ok(code.includes("PromptNest"), "includes PromptNest brand in OG template");
+  });
+
+  test("T-15.5", "15.0", "S15-05: Schema.org JSON-LD component generates WebSite, CreativeWork, and BreadcrumbList schemas", () => {
+    const jsonLdPath = path.resolve("src/components/seo/JsonLd.tsx");
+    assert.ok(fs.existsSync(jsonLdPath), "src/components/seo/JsonLd.tsx must exist");
+    const code = fs.readFileSync(jsonLdPath, "utf-8");
+    assert.ok(code.includes("generateWebsiteJsonLd"), "exports generateWebsiteJsonLd helper");
+    assert.ok(code.includes("generatePromptJsonLd"), "exports generatePromptJsonLd helper");
+    assert.ok(code.includes("generateBreadcrumbJsonLd"), "exports generateBreadcrumbJsonLd helper");
+    assert.ok(code.includes("application/ld+json"), "renders application/ld+json script");
+    assert.ok(code.includes("CreativeWork"), "supports CreativeWork prompt schema");
+  });
+
+  test("T-15.6", "15.0", "S15-06: Visible semantic Breadcrumbs component renders accessible <nav aria-label=\"Breadcrumb\"> and microdata", () => {
+    const breadcrumbsPath = path.resolve("src/components/seo/Breadcrumbs.tsx");
+    assert.ok(fs.existsSync(breadcrumbsPath), "src/components/seo/Breadcrumbs.tsx must exist");
+    const code = fs.readFileSync(breadcrumbsPath, "utf-8");
+    assert.ok(code.includes('aria-label="Breadcrumb"'), "renders accessible breadcrumb nav landmark");
+    assert.ok(code.includes("<ol"), "uses ordered list semantic structure");
+    assert.ok(code.includes('aria-current="page"'), "marks current page with aria-current");
+  });
+
+  test("T-15.7", "15.0", "S15-07: Dynamic XML sitemap and robots.txt define crawlable routes, include /trending, and disallow private paths", () => {
+    const sitemapPath = path.resolve("src/app/sitemap.ts");
+    assert.ok(fs.existsSync(sitemapPath), "sitemap.ts must exist");
+    const sitemapCode = fs.readFileSync(sitemapPath, "utf-8");
+    assert.ok(sitemapCode.includes("/trending"), "sitemap includes /trending");
+    assert.ok(!sitemapCode.includes("/collections/"), "sitemap excludes /collections/");
+
+    const robotsPath = path.resolve("src/app/robots.ts");
+    assert.ok(fs.existsSync(robotsPath), "robots.ts must exist");
+    const robotsCode = fs.readFileSync(robotsPath, "utf-8");
+    assert.ok(robotsCode.includes("/api/*"), "robots.txt disallows /api/*");
+    assert.ok(robotsCode.includes("/admin"), "robots.txt disallows /admin");
+    assert.ok(robotsCode.includes("sitemap.xml"), "robots.txt points to sitemap");
+  });
+
+  test("T-15.8", "15.0", "S15-08: Prompt detail page renders crawlable internal linking section with AI model and category hubs", () => {
+    const detailPath = path.resolve("src/app/prompts/[slug]/page.tsx");
+    const code = fs.readFileSync(detailPath, "utf-8");
+    assert.ok(code.includes("AI Model Hubs"), "renders AI Model Hubs header");
+    assert.ok(code.includes("Prompt Categories"), "renders Prompt Categories header");
+    assert.ok(code.includes("/trending"), "links to trending leaderboard");
+    assert.ok(code.includes("/collections"), "links to curated collections");
+  });
+
   console.log("\n==========================================");
   const passCount = results.filter((r) => r.status === "PASS").length;
   const failCount = results.filter((r) => r.status === "FAIL").length;
