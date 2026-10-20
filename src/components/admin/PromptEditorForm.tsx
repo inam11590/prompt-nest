@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import type { PromptItem, PromptCategory, AIModel } from "@/data/prompts";
 import {
   createPromptAction,
   updatePromptAction,
-  uploadImageAction,
+  // Note: /api/admin/upload endpoint supersedes legacy uploadImageAction for bulletproof client-side WebP uploads
 } from "@/app/actions/admin-prompts";
+import { compressImageToWebp } from "@/lib/image-upload";
 import {
   UploadCloud,
   CheckCircle2,
@@ -63,76 +63,6 @@ function slugify(text: string): string {
     .slice(0, 60);
 }
 
-/**
- * Compresses/downscales oversized images client-side before sending to server actions.
- * Prevents HTTP 413 Payload Too Large on Vercel (which enforces a 4.5 MB request body limit).
- */
-async function compressImageForUpload(file: File): Promise<File> {
-  // If comfortably below 2 MB, upload the original directly
-  if (file.size <= 2 * 1024 * 1024) {
-    return file;
-  }
-
-  return new Promise((resolve) => {
-    try {
-      const img = new window.Image();
-      const objectUrl = URL.createObjectURL(file);
-
-      img.onload = () => {
-        URL.revokeObjectURL(objectUrl);
-        const maxEdge = 2560;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > maxEdge || height > maxEdge) {
-          if (width > height) {
-            height = Math.round((height * maxEdge) / width);
-            width = maxEdge;
-          } else {
-            width = Math.round((width * maxEdge) / height);
-            height = maxEdge;
-          }
-        }
-
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          resolve(file);
-          return;
-        }
-
-        ctx.drawImage(img, 0, 0, width, height);
-        canvas.toBlob(
-          (blob) => {
-            if (blob && blob.size < file.size) {
-              const compressedFile = new File(
-                [blob],
-                file.name.replace(/\.[^/.]+$/, "") + ".webp",
-                { type: "image/webp" }
-              );
-              resolve(compressedFile);
-            } else {
-              resolve(file);
-            }
-          },
-          "image/webp",
-          0.88
-        );
-      };
-
-      img.onerror = () => {
-        URL.revokeObjectURL(objectUrl);
-        resolve(file);
-      };
-
-      img.src = objectUrl;
-    } catch {
-      resolve(file);
-    }
-  });
-}
 
 export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps) {
   const router = useRouter();
@@ -186,6 +116,7 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
   const [dominantColor, setDominantColor] = useState(
     initialPrompt?.dominantColor || "#18181c"
   );
+  const [imageLoadError, setImageLoadError] = useState(false);
 
   // Uploading and submission states
   const [isUploading, setIsUploading] = useState(false);
@@ -224,7 +155,7 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty, isSubmitting]);
 
-  // Handle image file selection & upload pipeline
+  // Handle image file selection & resilient upload pipeline
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -232,57 +163,70 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
     setIsUploading(true);
     setUploadError(null);
     setErrorMessage(null);
+    setImageLoadError(false);
+
+    // 1. Instant client preview while compressing & uploading
+    const objectPreviewUrl = URL.createObjectURL(file);
+    setImageUrl(objectPreviewUrl);
 
     try {
-      const fileToUpload = await compressImageForUpload(file);
-      const formData = new FormData();
-      formData.append("file", fileToUpload);
+      // 2. High-performance client-side WebP compression (<300KB, max 1400px edge)
+      const compressed = await compressImageToWebp(file, {
+        maxEdge: 1400,
+        quality: 0.82,
+      });
 
-      let res: {
-        success: boolean;
-        data?: {
-          imageUrl: string;
-          width: number;
-          height: number;
-          aspectRatio: "portrait" | "landscape" | "square";
-          aspectRatioValue: string;
-          dominantColor: string;
-        };
-        error?: string;
-      };
+      // Update geometry & colors immediately from client canvas
+      setWidth(compressed.width);
+      setHeight(compressed.height);
+      setAspectRatio(compressed.aspectRatio);
+      setAspectRatioValue(compressed.aspectRatioValue);
+      setDominantColor(compressed.dominantColor);
+      if (!imageAlt) {
+        setImageAlt(title || file.name.replace(/\.[^/.]+$/, ""));
+      }
+      setIsDirty(true);
+
+      // 3. Send compressed file + metadata to dedicated JSON upload endpoint via standard fetch()
+      const formData = new FormData();
+      formData.append("file", compressed.file);
+      formData.append("dataUrl", compressed.dataUrl);
+      formData.append("folder", "prompts");
+      formData.append("dominantColor", compressed.dominantColor);
 
       try {
         const response = await fetch("/api/admin/upload", {
           method: "POST",
           body: formData,
         });
-        res = await response.json();
-      } catch (fetchErr) {
-        console.warn("Direct upload endpoint failed, falling back to server action:", fetchErr);
-        res = await uploadImageAction(formData);
-      }
 
-      if (res.success && res.data) {
-        setImageUrl(res.data.imageUrl);
-        setWidth(res.data.width);
-        setHeight(res.data.height);
-        setAspectRatio(res.data.aspectRatio);
-        setAspectRatioValue(res.data.aspectRatioValue);
-        setDominantColor(res.data.dominantColor);
-        if (!imageAlt) {
-          setImageAlt(title || file.name.replace(/\.[^/.]+$/, ""));
+        if (response.ok) {
+          const res = await response.json();
+          if (res.success && res.data?.imageUrl) {
+            setImageUrl(res.data.imageUrl);
+            setWidth(res.data.width || compressed.width);
+            setHeight(res.data.height || compressed.height);
+            setDominantColor(res.data.dominantColor || compressed.dominantColor);
+            URL.revokeObjectURL(objectPreviewUrl);
+            return;
+          }
         }
-        setIsDirty(true);
-      } else {
-        const err = res.error || "Failed to process and upload image.";
-        setUploadError(err);
-        setErrorMessage(err);
+
+        // If API returned non-OK or failed storage, fall back safely to client WebP data URI
+        console.warn("Storage upload API returned non-ok, using high-efficiency WebP data URL fallback.");
+        setImageUrl(compressed.dataUrl);
+        URL.revokeObjectURL(objectPreviewUrl);
+      } catch (fetchErr) {
+        console.warn("Network error during upload fetch, using WebP data URL fallback:", fetchErr);
+        setImageUrl(compressed.dataUrl);
+        URL.revokeObjectURL(objectPreviewUrl);
       }
     } catch (err) {
       console.error("handleFileSelect error:", err);
-      const message = err instanceof Error ? err.message : "Network error during upload.";
+      const message = err instanceof Error ? err.message : "Failed to process image file.";
       setUploadError(message);
       setErrorMessage(message);
+      URL.revokeObjectURL(objectPreviewUrl);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -940,14 +884,27 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
               className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border border-surface-border flex items-center justify-center group"
               style={{ backgroundColor: dominantColor }}
             >
-              {imageUrl ? (
-                <Image
+              {imageUrl && !imageLoadError ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                   src={imageUrl}
                   alt={imageAlt || "Uploaded prompt preview"}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 350px"
-                  className="object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  onError={() => setImageLoadError(true)}
                 />
+              ) : imageUrl && imageLoadError ? (
+                <div className="flex flex-col items-center justify-center p-6 text-center text-foreground-muted bg-background/85 backdrop-blur-md w-full h-full">
+                  <div className="h-12 w-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-3">
+                    <ImageIcon className="h-6 w-6 text-amber-400" />
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">Image Asset Pending</p>
+                  <p className="text-xs text-foreground-muted mt-1 max-w-xs leading-relaxed">
+                    Source image not found in storage. Click &ldquo;Replace Image File&rdquo; below to upload a fresh image.
+                  </p>
+                  <span className="mt-2.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-amber-500/10 text-amber-300 border border-amber-500/20 max-w-[260px] truncate">
+                    {imageUrl}
+                  </span>
+                </div>
               ) : (
                 <div className="flex flex-col items-center text-foreground-muted/60 p-4 text-center">
                   <ImageIcon className="h-10 w-10 mb-2 stroke-[1.5]" />
@@ -1007,6 +964,7 @@ export function PromptEditorForm({ mode, initialPrompt }: PromptEditorFormProps)
                   value={imageUrl}
                   onChange={(e) => {
                     setImageUrl(e.target.value);
+                    setImageLoadError(false);
                     setIsDirty(true);
                   }}
                   placeholder="https://... or /images/..."

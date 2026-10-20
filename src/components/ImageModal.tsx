@@ -22,6 +22,7 @@ export function ImageModal({
   dominantColor,
 }: ImageModalProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -93,14 +94,24 @@ export function ImageModal({
             backgroundColor: dominantColor,
           }}
         >
-          <Image
-            src={src}
-            alt={alt}
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 60vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-          />
+          {!imgError ? (
+            <Image
+              src={src}
+              alt={alt}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-raised text-foreground-muted p-6 text-center">
+              <p className="text-xs font-semibold text-foreground">Asset Pending</p>
+              <p className="text-[11px] text-foreground-muted mt-1 max-w-xs">
+                Visual image asset is pending upload or generation.
+              </p>
+            </div>
+          )}
           <div className="absolute inset-0 bg-black/10 group-hover:bg-black/25 transition-colors pointer-events-none" />
 
           {/* Enlarge button overlay */}

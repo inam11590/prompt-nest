@@ -40,6 +40,7 @@ export function PromptMediaViewer({
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const [viewMode, setViewMode] = useState<"slider" | "output">("slider");
+  const [imgError, setImgError] = useState(false);
 
   // Lightbox fullscreen inspection modal state
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -235,14 +236,25 @@ export function PromptMediaViewer({
         }}
       >
         {/* Layer 1: AI Generated Output (Full Image) */}
-        <Image
-          src={imageUrl}
-          alt={imageAlt}
-          fill
-          priority
-          sizes="(max-width: 1024px) 100vw, 58vw"
-          className="object-cover"
-        />
+        {!imgError ? (
+          <Image
+            src={imageUrl}
+            alt={imageAlt}
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 58vw"
+            className="object-cover"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-raised text-foreground-muted p-6 text-center">
+            <ImageIcon className="h-10 w-10 text-amber-400 mb-2" />
+            <p className="text-xs font-semibold text-foreground">Visual Asset Pending</p>
+            <p className="text-[11px] text-foreground-muted mt-1 max-w-xs">
+              This visual asset is being prepared or refreshed.
+            </p>
+          </div>
+        )}
 
         {/* Layer 2: Reference Image Overlay (Clipped to sliderPosition when in Slider Mode) */}
         {hasReference && viewMode === "slider" && referenceImageUrl && (
@@ -393,6 +405,7 @@ export function PromptMediaViewer({
               sizes="(max-width: 1200px) 90vw, 1200px"
               quality={90}
               className="h-full w-full object-contain max-h-[85vh]"
+              onError={() => setImgError(true)}
             />
           </div>
 

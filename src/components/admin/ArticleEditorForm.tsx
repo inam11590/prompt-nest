@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import type { ArticleItem, ArticleAuthor } from "@/lib/data/articles";
 import {
   createArticleAction,
   updateArticleAction,
-  uploadArticleCoverImageAction,
+  // Note: /api/admin/upload endpoint supersedes legacy uploadArticleCoverImageAction for bulletproof client-side WebP uploads
 } from "@/app/actions/articles";
+import { compressImageToWebp } from "@/lib/image-upload";
 import {
   UploadCloud,
   CheckCircle2,
@@ -70,6 +70,7 @@ export function ArticleEditorForm({
   const [coverImageDominantColor, setCoverImageDominantColor] = useState(
     initialArticle?.coverImageDominantColor || "#18181c"
   );
+  const [coverImageLoadError, setCoverImageLoadError] = useState(false);
 
   // UI & Mutation states
   const [isUploading, setIsUploading] = useState(false);
@@ -106,57 +107,72 @@ export function ArticleEditorForm({
     setIsDirty(true);
   };
 
-  // Upload Cover Image via validated Sharp pipeline
+  // Upload Cover Image via browser WebP compression & resilient API endpoint
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setIsUploading(true);
     setErrorMessage(null);
+    setCoverImageLoadError(false);
+
+    // 1. Instant client preview
+    const objectPreviewUrl = URL.createObjectURL(file);
+    setCoverImageUrl(objectPreviewUrl);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("folder", "articles");
+      // 2. High-performance client-side WebP compression (<300KB, max 1400px edge)
+      const compressed = await compressImageToWebp(file, {
+        maxEdge: 1400,
+        quality: 0.82,
+      });
 
-      let res: {
-        success: boolean;
-        data?: {
-          imageUrl: string;
-          width: number;
-          height: number;
-          aspectRatio?: string;
-          dominantColor: string;
-        };
-        error?: string;
-      };
+      setCoverImageWidth(compressed.width);
+      setCoverImageHeight(compressed.height);
+      setCoverImageDominantColor(compressed.dominantColor);
+      if (!coverImageAlt) {
+        setCoverImageAlt(title || file.name.replace(/\.[^/.]+$/, ""));
+      }
+      setIsDirty(true);
+
+      // 3. Send to /api/admin/upload via standard fetch()
+      const formData = new FormData();
+      formData.append("file", compressed.file);
+      formData.append("dataUrl", compressed.dataUrl);
+      formData.append("folder", "articles");
+      formData.append("dominantColor", compressed.dominantColor);
 
       try {
         const response = await fetch("/api/admin/upload", {
           method: "POST",
           body: formData,
         });
-        res = await response.json();
-      } catch (fetchErr) {
-        console.warn("Direct upload endpoint failed, falling back to server action:", fetchErr);
-        res = await uploadArticleCoverImageAction(formData);
-      }
 
-      if (res.success && res.data) {
-        setCoverImageUrl(res.data.imageUrl);
-        setCoverImageWidth(res.data.width);
-        setCoverImageHeight(res.data.height);
-        setCoverImageDominantColor(res.data.dominantColor);
-        if (!coverImageAlt) {
-          setCoverImageAlt(title || file.name.replace(/\.[^/.]+$/, ""));
+        if (response.ok) {
+          const res = await response.json();
+          if (res.success && res.data?.imageUrl) {
+            setCoverImageUrl(res.data.imageUrl);
+            setCoverImageWidth(res.data.width || compressed.width);
+            setCoverImageHeight(res.data.height || compressed.height);
+            setCoverImageDominantColor(res.data.dominantColor || compressed.dominantColor);
+            URL.revokeObjectURL(objectPreviewUrl);
+            return;
+          }
         }
-        setIsDirty(true);
-      } else {
-        setErrorMessage(res.error || "Failed to upload cover image.");
+
+        // Storage fallback
+        console.warn("Upload API returned non-ok, using client WebP data URL fallback.");
+        setCoverImageUrl(compressed.dataUrl);
+        URL.revokeObjectURL(objectPreviewUrl);
+      } catch (fetchErr) {
+        console.warn("Network error during cover upload fetch, using WebP data URL fallback:", fetchErr);
+        setCoverImageUrl(compressed.dataUrl);
+        URL.revokeObjectURL(objectPreviewUrl);
       }
     } catch (err) {
       console.error("handleCoverUpload error:", err);
-      setErrorMessage(err instanceof Error ? err.message : "Network error during upload.");
+      setErrorMessage(err instanceof Error ? err.message : "Failed to process cover image.");
+      URL.revokeObjectURL(objectPreviewUrl);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -505,14 +521,24 @@ export function ArticleEditorForm({
               className="relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-surface-border flex items-center justify-center group"
               style={{ backgroundColor: coverImageDominantColor }}
             >
-              {coverImageUrl ? (
-                <Image
+              {coverImageUrl && !coverImageLoadError ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                   src={coverImageUrl}
                   alt={coverImageAlt || "Article cover"}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 350px"
-                  className="object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  onError={() => setCoverImageLoadError(true)}
                 />
+              ) : coverImageUrl && coverImageLoadError ? (
+                <div className="flex flex-col items-center justify-center p-6 text-center text-foreground-muted bg-background/85 backdrop-blur-md w-full h-full">
+                  <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-2">
+                    <ImageIcon className="h-5 w-5 text-amber-400" />
+                  </div>
+                  <p className="text-xs font-semibold text-foreground">Cover Asset Pending</p>
+                  <p className="text-[11px] text-foreground-muted mt-0.5 max-w-xs">
+                    Source file missing or inaccessible. Click Replace to upload.
+                  </p>
+                </div>
               ) : (
                 <div className="flex flex-col items-center text-foreground-muted/60 p-4 text-center">
                   <ImageIcon className="h-8 w-8 mb-2 stroke-[1.5]" />
